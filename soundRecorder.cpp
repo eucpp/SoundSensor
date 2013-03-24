@@ -31,7 +31,7 @@ void SoundRecorder::recordFrame()
 {
     qint64 pos = buffer->pos();
     buffer->seek(currentPos);
-    QByteArray* frameBytes = new QByteArray(buffer->read(pos));
+    QByteArray* frameBytes = new QByteArray(buffer->read(pos - currentPos));
     buffer->seek(pos);
     currentPos = pos;
     emit frameRecorded(frameBytes);
