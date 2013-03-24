@@ -13,12 +13,12 @@ MOBILITY = multimedia
 
 SOURCES += main.cpp\
         testwindow.cpp \
-    soundRecorder.cpp
+    soundRecorder.cpp \
 
 HEADERS  += testwindow.h \
-    soundRecorder.h
+    soundRecorder.h \
 
-FORMS    += testwindow.ui
+FORMS    += testwindow.ui \
 
 INCLUDEPATH += /usr/include/QtMultimediaKit
 INCLUDEPATH += /usr/include/QtMobility

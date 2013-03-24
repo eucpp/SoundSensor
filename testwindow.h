@@ -2,6 +2,7 @@
 #define TESTWINDOW_H
 
 #include <QMainWindow>
+#include "soundRecorder.h"
 
 namespace Ui {
 class TestWindow;
@@ -17,6 +18,7 @@ public:
     
 private:
     Ui::TestWindow *ui;
+
 };
 
 #endif // TESTWINDOW_H

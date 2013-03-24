@@ -11,10 +11,9 @@ int main(int argc, char *argv[])
     w.show();
 
     SoundRecorder recorder;
-    recorder.record();
+    recorder.startRecording();
     
-    QTimer::singleShot(9000, &recorder, SLOT(testplay()));
-    //recorder.testplay();
+    QTimer::singleShot(1000, &recorder, SLOT(stopRecording()));
 
     return a.exec();
 }
