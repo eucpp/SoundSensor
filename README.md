@@ -4,5 +4,5 @@ SoundSensor
 
 ===========
 Использует пакеты:
-qtmobility-dev
-libdeclarative-multimedia
+* qtmobility-dev
+* libdeclarative-multimedia
