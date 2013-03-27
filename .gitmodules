@@ -1,0 +1,3 @@
+[submodule "QRealFourier"]
+	path = QRealFourier
+	url = https://github.com/visore/QRealFourier
