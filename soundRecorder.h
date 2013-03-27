@@ -19,43 +19,45 @@ class SoundRecorder : public QObject
     Q_OBJECT
 public:
     /**
-      * @brief В конструкторе устанавливается формат записи по умолчанию,
-      *        создаётся и настраивается объект AudioInput
-      * @details Для записи используется первое доступное устройство
+      * В конструкторе устанавливается формат записи по умолчанию,
+      * создаётся и настраивается объект AudioInput.
+      * Для записи используется первое доступное устройство
       */
     SoundRecorder();
     ~SoundRecorder();
 public slots:
     /**
-      * @brief Начинает запись звука
-      * @details Данные, полученные от устройства сохраняются в QByteArray
-      *          После начала записи объект генерирует сигнал frameRecorded каждые frameLength миллисекунд
+      * Начинает запись звука.
+      * Данные, полученные от устройства сохраняются в QByteArray.
+      * После начала записи объект генерирует сигнал frameRecorded каждые frameLength миллисекунд.
       */
     void startRecording();
     /**
-      * @brief Завершение записи
+      * Завершение записи.
       */
     void stopRecording();
 private slots:
     /**
-      * @brief Копирует последний записанный фрейм
+      * Копирует последний записанный фрейм.
       */
     void recordFrame();
 signals:
     /**
-      * @details Сигнал вызывается каждые frameLength секунд и содержит массив байт с записанным фреймом
+      * Сигнал вызывается каждые frameLength секунд и содержит массив байт с записанным фреймом.
       */
-    void frameRecorded(QByteArray*);
+    void frameRecorded(QByteArray);
 private:
     /**
-      * @brief Установка параметров записи по умолчанию
+      * Установка параметров записи по умолчанию.
       */
     void defaultFormatSettings();
     QAudioInput* audioIn;
     QAudioFormat audioFormat;
     QByteArray* byteArray;
     QBuffer* buffer;
-    quint64 currentPos;
+    quint64 currentFramePos;
     static const int frameLength = 50;
+
+    int testVar;
 };
 

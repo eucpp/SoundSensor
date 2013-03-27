@@ -8,7 +8,7 @@ SoundRecorder::SoundRecorder()
     audioIn->setNotifyInterval(SoundRecorder::frameLength);
     byteArray = new QByteArray();
     buffer = new QBuffer(byteArray, this);
-    currentPos = 0;
+    currentFramePos = 0;
 }
 SoundRecorder::~SoundRecorder()
 {
@@ -17,7 +17,7 @@ SoundRecorder::~SoundRecorder()
 
 void SoundRecorder::startRecording()
 {
-    buffer->open(QIODevice::ReadWrite);
+    buffer->open(QIODevice::WriteOnly);
     connect(audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
     audioIn->start(buffer);
 }
@@ -29,11 +29,13 @@ void SoundRecorder::stopRecording()
 
 void SoundRecorder::recordFrame()
 {
-    qint64 pos = buffer->pos();
-    buffer->seek(currentPos);
-    QByteArray* frameBytes = new QByteArray(buffer->read(pos - currentPos));
-    buffer->seek(pos);
-    currentPos = pos;
+    // to do:
+    // вычислять кол-во байтов, которое должно содержаться в фрейме (время * част.дискр * др.параметры формата)
+    // и кол-во реально записанных байтов,
+    // передавать минимальное из этих значений
+    qint64 bytesInFrame = buffer->pos() - currentFramePos;
+    QByteArray frameBytes = QByteArray::fromRawData(byteArray->constData() + currentFramePos, bytesInFrame);
+    currentFramePos += bytesInFrame;
     emit frameRecorded(frameBytes);
 }
 
