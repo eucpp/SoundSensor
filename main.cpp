@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
     TestWindow w;
     w.show();
 
-    SoundRecorder recorder;
+    QAudioDeviceInfo device = QAudioDeviceInfo::availableDevices(QAudio::AudioInput).first();
+    SoundRecorder recorder(device);
     recorder.startRecording();
     
     QTimer::singleShot(1000, &recorder, SLOT(stopRecording()));

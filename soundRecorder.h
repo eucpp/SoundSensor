@@ -23,7 +23,7 @@ public:
       * создаётся и настраивается объект AudioInput.
       * Для записи используется первое доступное устройство
       */
-    SoundRecorder();
+    SoundRecorder(QAudioDeviceInfo& device);
     ~SoundRecorder();
 public slots:
     /**
@@ -51,12 +51,16 @@ private:
       * Установка параметров записи по умолчанию.
       */
     void defaultFormatSettings();
+    qreal pcmToReal();
+    qint16 realToPcm();
+
     QAudioInput* audioIn;
     QAudioFormat audioFormat;
+    QAudioDeviceInfo audioDevice;
     QByteArray* byteArray;
     QBuffer* buffer;
     quint64 currentFramePos;
-    static const int frameLength = 50;
+    static const int frameLength = 125;
 
     int testVar;
 };

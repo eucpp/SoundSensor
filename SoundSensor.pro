@@ -19,7 +19,10 @@ SOURCES += main.cpp\
     QRealFourier/code/sources/qfouriertransformer.cpp \
     QRealFourier/code/sources/qfourierfixedcalculator.cpp \
     QRealFourier/code/sources/qfouriercalculator.cpp \
-    QRealFourier/code/sources/qcomplexnumber.cpp
+    QRealFourier/code/sources/qcomplexnumber.cpp \
+    spectrumAnalyzer.cpp \
+    spectrogram.cpp \
+    utils.cpp
 
 HEADERS  += testwindow.h \
     soundRecorder.h \
@@ -48,7 +51,10 @@ HEADERS  += testwindow.h \
     QRealFourier/code/fftreal/DynArray.h \
     QRealFourier/code/fftreal/def.h \
     QRealFourier/code/fftreal/Array.hpp \
-    QRealFourier/code/fftreal/Array.h
+    QRealFourier/code/fftreal/Array.h \
+    spectrumAnalyzer.h \
+    spectrogram.h \
+    utils.h
 
 FORMS    += testwindow.ui \
 
