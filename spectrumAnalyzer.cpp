@@ -1,9 +1,9 @@
 #include "spectrumAnalyzer.h"
 
-SpectrumAnalyzer::SpectrumAnalyzer(int dataSizeLog, QAudioFormat &audioFormat):
+SpectrumAnalyzer::SpectrumAnalyzer(int dataSizeExp, QAudioFormat audioFormat):
     format(audioFormat)
 {
-    analyzedDataSize = static_cast<int>(pow(2, dataSizeLog));
+    analyzedDataSize = static_cast<int>(pow(2, dataSizeExp));
     fourierTransformer = new QFourierTransformer(analyzedDataSize);
 }
 
@@ -14,8 +14,17 @@ SpectrumAnalyzer::~SpectrumAnalyzer()
 
 void SpectrumAnalyzer::calclulateSpectrum(QByteArray byteArray)
 {
-    if (byteArray.size() != analyzedDataSize)
-        return;
+    // проверяем, совпадает ли размер массива с размером обрабатываемого фрейма
+    // сравнение не учитывает формат (подразумевается, что sample size = 8 bit)
+    // to do: норм. сравнение, учитывающее формат
+    if (byteArray.size() < analyzedDataSize)
+    {
+        qint64 oldSize = byteArray.size();
+        byteArray.resize(analyzedDataSize);
+        for (int i = oldSize; i < analyzedDataSize; i++)
+            byteArray[i] = 0;
+    }
+
     float* input = new float[analyzedDataSize];
     for (int i = 0; i < analyzedDataSize; i++)
         // фиксированное преобразование (подразумевается, что sample size = 8 bit)
@@ -30,7 +39,7 @@ void SpectrumAnalyzer::calclulateSpectrum(QByteArray byteArray)
         spectr[i].frequency = qreal((i * format.frequency()) / analyzedDataSize);
         qreal re = output[i];
         qreal im = 0.0;
-        if (im != 0 && im != analyzedDataSize/2)
+        if (i != 0 && i != analyzedDataSize/2)
             im = output[analyzedDataSize/2 + i];
         spectr[i].amplitude = sqrt(re*re + im*im);
     }

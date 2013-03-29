@@ -15,6 +15,11 @@ SoundRecorder::~SoundRecorder()
     delete byteArray;
 }
 
+QAudioFormat SoundRecorder::getAudioFormat() const
+{
+    return audioFormat;
+}
+
 void SoundRecorder::startRecording()
 {
     buffer->open(QIODevice::WriteOnly);
@@ -23,16 +28,18 @@ void SoundRecorder::startRecording()
 }
 void SoundRecorder::stopRecording()
 {
-    cout << "total: " << buffer->size() << " bytes were recorded" << endl;
     audioIn->stop();
 }
 
 void SoundRecorder::recordFrame()
 {
     qint64 expectedBytesInFrame = SoundRecorder::frameLength
-            * audioFormat.frequency() * audioFormat.channelCount() * audioFormat.sampleSize() / 8;
+            * audioFormat.frequency() / 1000 * audioFormat.channelCount() * audioFormat.sampleSize() / 8;
     qint64 actualBytesInFrame = buffer->pos() - currentFramePos;
     qint64 bytesInFrame = qMin(expectedBytesInFrame, actualBytesInFrame);
+
+    cout << "Expected Bytes: " << expectedBytesInFrame << endl;
+    cout << "Actual bytes: " << actualBytesInFrame << endl << endl;
 
     QByteArray frameBytes = QByteArray::fromRawData(byteArray->constData() + currentFramePos, bytesInFrame);
     currentFramePos += bytesInFrame;

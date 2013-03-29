@@ -25,6 +25,7 @@ public:
       */
     SoundRecorder(QAudioDeviceInfo& device);
     ~SoundRecorder();
+    QAudioFormat getAudioFormat() const;
 public slots:
     /**
       * Начинает запись звука.
@@ -60,7 +61,7 @@ private:
     QByteArray* byteArray;
     QBuffer* buffer;
     quint64 currentFramePos;
-    static const int frameLength = 125;
+    static const int frameLength = 128;
 
     int testVar;
 };
