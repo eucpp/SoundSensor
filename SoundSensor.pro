@@ -22,7 +22,12 @@ SOURCES += main.cpp\
     QRealFourier/code/sources/qcomplexnumber.cpp \
     spectrumAnalyzer.cpp \
     spectrogram.cpp \
-    utils.cpp
+    utils.cpp \
+    Alglib/fasttransforms.cpp \
+    Alglib/ap.cpp \
+    Alglib/alglibmisc.cpp \
+    correlator.cpp \
+    Alglib/alglibinternal.cpp
 
 HEADERS  += testwindow.h \
     soundRecorder.h \
@@ -54,7 +59,12 @@ HEADERS  += testwindow.h \
     QRealFourier/code/fftreal/Array.h \
     spectrumAnalyzer.h \
     spectrogram.h \
-    utils.h
+    utils.h \
+    Alglib/fasttransforms.h \
+    Alglib/ap.h \
+    Alglib/alglibinternal.h \
+    correlator.h \
+    Alglib/alglibmisc.h
 
 FORMS    += testwindow.ui \
 

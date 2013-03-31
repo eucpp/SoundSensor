@@ -2,4 +2,7 @@
 
 #include <QObject>
 
-float pcmToFloat(qint8 pcm);
+float pcmToFloat(int pcm);
+double pcmToDouble(int pcm);
+
+double* byteArrayToDouble(QByteArray byteArray);

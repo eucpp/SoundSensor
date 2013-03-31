@@ -52,8 +52,6 @@ private:
       * Установка параметров записи по умолчанию.
       */
     void defaultFormatSettings();
-    qreal pcmToReal();
-    qint16 realToPcm();
 
     QAudioInput* audioIn;
     QAudioFormat audioFormat;
@@ -62,7 +60,5 @@ private:
     QBuffer* buffer;
     quint64 currentFramePos;
     static const int frameLength = 128;
-
-    int testVar;
 };
 

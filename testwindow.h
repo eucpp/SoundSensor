@@ -8,6 +8,7 @@
 #include <QTimer>
 #include "soundRecorder.h"
 #include "spectrumAnalyzer.h"
+#include "correlator.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ private:
     Ui::TestWindow *ui;
     SoundRecorder* recorder;
     SpectrumAnalyzer* analyzer;
+    Correlator* correlator;
 };
 
 #endif // TESTWINDOW_H

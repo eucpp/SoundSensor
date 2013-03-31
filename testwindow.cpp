@@ -10,8 +10,10 @@ TestWindow::TestWindow(QWidget *parent) :
     QAudioDeviceInfo device = QAudioDeviceInfo::availableDevices(QAudio::AudioInput).first();
     recorder = new SoundRecorder(device);
     analyzer = new SpectrumAnalyzer(10, recorder->getAudioFormat());
+    correlator = new Correlator();
     connect(recorder, SIGNAL(frameRecorded(QByteArray)), analyzer, SLOT(calclulateSpectrum(QByteArray)));
     connect(analyzer, SIGNAL(spectrumCalculated(Spectrogram)), this, SLOT(printSpectum(Spectrogram)));
+
 
     recorder->startRecording();
     QTimer::singleShot(1000, recorder, SLOT(stopRecording()));
@@ -23,8 +25,8 @@ TestWindow::~TestWindow()
 
     delete recorder;
     delete analyzer;
+    delete correlator;
 }
-
 void TestWindow::printSpectum(Spectrogram spectr)
 {
     ofstream file;

@@ -19,7 +19,7 @@ void SpectrumAnalyzer::calclulateSpectrum(QByteArray byteArray)
     // to do: норм. сравнение, учитывающее формат
     if (byteArray.size() < analyzedDataSize)
     {
-        qint64 oldSize = byteArray.size();
+        int oldSize = byteArray.size();
         byteArray.resize(analyzedDataSize);
         for (int i = oldSize; i < analyzedDataSize; i++)
             byteArray[i] = 0;
@@ -29,7 +29,7 @@ void SpectrumAnalyzer::calclulateSpectrum(QByteArray byteArray)
     for (int i = 0; i < analyzedDataSize; i++)
         // фиксированное преобразование (подразумевается, что sample size = 8 bit)
         // to do: норм. преобразование, учитывающее формат
-        input[i] = pcmToFloat(static_cast<qint8>(byteArray[i]));
+        input[i] = pcmToFloat(static_cast<int>(byteArray[i]));
     float* output = new float[analyzedDataSize];
     fourierTransformer->forwardTransform(input, output);
 
