@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     Alglib/ap.cpp \
     Alglib/alglibmisc.cpp \
     correlator.cpp \
-    Alglib/alglibinternal.cpp
+    Alglib/alglibinternal.cpp \
+    signal.cpp \
+    wavFile.cpp
 
 HEADERS  += testwindow.h \
     soundRecorder.h \
@@ -64,7 +66,9 @@ HEADERS  += testwindow.h \
     Alglib/ap.h \
     Alglib/alglibinternal.h \
     correlator.h \
-    Alglib/alglibmisc.h
+    Alglib/alglibmisc.h \
+    signal.h \
+    wavFile.h
 
 FORMS    += testwindow.ui \
 

@@ -7,6 +7,7 @@
 #include <QAudioOutput>
 #include <QBuffer>
 #include <QByteArray>
+#include "signal.h"
 
 using namespace std;
 
@@ -44,9 +45,9 @@ private slots:
     void recordFrame();
 signals:
     /**
-      * Сигнал вызывается каждые frameLength секунд и содержит массив байт с записанным фреймом.
+      * Вызывается каждые frameLength секунд и объект-сигнал с записанным фреймом.
       */
-    void frameRecorded(QByteArray);
+    void frameRecorded(Signal);
 private:
     /**
       * Установка параметров записи по умолчанию.

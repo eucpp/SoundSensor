@@ -10,6 +10,7 @@ SoundRecorder::SoundRecorder(QAudioDeviceInfo& device):
     byteArray = new QByteArray();
     buffer = new QBuffer(byteArray, this);
 }
+
 SoundRecorder::~SoundRecorder()
 {
     delete byteArray;
@@ -26,9 +27,15 @@ void SoundRecorder::startRecording()
     connect(audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
     audioIn->start(buffer);
 }
+
 void SoundRecorder::stopRecording()
 {
     audioIn->stop();
+}
+
+QAudioFormat SoundRecorder::getFormat()
+{
+    return audioFormat;
 }
 
 void SoundRecorder::recordFrame()
@@ -38,17 +45,15 @@ void SoundRecorder::recordFrame()
     qint64 actualBytesInFrame = buffer->pos() - currentFramePos;
     qint64 bytesInFrame = qMin(expectedBytesInFrame, actualBytesInFrame);
 
-    cout << "Expected Bytes: " << expectedBytesInFrame << endl;
-    cout << "Actual bytes: " << actualBytesInFrame << endl << endl;
-
-    QByteArray frameBytes = QByteArray::fromRawData(byteArray->constData() + currentFramePos, bytesInFrame);
+    Signal signal(QByteArray::fromRawData(byteArray->constData() + currentFramePos, bytesInFrame),
+                  getAudioFormat());
     currentFramePos += bytesInFrame;
-    emit frameRecorded(frameBytes);
+    emit frameRecorded(signal);
 }
 
 void SoundRecorder::defaultFormatSettings()
 {
-    audioFormat.setFrequency(8000);
+    audioFormat.setSampleRate(8000);
     audioFormat.setChannels(1);
     audioFormat.setSampleSize(8);
     audioFormat.setCodec("audio/pcm");
