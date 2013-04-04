@@ -5,6 +5,7 @@
 #include "Alglib/ap.h"
 #include "Alglib/alglibinternal.h"
 #include "Alglib/fasttransforms.h"
+#include "signal.h"
 #include "utils.h"
 
 /**
@@ -16,8 +17,8 @@ class Correlator : public QObject
 public:
     Correlator();
 public slots:
-    void calcCorrelation(QByteArray signalBytes, QByteArray patternBytes);
+    Signal calcCorrelation(Signal signal, Signal pattern);
 signals:
-    void correlationCalculated(double*, unsigned int);
+    void correlationCalculated(Signal);
 };
 

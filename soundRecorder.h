@@ -26,6 +26,7 @@ public:
       */
     SoundRecorder(QAudioDeviceInfo& device);
     ~SoundRecorder();
+    Signal getSignal();
     QAudioFormat getAudioFormat() const;
 public slots:
     /**
@@ -45,7 +46,7 @@ private slots:
     void recordFrame();
 signals:
     /**
-      * Вызывается каждые frameLength секунд и объект-сигнал с записанным фреймом.
+      * Вызывается каждые frameLength секунд и содержит объект-сигнал с записанным фреймом.
       */
     void frameRecorded(Signal);
 private:

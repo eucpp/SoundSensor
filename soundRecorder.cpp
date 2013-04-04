@@ -16,6 +16,15 @@ SoundRecorder::~SoundRecorder()
     delete byteArray;
 }
 
+// метод возвращает сигнал записанный за всё время работы
+// поидее, надо проверять, продолжается ли запись в данный момент,
+// и возвращать только доступную область массива байт, если запись идёт.
+// пока возвращает полностью все байты (предполагается, что запись остановлена)
+Signal SoundRecorder::getSignal()
+{
+    return Signal(*byteArray, getAudioFormat());
+}
+
 QAudioFormat SoundRecorder::getAudioFormat() const
 {
     return audioFormat;
@@ -31,11 +40,6 @@ void SoundRecorder::startRecording()
 void SoundRecorder::stopRecording()
 {
     audioIn->stop();
-}
-
-QAudioFormat SoundRecorder::getFormat()
-{
-    return audioFormat;
 }
 
 void SoundRecorder::recordFrame()

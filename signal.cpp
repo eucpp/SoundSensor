@@ -28,6 +28,11 @@ QAudioFormat Signal::getFormat()
 {
     return bytesFormat;
 }
+void Signal::setFormat(QAudioFormat format)
+{
+    bytesFormat = format;
+}
+
 unsigned int Signal::getSize()
 {
     if (bytesSetFlag)
@@ -70,16 +75,16 @@ double* Signal::byteArrayToDoubles()
     double* doubleArray = new double[arraySize];
     for (int i = 0; i < arraySize; i++)
     {
-        doubleArray[i] = pcmToDouble(this->operator[](i));
+        doubleArray[i] = this->operator[](i);
     }
     return doubleArray;
 }
 
 double inline Signal::pcmToDouble(int pcm)
 {
-    return static_cast<double>(pcm / PCM4MaxAmplitude);
+    return static_cast<double>(pcm) / PCM8MaxAmplitude;
 }
 int inline Signal::doubleToPcm(double val)
 {
-    return static_cast<int>(round(val * PCM4MaxAmplitude));
+    return static_cast<int>(round(val * PCM8MaxAmplitude));
 }

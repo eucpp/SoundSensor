@@ -1,5 +1,9 @@
 #include "wavFile.h"
 
+WavFile::WavFile(QString filename):
+    QFile(filename)
+{}
+
 QAudioFormat WavFile::readHeader()
 {
     qint64 currPos = pos();
@@ -89,8 +93,12 @@ unsigned int WavFile::dataSize()
 {
     qint64 currPos = pos();
     seek(40);
-    char* size = NULL;
-    read(size, 4);
+    char* charSize = new char[5];
+    read(charSize, 4);
+    charSize[4] = '\0';
     seek(currPos);
-    return QString(size).toUInt();
+    unsigned int* pSize = reinterpret_cast<unsigned int*>(charSize);
+    unsigned int size = *pSize;
+    delete charSize;
+    return size;
 }

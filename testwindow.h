@@ -6,9 +6,11 @@
 #include <math.h>
 #include <QMainWindow>
 #include <QTimer>
+#include <QFileDialog>
 #include "soundRecorder.h"
 #include "spectrumAnalyzer.h"
 #include "correlator.h"
+#include "wavFile.h"
 
 using namespace std;
 
@@ -24,6 +26,11 @@ public:
     explicit TestWindow(QWidget *parent = 0);
     ~TestWindow();
 public slots:
+    void startRecording();
+    void stopRecording();
+    void openPattern();
+    void saveRecord();
+    void compareSignals();
     /**
       * Функция печатает спекр последнего фрейма в файл .csv
       * Можно открыть в офисе и посмотреть на диаграмму спектра :)
@@ -34,6 +41,9 @@ private:
     SoundRecorder* recorder;
     SpectrumAnalyzer* analyzer;
     Correlator* correlator;
+
+    Signal signal;
+    Signal pattern;
 };
 
 #endif // TESTWINDOW_H

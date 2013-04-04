@@ -38,9 +38,10 @@ public:
     /**
       * Возвращает массив значений амплитуды сигнала
       */
-    QAudioFormat getFormat();
-    unsigned int getSize();
     double* getData();
+    QAudioFormat getFormat();
+    void setFormat(QAudioFormat format);
+    unsigned int getSize();
     static double pcmToDouble(int pcm);
     static int doubleToPcm(double val);
 private:
@@ -52,6 +53,6 @@ private:
     double* values;
     unsigned int size;
 
-    static const int PCM4MaxAmplitude = 128;
+    static const int PCM8MaxAmplitude = 128;
 };
 

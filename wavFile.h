@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <QObject>
 #include <QAudioFormat>
 #include <QFile>
@@ -11,7 +12,7 @@
 class WavFile : public QFile
 {
 public:
-    WavFile() {}
+    WavFile(QString filename);
     /**
       * Читает заголовок wav файла
       */
