@@ -20,14 +20,46 @@ class SoundRecorder : public QObject
     Q_OBJECT
 public:
     /**
-      * В конструкторе устанавливается формат записи по умолчанию,
-      * создаётся и настраивается объект AudioInput.
-      * Для записи используется первое доступное устройство
+      * Конструктор.
+      * При создании нового объекта используется устройство и формат записи по умолчанию
       */
-    SoundRecorder(QAudioDeviceInfo& device);
+    SoundRecorder();
+    /**
+      * При вызове этого конструктора, используется формат записи по умолчанию
+      *
+      * @param device Устройство для записи
+      */
+    SoundRecorder(QAudioDeviceInfo device);
+    /**
+      * При вызове этого конструктора, используется устройство для записи по умолчанию
+      *
+      * @param format Формат записи
+      */
+    SoundRecorder(QAudioFormat format);
+    /**
+      * @param device Устройство для записи
+      * @param format Формат записи
+      */
+    SoundRecorder(QAudioDeviceInfo device, QAudioFormat format);
     ~SoundRecorder();
+    /**
+      * Возвращает весь записанный сигнал, если запись остановлена,
+      * или доступный для чтения участок записи (от начала) если запись продолжается.
+      */
     Signal getSignal();
     QAudioFormat getAudioFormat() const;
+    QAudioDeviceInfo getAudioDevice() const;
+    /**
+      * Устанавливает длину фрейма.
+      * При записи звука, через промежутки времени, равные длине фрейма, генерируется сигнал
+      * содержащий объект-сигнал, который хранит записанные байты.
+      */
+    void setFrameLength(int length);
+    int getFrameLength() const;
+    /**
+      * Возвращает формат записи, используемый по умолчанию
+      */
+    static QAudioFormat defaultAudioFormat();
 public slots:
     /**
       * Начинает запись звука.
@@ -50,17 +82,12 @@ signals:
       */
     void frameRecorded(Signal);
 private:
-    /**
-      * Установка параметров записи по умолчанию.
-      */
-    void defaultFormatSettings();
-
     QAudioInput* audioIn;
     QAudioFormat audioFormat;
     QAudioDeviceInfo audioDevice;
     QByteArray* byteArray;
     QBuffer* buffer;
     quint64 currentFramePos;
-    static const int frameLength = 128;
+    static const int defaultFrameLength = 128;
 };
 

@@ -1,12 +1,24 @@
 #include "soundRecorder.h"
 
-SoundRecorder::SoundRecorder(QAudioDeviceInfo& device):
+SoundRecorder::SoundRecorder()
+{
+    SoundRecorder(QAudioDeviceInfo::defaultInputDevice(), SoundRecorder::defaultAudioFormat());
+}
+SoundRecorder::SoundRecorder(QAudioDeviceInfo device)
+{
+    SoundRecorder(device, SoundRecorder::defaultAudioFormat());
+}
+SoundRecorder::SoundRecorder(QAudioFormat format)
+{
+    SoundRecorder(QAudioDeviceInfo::defaultInputDevice(), format);
+}
+SoundRecorder::SoundRecorder(QAudioDeviceInfo device, QAudioFormat format):
     audioDevice(device),
+    audioFormat(format),
     currentFramePos(0)
 {
-    defaultFormatSettings();
     audioIn = new QAudioInput(device, audioFormat, this);
-    audioIn->setNotifyInterval(SoundRecorder::frameLength);
+    audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
     byteArray = new QByteArray();
     buffer = new QBuffer(byteArray, this);
 }
@@ -16,19 +28,13 @@ SoundRecorder::~SoundRecorder()
     delete byteArray;
 }
 
-// метод возвращает сигнал записанный за всё время работы
-// поидее, надо проверять, продолжается ли запись в данный момент,
-// и возвращать только доступную область массива байт, если запись идёт.
-// пока возвращает полностью все байты (предполагается, что запись остановлена)
 Signal SoundRecorder::getSignal()
 {
+    if (audioIn->state() == QAudio::ActiveState)
+        return Signal(QByteArray::fromRawData(byteArray->constData(), buffer->pos()), getAudioFormat());
     return Signal(*byteArray, getAudioFormat());
 }
 
-QAudioFormat SoundRecorder::getAudioFormat() const
-{
-    return audioFormat;
-}
 
 void SoundRecorder::startRecording()
 {
@@ -44,23 +50,41 @@ void SoundRecorder::stopRecording()
 
 void SoundRecorder::recordFrame()
 {
-    qint64 expectedBytesInFrame = SoundRecorder::frameLength
-            * audioFormat.frequency() / 1000 * audioFormat.channelCount() * audioFormat.sampleSize() / 8;
-    qint64 actualBytesInFrame = buffer->pos() - currentFramePos;
-    qint64 bytesInFrame = qMin(expectedBytesInFrame, actualBytesInFrame);
-
+    qint64 bytesInFrame = buffer->pos() - currentFramePos;
     Signal signal(QByteArray::fromRawData(byteArray->constData() + currentFramePos, bytesInFrame),
                   getAudioFormat());
     currentFramePos += bytesInFrame;
     emit frameRecorded(signal);
 }
 
-void SoundRecorder::defaultFormatSettings()
+QAudioFormat SoundRecorder::getAudioFormat() const
 {
-    audioFormat.setSampleRate(8000);
-    audioFormat.setChannels(1);
-    audioFormat.setSampleSize(8);
-    audioFormat.setCodec("audio/pcm");
-    audioFormat.setByteOrder(QAudioFormat::LittleEndian);
-    audioFormat.setSampleType(QAudioFormat::SignedInt);
+    return audioFormat;
+}
+
+QAudioDeviceInfo SoundRecorder::getAudioDevice() const
+{
+    return audioDevice;
+}
+
+void SoundRecorder::setFrameLength(int length)
+{
+    audioIn->setNotifyInterval(length);
+}
+
+int SoundRecorder::getFrameLength() const
+{
+    return audioIn->notifyInterval();
+}
+
+QAudioFormat SoundRecorder::defaultAudioFormat()
+{
+    QAudioFormat format;
+    format.setSampleRate(8000);
+    format.setChannels(1);
+    format.setSampleSize(8);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+    return format;
 }
