@@ -2,25 +2,19 @@
 
 SoundRecorder::SoundRecorder()
 {
-    SoundRecorder(QAudioDeviceInfo::defaultInputDevice(), SoundRecorder::defaultAudioFormat());
+    init(QAudioDeviceInfo::defaultInputDevice(), SoundRecorder::defaultAudioFormat());
 }
 SoundRecorder::SoundRecorder(QAudioDeviceInfo device)
 {
-    SoundRecorder(device, SoundRecorder::defaultAudioFormat());
+    init(device, SoundRecorder::defaultAudioFormat());
 }
 SoundRecorder::SoundRecorder(QAudioFormat format)
 {
-    SoundRecorder(QAudioDeviceInfo::defaultInputDevice(), format);
+    init(QAudioDeviceInfo::defaultInputDevice(), format);
 }
-SoundRecorder::SoundRecorder(QAudioDeviceInfo device, QAudioFormat format):
-    audioDevice(device),
-    audioFormat(format),
-    currentFramePos(0)
+SoundRecorder::SoundRecorder(QAudioDeviceInfo device, QAudioFormat format)
 {
-    audioIn = new QAudioInput(device, audioFormat, this);
-    audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
-    byteArray = new QByteArray();
-    buffer = new QBuffer(byteArray, this);
+    init(device, format);
 }
 
 SoundRecorder::~SoundRecorder()
@@ -75,6 +69,17 @@ void SoundRecorder::setFrameLength(int length)
 int SoundRecorder::getFrameLength() const
 {
     return audioIn->notifyInterval();
+}
+
+void SoundRecorder::init(QAudioDeviceInfo device, QAudioFormat format)
+{
+    audioDevice = device;
+    audioFormat = format;
+    currentFramePos = 0;
+    audioIn = new QAudioInput(device, audioFormat, this);
+    audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
+    byteArray = new QByteArray();
+    buffer = new QBuffer(byteArray, this);
 }
 
 QAudioFormat SoundRecorder::defaultAudioFormat()

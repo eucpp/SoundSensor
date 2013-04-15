@@ -5,7 +5,7 @@
 #include <QAudioFormat>
 
 /**
-  * Класс-контейнер для цифрового звукового сигнала.
+  * Класс-контейнер для цифрового звукового моно сигнала.
   * Объект хранит информацию об амплитуде звуковой волны.
   * Информация о сигнале может храниться в объекте в двух разных формах,
   * как массив байт или как массив переменных double.
@@ -13,6 +13,11 @@
   */
 class Signal
 {
+    /**
+      * Класс исключений, генерируемых при попытке доступа к значению сигнала вне диапозона
+      */
+    class OutOfSignalRangeExc
+    {};
 public:
     /**
       * Создание сигнала по массиву байт
@@ -30,7 +35,7 @@ public:
     /**
       * Оператор возвразает значение амплитуды в позиции i сигнала
       */
-    double operator[](unsigned int i);
+    double operator[](unsigned int i) throw(OutOfSignalRangeExc);
     /**
       * Возвращает массив байт, кодирующих сигнал в соответствии с установленным форматом
       */
@@ -40,19 +45,43 @@ public:
       */
     double* getData();
     QAudioFormat getFormat();
+    /**
+      * Установка формата массива байт.
+      * Если объект содержит массив значений амплитуды(или не содержит ничего),
+      * то формат будет использован при попытке конвертирования массива double
+      * в массив байт (например, при записи сигнала в wav файл).
+      * Если объект уже хранит массив байт, то вся информация будет перекодирована в соответсвии
+      * с новым форматом.
+      */
     void setFormat(QAudioFormat format);
-    unsigned int getSize();
-    static double pcmToDouble(int pcm);
-    static int doubleToPcm(double val);
+    unsigned int size();
+    /**
+      * Конвертация pcm в double
+      *
+      * @param pcm конвертируемое значение
+      * @param pcmSize размер значения pcm в битах (8 или 16)
+      */
+    static double pcmToDouble(int pcm, int pcmSize);
+    /**
+      * Конвертация double в pcm
+      *
+      * @param pcm конвертируемое значение
+      * @param pcmSize размер значения pcm в битах (8 или 16)
+      */
+    static int doubleToPcm(double val, int pcmSize);
 private:
-    QByteArray doublesToByteArray();
-    double* byteArrayToDoubles();
-    QByteArray bytes;
-    bool bytesSetFlag;
-    QAudioFormat bytesFormat;
-    double* values;
-    unsigned int size;
+    void convertByteArray(QAudioFormat newFormat);
+    void doublesToByteArray();
+    void byteArrayToDoubles();
 
-    static const int PCM8MaxAmplitude = 128;
+    QByteArray bytes;
+    QAudioFormat bytesFormat;
+    bool bytesSetFlag;
+    double* values;
+    unsigned int valuesSize;
+    bool valuesSetFlag;
+
+    static const int PCM8MaxAmplitude = 255;
+    static const int PCM16MaxAmplitude = 65535;
 };
 

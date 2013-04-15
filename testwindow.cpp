@@ -42,7 +42,6 @@ void TestWindow::stopRecording()
 {
     recorder->stopRecording();
     signal = recorder->getSignal();
-    signal.setFormat(recorder->getAudioFormat());
     ui->stopButton->setEnabled(false);
     ui->recordLabel->setText("Sound was recorded successfully");
 }
@@ -68,7 +67,7 @@ void TestWindow::compareSignals()
     correlation.setFormat(signal.getFormat());
     double max = 0;
     unsigned int maxInd = 0;
-    for (int i = 0; i < correlation.getSize(); i++)
+    for (int i = 0; i < correlation.size(); i++)
     {
         if (correlation[i] > max)
         {
@@ -76,7 +75,7 @@ void TestWindow::compareSignals()
             maxInd = i;
         }
     }
-    QByteArray match = signal.getBytes().mid(maxInd, pattern.getSize());
+    QByteArray match = signal.getBytes().mid(maxInd, pattern.size());
     Signal matchSignal(match, signal.getFormat());
 
     WavFile file("matchingFragment.wav");

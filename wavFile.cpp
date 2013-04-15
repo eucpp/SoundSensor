@@ -84,7 +84,7 @@ Signal WavFile::readSignal()
 void WavFile::writeSignal(Signal signal)
 {
     seek(0);
-    writeHeader(signal.getFormat(), signal.getSize());
+    writeHeader(signal.getFormat(), signal.size());
     seek(44);
     write(signal.getBytes());
 }
