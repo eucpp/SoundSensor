@@ -14,23 +14,32 @@ Signal::Signal(double *vals, unsigned int valsSize):
     valuesSetFlag(true),
     bytesSetFlag(false)
 {}
+Signal::~Signal()
+{
+    if (valuesSetFlag)
+        delete[] values;
+}
 
-// to do: тест для этой функции!
 double Signal::operator[](unsigned int i) throw(OutOfSignalRangeExc)
 {
+    // если массив значений существует, возвращаем значение из него
     if (valuesSetFlag)
     {
         if (i >= valuesSize || i < 0)
             throw OutOfSignalRangeExc();
         return values[i];
     }
+    // иначе преобразуем pcm значения из массива байтов
     else if (bytesSetFlag)
     {
         int sampleSize = bytesFormat.sampleSize() / 8;
         char* val = new char(4);
         int valPos = i * sampleSize;
+        // проверяем выход за пределы массива
         if (valPos >= bytes.size() || valPos < 0)
             throw OutOfSignalRangeExc();
+        // копируем байты, соответствующие сэмплу i, в массив char,
+        // учитывая порядок байт
         for (int i = 0; i < 4; ++i)
         {
             if (bytesFormat.byteOrder() == QAudioFormat::LittleEndian)
@@ -48,15 +57,44 @@ double Signal::operator[](unsigned int i) throw(OutOfSignalRangeExc)
                     val[i] = 0;
             }
         }
-        int* intVal = reinterpret_cast<int*>(val);
-        if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
+
+        if (sampleSize == 1)
         {
-            if (sampleSize == 1)
-                *intVal += 128;
-            else if (sampleSize == 2)
-                *intVal += 32768;
+            // преобразуем 8-битное pcm значение в double,
+            // учитывая, знаковое ли оно, или нет
+            if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
+            {
+                int intVal = static_cast<int>(val[0]);
+                intVal += 128;
+                return pcmToDouble(intVal, bytesFormat.sampleSize());
+            }
+            else
+            {
+                unsigned int unsignIntVal =
+                        static_cast<unsigned int>(static_cast<unsigned char>(val[0]));
+                return pcmToDouble(unsignIntVal, bytesFormat.sampleSize());
+            }
+
         }
-        return pcmToDouble(*intVal, bytesFormat.sampleSize());
+        else if (sampleSize == 2)
+        {
+            // преобразуем 16-битное pcm значение в double,
+            // учитывая, знаковое ли оно, или нет
+            if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
+            {
+                short int* tempVal = reinterpret_cast<short int*>(val);
+                int intVal = static_cast<int>(*tempVal);
+                intVal += 32768;
+                return pcmToDouble(intVal, bytesFormat.sampleSize());
+            }
+            else
+            {
+                unsigned short int* tempVal =
+                        reinterpret_cast<unsigned short int*>(reinterpret_cast<unsigned char*>(val));
+                unsigned int intVal = static_cast<unsigned int>(*tempVal);
+                return pcmToDouble(intVal, bytesFormat.sampleSize());
+            }
+        }
     }
     else
         throw OutOfSignalRangeExc();
@@ -80,7 +118,7 @@ void Signal::setFormat(QAudioFormat format)
 unsigned int Signal::size()
 {
     if (bytesSetFlag)
-        return bytes.size();
+        return bytes.size() / (bytesFormat.sampleSize() / 8);
     return valuesSize;
 }
 

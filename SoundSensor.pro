@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui testlib
 
 TARGET = SoundSensor
 TEMPLATE = app
@@ -68,7 +68,8 @@ HEADERS  += testwindow.h \
     correlator.h \
     Alglib/alglibmisc.h \
     signal.h \
-    wavFile.h
+    wavFile.h \
+    tests/signalTest.h
 
 FORMS    += testwindow.ui \
 

@@ -9,8 +9,10 @@ TestWindow::TestWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QAudioFormat f = SoundRecorder::defaultAudioFormat();
+    f.setSampleSize(16);
     QAudioDeviceInfo device = QAudioDeviceInfo::availableDevices(QAudio::AudioInput).first();
-    recorder = new SoundRecorder(device);
+    recorder = new SoundRecorder(device, f);
     analyzer = new SpectrumAnalyzer(10, recorder->getAudioFormat());
     correlator = new Correlator();
 

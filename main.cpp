@@ -5,12 +5,16 @@
 #include "testwindow.h"
 #include "soundRecorder.h"
 #include "spectrumAnalyzer.h"
+#include "tests/signalTest.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     TestWindow w;
     w.show();
+
+    SignalTest signalTest;
+    QTest::qExec(&signalTest);
 
     return a.exec();
 }
