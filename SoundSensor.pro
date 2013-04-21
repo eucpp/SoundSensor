@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     correlator.cpp \
     Alglib/alglibinternal.cpp \
     signal.cpp \
-    wavFile.cpp
+    wavFile.cpp \
+    voiceCommandSensor.cpp
 
 HEADERS  += testwindow.h \
     soundRecorder.h \
@@ -69,9 +70,16 @@ HEADERS  += testwindow.h \
     Alglib/alglibmisc.h \
     signal.h \
     wavFile.h \
-    tests/signalTest.h
+    tests/signalTest.h \
+    voiceCommandSensor.h
 
 FORMS    += testwindow.ui \
 
 INCLUDEPATH += /usr/include/QtMultimediaKit
 INCLUDEPATH += /usr/include/QtMobility
+
+# подключаем pocketsphinx
+INCLUDEPATH +=  /usr/local/include/sphinxbase \
+    /usr/local/include/pocketsphinx
+
+LIBS+=  -L/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm

@@ -11,16 +11,24 @@ TestWindow::TestWindow(QWidget *parent) :
 
     QAudioFormat f = SoundRecorder::defaultAudioFormat();
     f.setSampleSize(16);
+    f.setSampleRate(16000);
     QAudioDeviceInfo device = QAudioDeviceInfo::availableDevices(QAudio::AudioInput).first();
     recorder = new SoundRecorder(device, f);
     analyzer = new SpectrumAnalyzer(10, recorder->getAudioFormat());
     correlator = new Correlator();
+
+    commandSensor = new VoiceCommandSensor(
+                "/usr/local/share/pocketsphinx/model/hmm/en/tidigits",
+                "/usr/local/share/pocketsphinx/model/lm/en/tidigits.DMP",
+                "/usr/local/share/pocketsphinx/model/lm/en/tidigits.dic");
+
 
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startRecording()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stopRecording()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(saveRecord()));
     connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(openPattern()));
     connect(ui->compareButton, SIGNAL(clicked()), this, SLOT(compareSignals()));
+    connect(ui->recognizeButton, SIGNAL(clicked()), this, SLOT(recognizeCommand()));
 
     ui->stopButton->setEnabled(false);
 }
@@ -32,6 +40,7 @@ TestWindow::~TestWindow()
     delete recorder;
     delete analyzer;
     delete correlator;
+    delete commandSensor;
 }
 
 void TestWindow::startRecording()
@@ -91,6 +100,17 @@ void TestWindow::compareSignals()
     text += '\n';
     text += "Matching fragment was saved to matchingFragment.wav";
     ui->compareLabel->setText(text);
+}
+
+void TestWindow::recognizeCommand()
+{
+    VoiceCommandSensor::Command cmd = commandSensor->recognizeCommand(recorder->getSignal());
+    QString text;
+    text += "Command: ";
+    text += cmd.command + '\n';
+    text += "Accuracy: ";
+    text += QString().setNum(cmd.accuracy);
+    ui->commandLabel->setText(text);
 }
 
 void TestWindow::printSpectum(Spectrogram spectr)

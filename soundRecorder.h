@@ -13,7 +13,7 @@ using namespace std;
 
 
 /**
-  * @brief Класс используется для записи звука с микрофона (поддерживается только моно запись)
+  * Класс используется для записи звука с микрофона (поддерживается только моно запись)
   */
 class SoundRecorder : public QObject
 {
@@ -81,6 +81,10 @@ signals:
       * Вызывается каждые frameLength секунд и содержит объект-сигнал с записанным фреймом.
       */
     void frameRecorded(Signal);
+    /**
+      * Вызывается после окончания записи и содержит объект-сигнал с записью.
+      */
+    void recordingStopped(Signal);
 private:
     void init(QAudioDeviceInfo device, QAudioFormat format);
 

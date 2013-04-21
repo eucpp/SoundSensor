@@ -7,6 +7,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QFileDialog>
+#include "voiceCommandSensor.h"
 #include "soundRecorder.h"
 #include "spectrumAnalyzer.h"
 #include "correlator.h"
@@ -31,6 +32,7 @@ public slots:
     void openPattern();
     void saveRecord();
     void compareSignals();
+    void recognizeCommand();
     /**
       * Функция печатает спекр последнего фрейма в файл .csv
       * Можно открыть в офисе и посмотреть на диаграмму спектра :)
@@ -41,6 +43,7 @@ private:
     SoundRecorder* recorder;
     SpectrumAnalyzer* analyzer;
     Correlator* correlator;
+    VoiceCommandSensor* commandSensor;
 
     Signal signal;
     Signal pattern;

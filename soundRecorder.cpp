@@ -40,6 +40,7 @@ void SoundRecorder::startRecording()
 void SoundRecorder::stopRecording()
 {
     audioIn->stop();
+    emit recordingStopped(getSignal());
 }
 
 void SoundRecorder::recordFrame()
