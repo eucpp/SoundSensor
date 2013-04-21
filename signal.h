@@ -47,6 +47,15 @@ public:
       * Возвращает массив значений амплитуды сигнала
       */
     double* getData();
+    /**
+      * Возвращает массив 8-битных pcm сэмплов (signed), кодирующих данный сигнал
+      */
+    const char* get8bitSamples();
+    /**
+      * Возвращает массив 16-битных pcm сэмплов (signed, little-endian),
+      * кодирующих данный сигнал
+      */
+    const short* get16bitSamples();
     QAudioFormat getFormat();
     /**
       * Установка формата массива байт.
@@ -73,7 +82,7 @@ public:
       */
     static int doubleToPcm(double val, int pcmSize);
 private:
-    void convertByteArray(QAudioFormat newFormat);
+
     void doublesToByteArray();
     void byteArrayToDoubles();
 
@@ -84,6 +93,7 @@ private:
     unsigned int valuesSize;
     bool valuesSetFlag;
 
+    static QByteArray convertByteArray(QByteArray array, QAudioFormat oldFormat, QAudioFormat newFormat);
     static const int PCM8MaxAmplitude = 255;
     static const int PCM16MaxAmplitude = 65535;
 };

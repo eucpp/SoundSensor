@@ -9,6 +9,31 @@ class SignalTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void pcmToDoubleTest()
+    {
+        QVERIFY(compare(Signal::pcmToDouble(255, 8), 1.0));
+        QVERIFY(compare(Signal::pcmToDouble(128, 8), 0.5));
+        QVERIFY(compare(Signal::pcmToDouble(64, 8), 0.25));
+        QVERIFY(compare(Signal::pcmToDouble(32, 8), 0.125));
+
+        QVERIFY(compare(Signal::pcmToDouble(65535, 16), 1.0));
+        QVERIFY(compare(Signal::pcmToDouble(32767, 16), 0.5));
+        QVERIFY(compare(Signal::pcmToDouble(16384, 16), 0.25));
+        QVERIFY(compare(Signal::pcmToDouble(8192, 16), 0.125));
+    }
+    void doubleToPcmTest()
+    {
+        QCOMPARE(Signal::doubleToPcm(1.0, 8), 255);
+        QCOMPARE(Signal::doubleToPcm(0.5, 8), 128);
+        QCOMPARE(Signal::doubleToPcm(0.25, 8), 64);
+        QCOMPARE(Signal::doubleToPcm(0.125, 8), 32);
+
+        QCOMPARE(Signal::doubleToPcm(1.0, 16), 65535);
+        QCOMPARE(Signal::doubleToPcm(0.5, 16), 32768);
+        QCOMPARE(Signal::doubleToPcm(0.25, 16), 16384);
+        QCOMPARE(Signal::doubleToPcm(0.125, 16), 8192);
+    }
+
     void accessOperatorTest1()
     {
         QAudioFormat format;
@@ -126,6 +151,151 @@ private slots:
         QVERIFY(compare(signal[2], 0.25));
         QVERIFY(compare(signal[3], 0.125));
     }
+
+    // проверка приведения массива double в массив 8-битных pcm
+    void getBytesTest1()
+    {
+        double* values = new double[4];
+        values[0] = 1.0;
+        values[1] = 0.5;
+        values[2] = 0.25;
+        values[3] = 0.125;
+
+        Signal signal(values, 4);
+        QAudioFormat format;
+        format.setSampleSize(8);
+        format.setSampleType(QAudioFormat::UnSignedInt);
+        format.setByteOrder(QAudioFormat::LittleEndian);
+        signal.setFormat(format);
+        QByteArray bytes = signal.getBytes();
+
+        QCOMPARE((char)bytes[0], (char)255);
+        QCOMPARE((char)bytes[1], (char)128);
+        QCOMPARE((char)bytes[2], (char)64);
+        QCOMPARE((char)bytes[3], (char)32);
+    }
+    // проверка приведения массива double в массив 16-битных pcm (беззнаковых)
+    // с big-endian порядком байт
+    void getBytesTest2()
+    {
+        double* values = new double[4];
+        values[0] = 1.0;
+        values[1] = 0.5;
+        values[2] = 0.25;
+        values[3] = 0.125;
+
+        Signal signal(values, 4);
+        QAudioFormat format;
+        format.setSampleSize(16);
+        format.setSampleType(QAudioFormat::SignedInt);
+        format.setByteOrder(QAudioFormat::BigEndian);
+        signal.setFormat(format);
+        QByteArray bytes = signal.getBytes();
+
+        QCOMPARE((char)bytes[0], (char)0x7F);
+        QCOMPARE((char)bytes[1], (char)0xFF);
+        QCOMPARE((char)bytes[2], (char)0x00);
+        QCOMPARE((char)bytes[3], (char)0x00);
+        QCOMPARE((char)bytes[4], (char)0xC0);
+        QCOMPARE((char)bytes[5], (char)0x00);
+        QCOMPARE((char)bytes[6], (char)0xA0);
+        QCOMPARE((char)bytes[7], (char)0x00);
+    }
+    // проверка приведения массива байт в массив double
+    void getDataTest()
+    {
+        QByteArray bytes;
+        bytes.append(0x7F);
+        bytes.append(0xFF); // 32767
+        bytes.append((char)0x00);
+        bytes.append((char)0x00); // 0
+        bytes.append(0xC0);
+        bytes.append((char)0x00); // -16384
+        bytes.append(0xA0);
+        bytes.append((char)0x00); // -24575
+
+        QAudioFormat format;
+        format.setSampleSize(16);
+        format.setSampleType(QAudioFormat::SignedInt);
+        format.setByteOrder(QAudioFormat::BigEndian);
+
+        Signal signal(bytes, format);
+
+        double* values = signal.getData();
+
+        QVERIFY(compare(values[0], 1.0));
+        QVERIFY(compare(values[1], 0.5));
+        QVERIFY(compare(values[2], 0.25));
+        QVERIFY(compare(values[3], 0.125));
+    }
+
+    void setFormatTest()
+    {
+        QByteArray bytes;
+        bytes.append(0x7F);
+        bytes.append(0xFF); // 32767
+        bytes.append((char)0x00);
+        bytes.append((char)0x00); // 0
+        bytes.append(0xC0);
+        bytes.append((char)0x00); // -16384
+        bytes.append(0xA0);
+        bytes.append((char)0x00); // -24575
+
+        QAudioFormat format;
+        format.setSampleSize(16);
+        format.setSampleType(QAudioFormat::SignedInt);
+        format.setByteOrder(QAudioFormat::BigEndian);
+
+        Signal signal(bytes, format);
+
+        QAudioFormat newFormat;
+        newFormat.setSampleSize(8);
+        newFormat.setSampleType(QAudioFormat::UnSignedInt);
+        newFormat.setByteOrder(QAudioFormat::LittleEndian);
+
+        signal.setFormat(newFormat);
+        QByteArray newBytes = signal.getBytes();
+
+        QCOMPARE((char)newBytes[0], (char)255);
+        QCOMPARE((char)newBytes[1], (char)128);
+        QCOMPARE((char)newBytes[2], (char)64);
+        QCOMPARE((char)newBytes[3], (char)32);
+    }
+
+    void sizeTest1()
+    {
+        double* values = new double[4];
+        values[0] = 1.0;
+        values[1] = 0.5;
+        values[2] = 0.25;
+        values[3] = 0.125;
+
+        Signal signal(values, 4);
+
+        QCOMPARE(signal.size(), (unsigned int)4);
+    }
+    void sizeTest2()
+    {
+        QByteArray bytes;
+        bytes.append(0x7F);
+        bytes.append(0xFF); // 32767
+        bytes.append((char)0x00);
+        bytes.append((char)0x00); // 0
+        bytes.append(0xC0);
+        bytes.append((char)0x00); // -16384
+        bytes.append(0xA0);
+        bytes.append((char)0x00); // -24575
+
+        QAudioFormat format;
+        format.setSampleSize(16);
+        format.setSampleType(QAudioFormat::SignedInt);
+        format.setByteOrder(QAudioFormat::BigEndian);
+
+        Signal signal(bytes, format);
+
+        QCOMPARE(signal.size(), (unsigned int)4);
+    }
+
 
 private:
     bool compare(double d1, double d2)

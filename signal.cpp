@@ -9,11 +9,14 @@ Signal::Signal(QByteArray byteArray, QAudioFormat signalFormat):
 {}
 
 Signal::Signal(double *vals, unsigned int valsSize):
-    values(vals),
     valuesSize(valsSize),
     valuesSetFlag(true),
     bytesSetFlag(false)
-{}
+{
+    values = new double[valsSize];
+    for (unsigned int i = 0; i < valsSize; i++)
+        values[i] = vals[i];
+}
 Signal::~Signal()
 {
     if (valuesSetFlag)
@@ -109,7 +112,7 @@ void Signal::setFormat(QAudioFormat format)
     if (bytesSetFlag)
     {
         // здесь надо бы ещё проверить, не одинаковы ли форматы
-        convertByteArray(format);
+        bytes = convertByteArray(bytes, bytesFormat, format);
     }
     else
         bytesFormat = format;
@@ -137,13 +140,67 @@ double* Signal::getData()
         byteArrayToDoubles();
     return values;
 }
-
-void Signal::convertByteArray(QAudioFormat newFormat)
+const char* Signal::get8bitSamples()
 {
-    if (!valuesSetFlag)
-        byteArrayToDoubles();
-    bytesFormat = newFormat;
-    doublesToByteArray();
+    if (!valuesSetFlag && !bytesSetFlag)
+        return NULL;
+    else if (!bytesSetFlag)
+        doublesToByteArray();
+    if (bytesSetFlag)
+    {
+        if (bytesFormat.sampleSize() / 8 == 1)
+        {
+            if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
+                return bytes.constData();
+            else
+            {
+                QAudioFormat convFormat = bytesFormat;
+                convFormat.setSampleType(QAudioFormat::SignedInt);
+                QByteArray samplesUnsign = convertByteArray(bytes, bytesFormat, convFormat);
+                return samplesUnsign.constData();
+            }
+        }
+        else if (bytesFormat.sampleSize() / 8 == 2)
+        {
+            QAudioFormat convFormat = bytesFormat;
+            convFormat.setSampleSize(8);
+            convFormat.setByteOrder(QAudioFormat::LittleEndian);
+            convFormat.setSampleType(QAudioFormat::SignedInt);
+            QByteArray samples8bit = convertByteArray(bytes, bytesFormat, convFormat);
+            return samples8bit.constData();
+        }
+    }
+}
+const short* Signal::get16bitSamples()
+{
+    if (!valuesSetFlag && !bytesSetFlag)
+        return NULL;
+    else if (!bytesSetFlag)
+        doublesToByteArray();
+    if (bytesSetFlag)
+    {
+        if (bytesFormat.sampleSize() / 8 == 2)
+        {
+            if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
+                return reinterpret_cast<const short*>(bytes.constData());
+            else
+            {
+                QAudioFormat convFormat = bytesFormat;
+                convFormat.setSampleType(QAudioFormat::SignedInt);
+                QByteArray samplesUnsign = convertByteArray(bytes, bytesFormat, convFormat);
+                return reinterpret_cast<const short*>(samplesUnsign.constData());
+            }
+        }
+        else if (bytesFormat.sampleSize() / 8 == 1)
+        {
+            QAudioFormat convFormat = bytesFormat;
+            convFormat.setSampleSize(16);
+            convFormat.setByteOrder(QAudioFormat::LittleEndian);
+            convFormat.setSampleType(QAudioFormat::SignedInt);
+            QByteArray samples8bit = convertByteArray(bytes, bytesFormat, convFormat);
+            return reinterpret_cast<const short*>(samples8bit.constData());
+        }
+    }
 }
 
 void Signal::doublesToByteArray()
@@ -162,12 +219,12 @@ void Signal::doublesToByteArray()
         }
         char* valBytes = reinterpret_cast<char*>(val);
         int valPos = i * sampleSize;
-        for (int i = 0; i < sampleSize; ++i)
+        for (int j = 0; j < sampleSize; ++j)
         {
             if (bytesFormat.byteOrder() == QAudioFormat::LittleEndian)
-                bytes[valPos + i] =  valBytes[i];
+                bytes[valPos + j] =  valBytes[j];
             else if (bytesFormat.byteOrder() == QAudioFormat::BigEndian)
-                bytes[valPos + (sampleSize - 1) - i] =  valBytes[i];
+                bytes[valPos + (sampleSize - 1) - j] =  valBytes[j];
         }
     }
     bytesSetFlag = true;
@@ -197,4 +254,13 @@ int inline Signal::doubleToPcm(double val, int pcmSize)
         return static_cast<int>(round(val * PCM8MaxAmplitude));
     else if (pcmSize == 16)
         return static_cast<int>(round(val * PCM16MaxAmplitude));
+}
+
+QByteArray Signal::convertByteArray(QByteArray array, QAudioFormat oldFormat, QAudioFormat newFormat)
+{
+    Signal origin(array, oldFormat);
+    double* amplVals = origin.getData();
+    Signal converted(amplVals, origin.size());
+    converted.setFormat(newFormat);
+    return converted.getBytes();
 }
