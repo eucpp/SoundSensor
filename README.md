@@ -9,5 +9,7 @@ SoundSensor
 
 ===========
 Использует пакеты:
+* sphinxbase-0.8
+* pocketsphinx-0.8
 * qtmobility-dev
 * libdeclarative-multimedia
