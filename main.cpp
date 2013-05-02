@@ -6,6 +6,7 @@
 #include "soundRecorder.h"
 #include "spectrumAnalyzer.h"
 #include "tests/signalTest.h"
+#include "tests/wavFileTest.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,9 @@ int main(int argc, char *argv[])
 
     SignalTest signalTest;
     QTest::qExec(&signalTest);
+    WavFileTest wavFileTest;
+    QTest::qExec(&wavFileTest);
+
 
     return a.exec();
 }

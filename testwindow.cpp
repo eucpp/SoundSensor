@@ -60,14 +60,14 @@ void TestWindow::openPattern()
 {
     QString filename = QFileDialog::getOpenFileName(this, "Open pattern wav file", "/home", "(*.wav)");
     WavFile file(filename);
-    file.open(QIODevice::ReadOnly);
+    file.open(WavFile::ReadOnly);
     pattern = file.readSignal();
     ui->loadLabel->setText("Pattern loaded successfully");
 }
 void TestWindow::saveRecord()
 {
     WavFile file("record.wav");
-    file.open(QIODevice::WriteOnly);
+    file.open(WavFile::WriteOnly);
     file.writeSignal(signal);
 
     ui->saveLabel->setText("Record was saved to record.wav");
@@ -90,7 +90,7 @@ void TestWindow::compareSignals()
     Signal matchSignal(match, signal.getFormat());
 
     WavFile file("matchingFragment.wav");
-    file.open(QIODevice::WriteOnly);
+    file.open(WavFile::WriteOnly);
     file.writeSignal(matchSignal);
 
     QString text;

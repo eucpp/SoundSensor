@@ -71,7 +71,8 @@ HEADERS  += testwindow.h \
     signal.h \
     wavFile.h \
     tests/signalTest.h \
-    voiceCommandSensor.h
+    voiceCommandSensor.h \
+    tests/wavFileTest.h
 
 FORMS    += testwindow.ui \
 
