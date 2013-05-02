@@ -1,5 +1,11 @@
 #include "signal.h"
 
+Signal::Signal():
+    bytesSetFlag(false),
+    valuesSetFlag(false),
+    values(NULL)
+{}
+
 Signal::Signal(QByteArray byteArray, QAudioFormat signalFormat):
     bytes(byteArray),
     bytesFormat(signalFormat),
@@ -103,7 +109,7 @@ double Signal::operator[](unsigned int i) throw(OutOfSignalRangeExc)
         throw OutOfSignalRangeExc();
 }
 
-QAudioFormat Signal::getFormat()
+QAudioFormat Signal::getFormat() const
 {
     return bytesFormat;
 }
@@ -118,7 +124,7 @@ void Signal::setFormat(QAudioFormat format)
         bytesFormat = format;
 }
 
-unsigned int Signal::size()
+unsigned int Signal::size() const
 {
     if (bytesSetFlag)
         return bytes.size() / (bytesFormat.sampleSize() / 8);

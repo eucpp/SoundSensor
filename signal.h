@@ -15,14 +15,17 @@
   */
 class Signal
 {
+public:
     /**
       * Класс исключений, генерируемых при попытке доступа к значению сигнала вне диапозона
       */
-    class OutOfSignalRangeExc
-    {};
-public:
+    class OutOfSignalRangeExc {};
     /**
-      * Создание сигнала по массиву байт
+      * Создание пустого сигнала.
+      */
+    Signal();
+    /**
+      * Создание сигнала по массиву байт.
       *
       * @param byteArray Массив байт, кодирующих сигнал
       * @param signalFormat Формат данных, содержащихся в byteArray
@@ -56,7 +59,7 @@ public:
       * кодирующих данный сигнал
       */
     const short* get16bitSamples();
-    QAudioFormat getFormat();
+    QAudioFormat getFormat() const;
     /**
       * Установка формата массива байт.
       * Если объект содержит массив значений амплитуды(или не содержит ничего),
@@ -66,7 +69,7 @@ public:
       * с новым форматом.
       */
     void setFormat(QAudioFormat format);
-    unsigned int size();
+    unsigned int size() const;
     /**
       * Конвертация pcm в double
       *

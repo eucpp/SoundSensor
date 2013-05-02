@@ -38,7 +38,7 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
 
     Command cmd;
     int score;
-    // если ничего не распознанно, возвращать пустую строку и
+    // to do: если ничего не распознанно, возвращать пустую строку и
     // точность = 0
     cmd.command = ps_get_hyp(recognizer, &score, &uttid);
     if (cmd.command == NULL)

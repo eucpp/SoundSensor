@@ -29,24 +29,23 @@ public:
       *
       * @param device Устройство для записи
       */
-    SoundRecorder(QAudioDeviceInfo device);
+    SoundRecorder(const QAudioDeviceInfo& device);
     /**
       * При вызове этого конструктора, используется устройство для записи по умолчанию
       *
       * @param format Формат записи
       */
-    SoundRecorder(QAudioFormat format);
+    SoundRecorder(const QAudioFormat& format);
     /**
       * @param device Устройство для записи
       * @param format Формат записи
       */
-    SoundRecorder(QAudioDeviceInfo device, QAudioFormat format);
-    ~SoundRecorder();
+    SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat& format);
     /**
       * Возвращает весь записанный сигнал, если запись остановлена,
       * или доступный для чтения участок записи (от начала) если запись продолжается.
       */
-    Signal getSignal();
+    Signal getSignal() const;
     QAudioFormat getAudioFormat() const;
     QAudioDeviceInfo getAudioDevice() const;
     /**
@@ -86,13 +85,10 @@ signals:
       */
     void recordingStopped(Signal);
 private:
-    void init(QAudioDeviceInfo device, QAudioFormat format);
-
-    QAudioInput* audioIn;
-    QAudioFormat audioFormat;
     QAudioDeviceInfo audioDevice;
-    QByteArray* byteArray;
-    QBuffer* buffer;
+    QAudioInput audioIn;
+    QByteArray byteArray;
+    QBuffer buffer;
     quint64 currentFramePos;
     static const int defaultFrameLength = 128;
 };
