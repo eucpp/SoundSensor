@@ -8,6 +8,10 @@
 #include "tests/signalTest.h"
 #include "tests/wavFileTest.h"
 
+#include "tmp.h"
+
+
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -19,6 +23,7 @@ int main(int argc, char *argv[])
     WavFileTest wavFileTest;
     QTest::qExec(&wavFileTest);
 
+    //printStatistics();
 
     return a.exec();
 }

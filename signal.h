@@ -1,6 +1,7 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
+#include <cstring>
 #include <QObject>
 #include <QAudioFormat>
 
@@ -51,14 +52,16 @@ public:
       */
     double* getData();
     /**
-      * Возвращает массив 8-битных pcm сэмплов (signed), кодирующих данный сигнал
+      * Возвращает массив 8-битных pcm сэмплов (signed), кодирующих данный сигнал.
+      * Массив размещается в динамической памяти, после использования её необходимо очистить.
       */
-    const char* get8bitSamples();
+    char* get8bitSamples();
     /**
       * Возвращает массив 16-битных pcm сэмплов (signed, little-endian),
-      * кодирующих данный сигнал
+      * кодирующих данный сигнал.
+      * Массив размещается в динамической памяти, после использования её необходимо очистить
       */
-    const short* get16bitSamples();
+    short* get16bitSamples();
     QAudioFormat getFormat() const;
     /**
       * Установка формата массива байт.

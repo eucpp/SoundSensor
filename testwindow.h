@@ -31,6 +31,7 @@ public slots:
     void stopRecording();
     void openPattern();
     void saveRecord();
+    void openRecordFile();
     void compareSignals();
     void recognizeCommand();
     /**

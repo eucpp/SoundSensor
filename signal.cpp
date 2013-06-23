@@ -146,7 +146,7 @@ double* Signal::getData()
         byteArrayToDoubles();
     return values;
 }
-const char* Signal::get8bitSamples()
+char* Signal::get8bitSamples()
 {
     if (!valuesSetFlag && !bytesSetFlag)
         return NULL;
@@ -157,13 +157,17 @@ const char* Signal::get8bitSamples()
         if (bytesFormat.sampleSize() / 8 == 1)
         {
             if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
-                return bytes.constData();
+            {
+                char* dataCopy = new char[bytes.size() + 1];
+                strcpy(dataCopy, bytes.data());
+                return dataCopy;
+            }
             else
             {
                 QAudioFormat convFormat = bytesFormat;
                 convFormat.setSampleType(QAudioFormat::SignedInt);
                 QByteArray samplesUnsign = convertByteArray(bytes, bytesFormat, convFormat);
-                return samplesUnsign.constData();
+                return samplesUnsign.data();
             }
         }
         else if (bytesFormat.sampleSize() / 8 == 2)
@@ -173,11 +177,11 @@ const char* Signal::get8bitSamples()
             convFormat.setByteOrder(QAudioFormat::LittleEndian);
             convFormat.setSampleType(QAudioFormat::SignedInt);
             QByteArray samples8bit = convertByteArray(bytes, bytesFormat, convFormat);
-            return samples8bit.constData();
+            return samples8bit.data();
         }
     }
 }
-const short* Signal::get16bitSamples()
+short* Signal::get16bitSamples()
 {
     if (!valuesSetFlag && !bytesSetFlag)
         return NULL;
@@ -188,13 +192,17 @@ const short* Signal::get16bitSamples()
         if (bytesFormat.sampleSize() / 8 == 2)
         {
             if (bytesFormat.sampleType() == QAudioFormat::SignedInt)
-                return reinterpret_cast<const short*>(bytes.constData());
+            {
+                char* dataCopy = new char[bytes.size() + 1];
+                strcpy(dataCopy, bytes.data());
+                return reinterpret_cast<short*>(dataCopy);
+            }
             else
             {
                 QAudioFormat convFormat = bytesFormat;
                 convFormat.setSampleType(QAudioFormat::SignedInt);
                 QByteArray samplesUnsign = convertByteArray(bytes, bytesFormat, convFormat);
-                return reinterpret_cast<const short*>(samplesUnsign.constData());
+                return reinterpret_cast<short*>(samplesUnsign.data());
             }
         }
         else if (bytesFormat.sampleSize() / 8 == 1)
@@ -204,7 +212,7 @@ const short* Signal::get16bitSamples()
             convFormat.setByteOrder(QAudioFormat::LittleEndian);
             convFormat.setSampleType(QAudioFormat::SignedInt);
             QByteArray samples8bit = convertByteArray(bytes, bytesFormat, convFormat);
-            return reinterpret_cast<const short*>(samples8bit.constData());
+            return reinterpret_cast<short*>(samples8bit.data());
         }
     }
 }

@@ -114,23 +114,23 @@ unsigned int WavFile::dataSize()
 QAudioFormat WavFile::readHeader()
 {
     qint64 currPos = pos();
-    seek(0);
-    char* headerBytes = file.read(sizeof(Header)).data();
+    file.seek(0);
+    QByteArray headerArrayBytes = file.read(sizeof(Header));
+    const char* headerBytes = headerArrayBytes.constData();
     seek(currPos);
 
     // здесь надо бы ещё добавить проверку корректности заголовка
     // если заголовок некорректный, кидаем исключение, например
 
-    Header* header = reinterpret_cast<Header*>(headerBytes);
+    const Header* pHeader = reinterpret_cast<const Header*>(headerBytes);
     QAudioFormat format;
-    // пока просто пишем pcm
-    // to do: запись формата из хедера
     format.setCodec("audio/pcm");
-    format.setSampleRate(header->sampleRate);
-    format.setChannels(header->numChannels);
-    format.setSampleSize(header->bitsPerSample);
+    format.setSampleRate(pHeader->sampleRate);
+    format.setChannels(pHeader->numChannels);
+    format.setSampleSize(pHeader->bitsPerSample);
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::SignedInt);
+
 
     return format;
 }
@@ -174,7 +174,7 @@ void WavFile::writeHeader(const QAudioFormat& format)
 
     char* bytes = reinterpret_cast<char*>(&header);
     qint64 currPos = pos();
-    seek(0);
+    file.seek(0);
     file.write(bytes, sizeof(Header));
     seek(currPos);
 }

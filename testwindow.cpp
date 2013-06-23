@@ -18,14 +18,15 @@ TestWindow::TestWindow(QWidget *parent) :
     correlator = new Correlator();
 
     commandSensor = new VoiceCommandSensor(
-                "/usr/local/share/pocketsphinx/model/hmm/en/tidigits",
-                "/usr/local/share/pocketsphinx/model/lm/en/tidigits.DMP",
-                "/usr/local/share/pocketsphinx/model/lm/en/tidigits.dic");
+                "/home/evgeniy/projects/SoundSensor/trained_model/hub4wsj_sc_8kadapt",
+                "./voiceCommands.lm",
+                "./voiceCommands.dic");
 
 
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startRecording()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stopRecording()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(saveRecord()));
+    connect(ui->openFileButton, SIGNAL(clicked()), this, SLOT(openRecordFile()));
     connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(openPattern()));
     connect(ui->compareButton, SIGNAL(clicked()), this, SLOT(compareSignals()));
     connect(ui->recognizeButton, SIGNAL(clicked()), this, SLOT(recognizeCommand()));
@@ -55,6 +56,7 @@ void TestWindow::stopRecording()
     signal = recorder->getSignal();
     ui->stopButton->setEnabled(false);
     ui->recordLabel->setText("Sound was recorded successfully");
+    ui->startButton->setEnabled(true);
 }
 void TestWindow::openPattern()
 {
@@ -62,16 +64,27 @@ void TestWindow::openPattern()
     WavFile file(filename);
     file.open(WavFile::ReadOnly);
     pattern = file.readSignal();
-    ui->loadLabel->setText("Pattern loaded successfully");
+    ui->loadLabel->setText("Pattern was loaded successfully");
 }
 void TestWindow::saveRecord()
 {
     WavFile file("record.wav");
-    file.open(WavFile::WriteOnly);
+    file.open(WavFile::WriteOnly, signal.getFormat());
     file.writeSignal(signal);
 
     ui->saveLabel->setText("Record was saved to record.wav");
 }
+void TestWindow::openRecordFile()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Open wav file with record",
+                                                    "/home/evgeniy/projects/SoundSensor/voice_commands_tests",
+                                                    "(*.wav)");
+    WavFile file(filename);
+    file.open(WavFile::ReadOnly);
+    signal = file.readSignal();
+    ui->openFileLabel->setText("Record was opened successfully");
+}
+
 void TestWindow::compareSignals()
 {
     Signal correlation = correlator->calcCorrelation(signal, pattern);
@@ -104,12 +117,14 @@ void TestWindow::compareSignals()
 
 void TestWindow::recognizeCommand()
 {
-    VoiceCommandSensor::Command cmd = commandSensor->recognizeCommand(recorder->getSignal());
+    VoiceCommandSensor::Command cmd = commandSensor->recognizeCommand(signal);
     QString text;
     text += "Command: ";
     text += cmd.command + '\n';
     text += "Accuracy: ";
-    text += QString().setNum(cmd.accuracy);
+    text += QString().setNum(cmd.accuracy) + '\n';
+    text += "Uttid: ";
+    text += cmd.uttid + '\n';
     ui->commandLabel->setText(text);
 }
 

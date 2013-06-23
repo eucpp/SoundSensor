@@ -6,6 +6,7 @@
 
 QT       += core gui testlib
 
+
 TARGET = SoundSensor
 TEMPLATE = app
 CONFIG += mobility

@@ -39,6 +39,7 @@ public:
           * Точность распознавания (в диапозоне от 0 до 1)
           */
         double accuracy;
+        char* uttid;
     };
 
     /**

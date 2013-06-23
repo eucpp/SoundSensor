@@ -3,28 +3,32 @@
 SoundRecorder::SoundRecorder():
     audioDevice(QAudioDeviceInfo::defaultInputDevice()),
     audioIn(audioDevice, SoundRecorder::defaultAudioFormat()),
-    currentFramePos(0)
+    currentFramePos(0),
+    buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
 }
 SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device):
     audioDevice(device),
     audioIn(audioDevice, SoundRecorder::defaultAudioFormat()),
-    currentFramePos(0)
+    currentFramePos(0),
+    buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
 }
 SoundRecorder::SoundRecorder(const QAudioFormat& format):
     audioDevice(QAudioDeviceInfo::defaultInputDevice()),
     audioIn(audioDevice, format),
-    currentFramePos(0)
+    currentFramePos(0),
+    buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
 }
 SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat& format):
     audioDevice(device),
     audioIn(audioDevice, format),
-    currentFramePos(0)
+    currentFramePos(0),
+    buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
 }
@@ -82,9 +86,9 @@ int inline SoundRecorder::getFrameLength() const
 QAudioFormat SoundRecorder::defaultAudioFormat()
 {
     QAudioFormat format;
-    format.setSampleRate(8000);
+    format.setSampleRate(16000);
     format.setChannels(1);
-    format.setSampleSize(8);
+    format.setSampleSize(16);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::SignedInt);

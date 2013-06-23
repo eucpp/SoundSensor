@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>405</height>
+    <height>461</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,6 +59,20 @@
          </item>
          <item>
           <widget class="QLabel" name="saveLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="openFileButton">
+           <property name="text">
+            <string>Open File</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="openFileLabel">
            <property name="text">
             <string/>
            </property>

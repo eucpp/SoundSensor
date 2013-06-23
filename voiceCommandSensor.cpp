@@ -7,6 +7,7 @@ VoiceCommandSensor::VoiceCommandSensor(QString pathToHmm, QString pathToLm, QStr
                          "-hmm", pathToHmm.toAscii().data(),
                          "-lm", pathToLm.toAscii().data(),
                          "-dict", pathToDict.toAscii().data(),
+                         "-dither", "1",
                          NULL);
     if (config == NULL)
         throw PocketSphinxInitExc();
@@ -22,13 +23,16 @@ VoiceCommandSensor::~VoiceCommandSensor()
 
 VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
 {
-    char const *uttid;
-    int uttReturn = ps_start_utt(recognizer, uttid);
+    const char* uttid;
+    int uttReturn = ps_start_utt(recognizer, NULL);
     if (uttReturn < 0)
         throw PocketSphinxInitExc();
 
-    int decodeReturn = ps_process_raw(recognizer, signal.get16bitSamples(),
+    short* samples = signal.get16bitSamples();
+    int decodeReturn = ps_process_raw(recognizer, samples,
                                   signal.size() * 2, false, false);
+    delete[] samples;
+
     if (decodeReturn < 0)
         throw PocketSphinxRecognizeExc();
 
@@ -38,12 +42,21 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
 
     Command cmd;
     int score;
-    // to do: если ничего не распознанно, возвращать пустую строку и
-    // точность = 0
-    cmd.command = ps_get_hyp(recognizer, &score, &uttid);
-    if (cmd.command == NULL)
-        throw PocketSphinxRecognizeExc();
-    cmd.accuracy = - static_cast<double>(ps_get_prob(recognizer, &uttid)) / MAX_INT16;
+    const char* hyp = ps_get_hyp(recognizer, &score, &uttid);
+    if (hyp == NULL)
+    {
+        cmd.command = QString();
+        cmd.accuracy = 0;
+    }
+    else
+    {
+        cmd.command = hyp;
+        cmd.accuracy = static_cast<double>(MAX_INT16 + ps_get_prob(recognizer, &uttid)) / MAX_INT16;
+        cmd.uttid = const_cast<char*>(uttid);
+    }
+
+    //delete uttid;
+    //delete hyp;
 
     emit commandRecognized(cmd);
     return cmd;
