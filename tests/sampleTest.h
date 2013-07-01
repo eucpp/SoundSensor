@@ -31,8 +31,7 @@ private slots:
     void toPcm16BigEndTest()
     {
         Sample s(-0.5);
-        s.setByteOrder(Sample::BigEndian);
-        short pcm = s.toPcm16();
+        short pcm = s.toPcm16(Sample::BigEndian);
         char* bytes = reinterpret_cast<char*>(&pcm);
         QCOMPARE(bytes[0], (char)0xC0);
         QCOMPARE(bytes[1], (char)0x00);
@@ -50,8 +49,7 @@ private slots:
     void toUPcm16BigEndTest()
     {
         Sample s(-0.5);
-        s.setByteOrder(Sample::BigEndian);
-        short pcm = s.toUPcm16();
+        short pcm = s.toUPcm16(Sample::BigEndian);
         char* bytes = reinterpret_cast<char*>(&pcm);
         QCOMPARE(bytes[0], (char)0x40);
         QCOMPARE(bytes[1], (char)0x00);

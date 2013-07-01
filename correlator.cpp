@@ -6,9 +6,9 @@ Correlator::Correlator()
 Signal Correlator::calcCorrelation(Signal signal, Signal pattern)
 {
     alglib::real_1d_array signalArray;
-    signalArray.setcontent(signal.size(), signal.getData());
+    signalArray.setcontent(signal.size(), signal.toDoubleArray());
     alglib::real_1d_array patternArray;
-    patternArray.setcontent(pattern.size(), pattern.getData());
+    patternArray.setcontent(pattern.size(), pattern.toDoubleArray());
     alglib::real_1d_array corrArray;
     alglib::corrr1d(signalArray, signal.size(), patternArray, pattern.size(), corrArray);
 

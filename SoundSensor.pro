@@ -23,7 +23,6 @@ SOURCES += main.cpp\
     QRealFourier/code/sources/qcomplexnumber.cpp \
     spectrumAnalyzer.cpp \
     spectrogram.cpp \
-    utils.cpp \
     Alglib/fasttransforms.cpp \
     Alglib/ap.cpp \
     Alglib/alglibmisc.cpp \
@@ -31,7 +30,8 @@ SOURCES += main.cpp\
     Alglib/alglibinternal.cpp \
     signal.cpp \
     wavFile.cpp \
-    voiceCommandSensor.cpp
+    voiceCommandSensor.cpp \
+    sample.cpp
 
 HEADERS  += testwindow.h \
     soundRecorder.h \
@@ -63,7 +63,6 @@ HEADERS  += testwindow.h \
     QRealFourier/code/fftreal/Array.h \
     spectrumAnalyzer.h \
     spectrogram.h \
-    utils.h \
     Alglib/fasttransforms.h \
     Alglib/ap.h \
     Alglib/alglibinternal.h \
@@ -73,7 +72,9 @@ HEADERS  += testwindow.h \
     wavFile.h \
     tests/signalTest.h \
     voiceCommandSensor.h \
-    tests/wavFileTest.h
+    tests/wavFileTest.h \
+    sample.h \
+    tests/sampleTest.h
 
 FORMS    += testwindow.ui \
 

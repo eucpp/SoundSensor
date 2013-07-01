@@ -5,10 +5,9 @@
 #include "testwindow.h"
 #include "soundRecorder.h"
 #include "spectrumAnalyzer.h"
+#include "tests/sampleTest.h"
 #include "tests/signalTest.h"
 #include "tests/wavFileTest.h"
-
-#include "tmp.h"
 
 
 
@@ -18,10 +17,14 @@ int main(int argc, char *argv[])
     TestWindow w;
     w.show();
 
+    SampleTest sampleTest;
+    QTest::qExec(&sampleTest);
     SignalTest signalTest;
     QTest::qExec(&signalTest);
+
     WavFileTest wavFileTest;
     QTest::qExec(&wavFileTest);
+
 
     //printStatistics();
 

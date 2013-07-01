@@ -7,7 +7,9 @@ SoundRecorder::SoundRecorder():
     buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
+    connect(&audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
 }
+
 SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device):
     audioDevice(device),
     audioIn(audioDevice, SoundRecorder::defaultAudioFormat()),
@@ -15,7 +17,9 @@ SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device):
     buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
+    connect(&audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
 }
+
 SoundRecorder::SoundRecorder(const QAudioFormat& format):
     audioDevice(QAudioDeviceInfo::defaultInputDevice()),
     audioIn(audioDevice, format),
@@ -23,7 +27,9 @@ SoundRecorder::SoundRecorder(const QAudioFormat& format):
     buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
+    connect(&audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
 }
+
 SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat& format):
     audioDevice(device),
     audioIn(audioDevice, format),
@@ -31,54 +37,32 @@ SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat&
     buffer(&byteArray)
 {
     audioIn.setNotifyInterval(SoundRecorder::defaultFrameLength);
+    connect(&audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
 }
 
 Signal SoundRecorder::getSignal() const
 {
     if (audioIn.state() == QAudio::ActiveState)
-        return Signal(QByteArray::fromRawData(byteArray.constData(), buffer.pos()), getAudioFormat());
-    return Signal(byteArray, getAudioFormat());
+        return Signal(QByteArray::fromRawData(byteArray.constData(), buffer.pos()), getFormat());
+    return Signal(byteArray, getFormat());
 }
 
-
-void SoundRecorder::startRecording()
-{
-    buffer.open(QIODevice::WriteOnly);
-    connect(&audioIn, SIGNAL(notify()), this, SLOT(recordFrame()));
-    audioIn.start(&buffer);
-}
-
-void SoundRecorder::stopRecording()
-{
-    audioIn.stop();
-    emit recordingStopped(getSignal());
-}
-
-void SoundRecorder::recordFrame()
-{
-    qint64 bytesInFrame = buffer.pos() - currentFramePos;
-    Signal signal(QByteArray::fromRawData(byteArray.constData() + currentFramePos, bytesInFrame),
-                  getAudioFormat());
-    currentFramePos += bytesInFrame;
-    emit frameRecorded(signal);
-}
-
-QAudioFormat inline SoundRecorder::getAudioFormat() const
+QAudioFormat SoundRecorder::getFormat() const
 {
     return audioIn.format();
 }
 
-QAudioDeviceInfo inline SoundRecorder::getAudioDevice() const
+QAudioDeviceInfo SoundRecorder::getDevice() const
 {
     return audioDevice;
 }
 
-void inline SoundRecorder::setFrameLength(int length)
+void SoundRecorder::setFrameLength(int length)
 {
     audioIn.setNotifyInterval(length);
 }
 
-int inline SoundRecorder::getFrameLength() const
+int SoundRecorder::getFrameLength() const
 {
     return audioIn.notifyInterval();
 }
@@ -94,3 +78,25 @@ QAudioFormat SoundRecorder::defaultAudioFormat()
     format.setSampleType(QAudioFormat::SignedInt);
     return format;
 }
+
+void SoundRecorder::start()
+{
+    buffer.open(QIODevice::WriteOnly);
+    audioIn.start(&buffer);
+}
+
+void SoundRecorder::stop()
+{
+    audioIn.stop();
+    buffer.close();
+    emit recordingStopped(getSignal());
+}
+
+void SoundRecorder::recordFrame()
+{
+    qint64 bytesInFrame = buffer.pos() - currentFramePos;
+    Signal signal(QByteArray::fromRawData(byteArray.constData() + currentFramePos, bytesInFrame), getFormat());
+    currentFramePos += bytesInFrame;
+    emit frameRecorded(signal);
+}
+

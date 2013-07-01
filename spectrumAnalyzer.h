@@ -7,7 +7,7 @@
 #include <QAudioFormat>
 #include "QRealFourier/code/headers/qfouriertransformer.h"
 #include "spectrogram.h"
-#include "utils.h"
+#include "sample.h"
 
 #include "stdlib.h"
 #include <QtGlobal>

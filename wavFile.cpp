@@ -1,60 +1,147 @@
 #include "wavFile.h"
 
+WavFile::WavFile():
+    file(),
+    openmode(NotOpen),
+    headerSetFlag(false)
+{}
 WavFile::WavFile(const QString &filename):
     file(filename),
-    openmode(NotOpen)
+    openmode(NotOpen),
+    headerSetFlag(false)
 {}
 
-QAudioFormat WavFile::open(OpenModes mode)
+void WavFile::open(OpenModes mode)
 {
-    QAudioFormat format = SoundRecorder::defaultAudioFormat();
-    return open(mode, format);
+    open(mode, QAudioFormat());
 }
 
-QAudioFormat WavFile::open(OpenModes mode, const QAudioFormat& format)
+void WavFile::open(OpenModes mode, const QAudioFormat& format)
 {
-    openmode = mode;
-    if (openmode == ReadOnly)
+    try
     {
-        if (!file.open(QIODevice::ReadOnly))
-            throw OpenFileExc();
-        // проверяем размер заголовка файла
-        if (file.size() > 0 && file.size() < 44)
-            throw OpenFileExc();
-        seek(0);
-        dSize = readDataSize();
-        return (header = readHeader());
+        openmode = mode;
+        if (openmode == ReadOnly)
+        {
+            if (!file.open(QIODevice::ReadOnly))
+                throw OpenFileExc();
+            // проверяем размер заголовка файла
+            if (file.size() > 0 && file.size() < 44)
+                throw OpenFileExc();
+            seek(0);
+            header = readHeader();
+            headerSetFlag = true;
+            return;
+        }
+        else if (openmode == WriteOnly)
+        {
+            if (!file.open(QIODevice::WriteOnly))
+                throw OpenFileExc();
+            if (isCorrectFormat(format))
+            {
+                header = format;
+                writeHeader(header);
+                headerSetFlag = true;
+            }
+            seek(0);
+            return;
+        }
+        else if (openmode == Append)
+        {
+            // сначала открываем на чтение, чтобы проситать заголовок.
+            if (!file.open(QIODevice::ReadOnly))
+                throw OpenFileExc();
+            // проверяем размер заголовка файла
+            if (file.size() > 0 && file.size() < 44)
+                throw OpenFileExc();
+            header = readHeader();
+            headerSetFlag = true;
+            file.close();
+            if (!file.open(QIODevice::Append))
+                throw OpenFileExc();
+            seek(size());
+            return;
+        }
     }
-    else if (openmode == WriteOnly)
+    catch (UncorrectHeader exc)
     {
-        if (!file.open(QIODevice::WriteOnly))
-            throw OpenFileExc();
-        header = format;
-        writeHeader(header);
-        seek(0);
-        dSize = 0;
-        return header;
+        throw OpenFileExc();
     }
-    else if (openmode == Append)
-    {
-        if (!file.open(QIODevice::Append))
-            throw OpenFileExc();
-        seek(0);
-        dSize = readDataSize();
-        return (header = readHeader());
-    }
+
+    /*
     else if (openmode == ReadWrite)
     {
         if (!file.open(QIODevice::ReadWrite))
             throw OpenFileExc();
-        seek(0);
-        dSize = readDataSize();
-        return (header = readHeader());
+        // проверяем размер заголовка файла
+        if (file.size() > 0 && file.size() < 44)
+            throw OpenFileExc();
+        header = readHeader();
+        // перекодируем содержимое файла, если был передан новый формат, и он отличается от старого
+        if (isCorrectFormat(format) && header != format)
+        {
+            Signal fileData = readAll();
+            writeHeader(format);
+            header = format;
+            seek(0);
+            write(fileData);
+            seek(size());
+        }
+        return;
     }
+    */
 }
 void WavFile::close()
 {
     file.close();
+    openmode = NotOpen;
+    headerSetFlag = false;
+}
+
+void WavFile::setFileName(const QString &filename)
+{
+    if (openmode != NotOpen)
+        file.close();
+    file.setFileName(filename);
+}
+
+QString WavFile::fileName() const
+{
+    return file.fileName();
+}
+
+bool WavFile::headerSet() const
+{
+    return headerSetFlag;
+}
+
+void WavFile::setHeader(const QAudioFormat &format) throw(WriteDisabledExc)
+{
+    if ((openmode == ReadOnly) || (openmode == WriteOnly))
+        throw WriteDisabledExc();
+    else if (!headerSetFlag)
+    {
+        header = format;
+        writeHeader(header);
+    }
+    else if (header != format)
+    {
+        int currPos = pos();
+        Signal fileData = readAll();
+        writeHeader(format);
+        header = format;
+        seek(0);
+        write(fileData);
+        seek(currPos);
+    }
+}
+
+QAudioFormat WavFile::getHeader() const
+{
+    if (headerSetFlag)
+        return header;
+    else
+        return QAudioFormat();
 }
 
 bool WavFile::isOpen() const
@@ -62,54 +149,59 @@ bool WavFile::isOpen() const
     return file.isOpen();
 }
 
-bool inline WavFile::seek(unsigned int pos)
+bool WavFile::seek(int pos)
 {
     return file.seek(pos + 44);
 }
 
-unsigned int inline WavFile::pos()
+int WavFile::pos()
 {
-    unsigned int tmp = file.pos();
     return file.pos() - 44;
 }
 
-Signal WavFile::readSignal() throw(ReadDisabledExc)
+int WavFile::size()
+{
+    if (openmode == NotOpen)
+        return 0;
+    return file.size() - 44;
+}
+
+Signal WavFile::read(int length) throw(ReadDisabledExc)
 {
     if (openmode == NotOpen)
         return Signal();
     if (openmode == WriteOnly)
         throw ReadDisabledExc();
-    unsigned int soundSize = dataSize();
-    QByteArray bytes = file.read(soundSize);
+    int bytesNum = length * header.sampleSize() / 8;
+    QByteArray bytes = file.read(bytesNum);
     return Signal(bytes, header);
 }
-void WavFile::writeSignal(Signal signal) throw(WriteDisabledExc)
+
+Signal WavFile::readAll() throw(ReadDisabledExc)
 {
     if (openmode == NotOpen)
-        return;
+        return Signal();
+    if (openmode == WriteOnly)
+        throw ReadDisabledExc();
+    int currPos = pos();
+    seek(0);
+    QByteArray bytes = file.readAll();
+    seek(currPos);
+    return Signal(bytes, header);
+}
+
+int WavFile::write(Signal signal, int length) throw(WriteDisabledExc)
+{
+    if ((openmode == NotOpen) || !headerSetFlag)
+        return 0;
     if (openmode == ReadOnly)
         throw WriteDisabledExc();
-
-    unsigned int overlay = dSize - pos();
-    if (signal.getFormat() == header)
-        file.write(signal.getBytes());
-    else
-    {
-        // временный код:
-        // преобразуем сигнал к нужному формату
-        // to do: запись "на лету", без преобразования
-        Signal tmpSignal(signal.getBytes(), signal.getFormat());
-        tmpSignal.setFormat(header);
-        file.write(tmpSignal.getBytes());
-    }
-    dSize = signal.getBytes().size() - overlay;
-    setDataSize(dSize);
+    QByteArray bytes = signal.subSignal(0, length).toByteArray(header);
+    int n = file.write(bytes);
+    setDataSize(size());
+    return n / (header.sampleSize() / 8);
 }
 
-unsigned int WavFile::dataSize()
-{
-    return dSize;
-}
 
 QAudioFormat WavFile::readHeader()
 {
@@ -119,19 +211,34 @@ QAudioFormat WavFile::readHeader()
     const char* headerBytes = headerArrayBytes.constData();
     seek(currPos);
 
-    // здесь надо бы ещё добавить проверку корректности заголовка
-    // если заголовок некорректный, кидаем исключение, например
-
     const Header* pHeader = reinterpret_cast<const Header*>(headerBytes);
+    // проверяем, что это действительно заголовок wav файла
+    if (    (pHeader->chunkId[0] != 'R') ||
+            (pHeader->chunkId[1] != 'I') ||
+            (pHeader->chunkId[2] != 'F') ||
+            (pHeader->chunkId[3] != 'F'))
+        throw UncorrectHeader();
+    if (    (pHeader->format[0] != 'W') ||
+            (pHeader->format[1] != 'A') ||
+            (pHeader->format[2] != 'V') ||
+            (pHeader->format[3] != 'E'))
+        throw UncorrectHeader();
+    if (    (pHeader->subchunk1Id[0] != 'f') ||
+            (pHeader->subchunk1Id[1] != 'm') ||
+            (pHeader->subchunk1Id[2] != 't') ||
+            (pHeader->subchunk1Id[3] != ' '))
+        throw UncorrectHeader();
+
+
     QAudioFormat format;
     format.setCodec("audio/pcm");
     format.setSampleRate(pHeader->sampleRate);
     format.setChannels(pHeader->numChannels);
     format.setSampleSize(pHeader->bitsPerSample);
-    format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleType(QAudioFormat::SignedInt);
-
-
+    if (pHeader->bitsPerSample == 8)
+        format.setSampleType(QAudioFormat::UnSignedInt);
+    else
+        format.setSampleType(QAudioFormat::SignedInt);
     return format;
 }
 
@@ -156,8 +263,6 @@ void WavFile::writeHeader(const QAudioFormat& format)
     header.subchunk1Id[3] = ' ';
 
     header.subchunk1Size = 16;
-    // пока пишем pcm
-    // to do: запись кодека из QAudioFormat
     header.audioFormat = 1;
     header.numChannels = format.channels();
     header.sampleRate = format.sampleRate();
@@ -179,13 +284,30 @@ void WavFile::writeHeader(const QAudioFormat& format)
     seek(currPos);
 }
 
-void WavFile::setDataSize(unsigned int size)
+void WavFile::setDataSize(int size)
 {
-    qint64 currPos = pos();
+    int currPos = pos();
+    if (openmode == Append)
+    {
+        file.close();
+        file.open(QIODevice::ReadWrite);
+    }
     file.seek(40);
     file.write(reinterpret_cast<char*>(&size), 4);
+    if (openmode == Append)
+    {
+        file.close();
+        file.open(QIODevice::Append);
+    }
     seek(currPos);
 }
+
+bool WavFile::isCorrectFormat(const QAudioFormat &format)
+{
+    return !((format.sampleRate() == -1) || (format.sampleSize() == -1) || (format.channelCount() == -1));
+}
+
+/*
 unsigned int WavFile::readDataSize()
 {
     unsigned int currPos = pos();
@@ -199,3 +321,4 @@ unsigned int WavFile::readDataSize()
     delete[] charSize;
     return size;
 }
+*/

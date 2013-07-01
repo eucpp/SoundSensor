@@ -12,6 +12,12 @@
 class Sample
 {
 public:
+    enum ByteOrder
+    {
+        LittleEndian,
+        BigEndian
+    };
+
     /**
       * Конструктор инициализирует объект нулевым значением.
       */
@@ -26,54 +32,58 @@ public:
     Sample(char pcm);
     /**
       * Инициализация 16-битным знаковым pcm значением.
+      *
+      * @param byteOrd порядок байт аргумента.
       */
-    Sample(short pcm);
+    Sample(short pcm, ByteOrder byteOrder = LittleEndian);
     /**
       * Инициализация 8-битным беззнаковым pcm значением.
       */
     Sample(unsigned char pcm);
     /**
       * Инициализация 16-битным беззнаковым pcm значением.
+      *
+      * @param byteOrd порядок байт аргумента.
       */
-    Sample(unsigned short pcm);
+    Sample(unsigned short pcm, ByteOrder byteOrder = LittleEndian);
+    /**
+      * Установка значения сэмпла (16-битный знаковый pcm).
+      */
+    inline void setPcm16(short pcm, ByteOrder byteOrder = LittleEndian);
+    /**
+      * Установка значения сэмпла (16-битный беззнаковый pcm).
+      */
+    inline void setUPcm16(unsigned short pcm, ByteOrder byteOrder = LittleEndian);
     /**
       * Возвращает значение сэмпла в виде double.
       */
-    double toDouble();
+    double toDouble() const;
     /**
       * Возвращает значение сэмпла в виде float.
       */
-    float toFloat();
+    float toFloat() const;
     /**
       * Возвращает значение сэмпла в виде 8-битного знакового pcm.
       */
-    char toPcm8();
+    char toPcm8() const;
     /**
       * Возвращает значение сэмпла в виде 16-битного знакового pcm.
+      *
+      * @param byteOrd порядок байт возвращаемого значения.
       */
-    short toPcm16();
+    short toPcm16(ByteOrder byteOrder = LittleEndian) const;
     /**
       * Возвращает значение сэмпла в виде 8-битного беззнакового pcm.
       */
-    unsigned char toUPcm8();
+    unsigned char toUPcm8() const;
     /**
       * Возвращает значение сэмпла в виде 16-битного беззнакового pcm.
+      *
+      * @param byteOrd порядок байт возвращаемого значения.
       */
-    unsigned short toUPcm16();
+    unsigned short toUPcm16(ByteOrder byteOrder = LittleEndian) const;
+    bool operator==(const Sample& sample) const;
 
-    enum ByteOrder
-    {
-        LittleEndian,
-        BigEndian
-    };
-    /**
-      * Устанавливает порядок байт, используемый при конвертировании в 16-битный pcm.
-      */
-    void setByteOrder(ByteOrder order);
-    /**
-      * Возвращает используемый в данный момент порядок байт для записи 16-битных pcm.
-      */
-    ByteOrder byteOrder();
 private:
     /**
       * Конвертация pcm в double.
@@ -91,7 +101,6 @@ private:
     static int doubleToPcm(double val, int pcmSize);
 
     double value;
-    ByteOrder byteOrd;
 
     /**
       * Максимальные значения амплитуд в pcm.
@@ -100,3 +109,12 @@ private:
     static const int PCM8MaxAmplitude = 127;
     static const int PCM16MaxAmplitude = 32767;
 };
+
+inline void Sample::setPcm16(short pcm, ByteOrder byteOrder)
+{
+    value = Sample(pcm, byteOrder).value;
+}
+inline void Sample::setUPcm16(unsigned short pcm, ByteOrder byteOrder)
+{
+    value = Sample(pcm, byteOrder).value;
+}

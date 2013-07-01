@@ -3,7 +3,10 @@
 #include <cmath>
 #include <cstring>
 #include <QObject>
+#include <QtEndian>
+#include <QVector>
 #include <QAudioFormat>
+#include "sample.h"
 
 /**
   * Класс-контейнер для цифрового звукового моно сигнала.
@@ -26,81 +29,104 @@ public:
       */
     Signal();
     /**
+      * Создание сигнала длиной n сэмплов, инициализированного нулями.
+      */
+    Signal(int n);
+    Signal(double* array, int arraySize);
+    Signal(float* array, int size);
+    Signal(char* array, int arraySize);
+    Signal(short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian);
+    Signal(unsigned char* array, int arraySize);
+    Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian);
+    /**
       * Создание сигнала по массиву байт.
       *
-      * @param byteArray Массив байт, кодирующих сигнал
-      * @param signalFormat Формат данных, содержащихся в byteArray
+      * @param byteArray Массив байт, кодирующих сигнал.
+      * @param signalFormat Формат данных, содержащихся в byteArray.
+      *     Должен определять размер сэмпла (8/16 бит) и порядок байт для 16-битного сэмпла (little-endian/big-endian)
+      *     тип сэмпла подразумевается знаковый
       */
-    Signal(QByteArray byteArray, QAudioFormat signalFormat);
+    Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat);
     /**
-      * Создание сигнала по массиву значений (амплитуды волны)
-      *
-      * @param vals Массив значений
+      * Возвращает массив значений амплитуды сигнала в виде double (в диапозоне от -1.0 до 1.0).
       */
-    Signal(double* vals, unsigned int valsSize);
-    ~Signal();
+    double* toDoubleArray() const;
     /**
-      * Оператор возвразает значение амплитуды в позиции i сигнала
+      * Возвращает массив значений амплитуды сигнала в виде float (в диапозоне от -1.0 до 1.0).
       */
-    double operator[](unsigned int i) throw(OutOfSignalRangeExc);
-    /**
-      * Возвращает массив байт, кодирующих сигнал в соответствии с установленным форматом
-      */
-    QByteArray getBytes();
-    /**
-      * Возвращает массив значений амплитуды сигнала
-      */
-    double* getData();
+    float* toFloatArray() const;
     /**
       * Возвращает массив 8-битных pcm сэмплов (signed), кодирующих данный сигнал.
       * Массив размещается в динамической памяти, после использования её необходимо очистить.
       */
-    char* get8bitSamples();
+    char* toPcm8Array() const;
     /**
-      * Возвращает массив 16-битных pcm сэмплов (signed, little-endian),
-      * кодирующих данный сигнал.
-      * Массив размещается в динамической памяти, после использования её необходимо очистить
-      */
-    short* get16bitSamples();
-    QAudioFormat getFormat() const;
-    /**
-      * Установка формата массива байт.
-      * Если объект содержит массив значений амплитуды(или не содержит ничего),
-      * то формат будет использован при попытке конвертирования массива double
-      * в массив байт (например, при записи сигнала в wav файл).
-      * Если объект уже хранит массив байт, то вся информация будет перекодирована в соответсвии
-      * с новым форматом.
-      */
-    void setFormat(QAudioFormat format);
-    unsigned int size() const;
-    /**
-      * Конвертация pcm в double
+      * Возвращает массив 16-битных pcm сэмплов (signed), кодирующих данный сигнал.
+      * Порядок байт в сэмпле устанавливается методом setByteOrder().
+      * Массив размещается в динамической памяти, после использования её необходимо очистить.
       *
-      * @param pcm конвертируемое значение
-      * @param pcmSize размер значения pcm в битах (8 или 16)
+      * @param byteOrd порядок байт в сэмплах массива.
       */
-    static double pcmToDouble(int pcm, int pcmSize);
+    short* toPcm16Array(Sample::ByteOrder byteOrder = Sample::LittleEndian) const;
     /**
-      * Конвертация double в pcm
-      *
-      * @param pcm конвертируемое значение
-      * @param pcmSize размер значения pcm в битах (8 или 16)
+      * Возвращает массив 8-битных pcm сэмплов (unsigned), кодирующих данный сигнал.
+      * Массив размещается в динамической памяти, после использования её необходимо очистить.
       */
-    static int doubleToPcm(double val, int pcmSize);
+    unsigned char* toUPcm8Array() const;
+    /**
+      * Возвращает массив 16-битных pcm сэмплов (unsigned), кодирующих данный сигнал.
+      * Порядок байт в сэмпле устанавливается методом setByteOrder().
+      * Массив размещается в динамической памяти, после использования её необходимо очистить.
+      *
+      * @param byteOrd порядок байт в сэмплах массива.
+      */
+    unsigned short* toUPcm16Array(Sample::ByteOrder byteOrder = Sample::LittleEndian) const;
+    /**
+      * Возвращает массив байт, кодирующих сигнал в соответствии с переданным форматом.
+      *
+      * @param format Формат устанавливает размер сэмпла и порядок байт (для 16-битного сэмпла).
+      */
+    QByteArray toByteArray(const QAudioFormat& format);
+    /**
+      * Оператор возвращает сэмпл в позиции i сигнала.
+      */
+    Sample& operator[](int i) throw(OutOfSignalRangeExc);
+    /**
+      * Оператор возвращает сэмпл в позиции i сигнала.
+      */
+    const Sample& operator[](int i) const throw(OutOfSignalRangeExc);
+    bool operator==(const Signal& signal) const;
+    /**
+      * Возвращает размер сигнала (кол-во сэмплов).
+      */
+    int size() const;
+    /**
+      * Изменяет длину сигнала.
+      * Если новая длина больше, увеличивает размер и заполняет новые сэмплы нулями.
+      * Иначе удаляет часть сигнала.
+      *
+      * @param n Новая длина сигнала.
+      */
+    void resize(int n);
+    /**
+      * Возвращает копию части сигнала.
+      *
+      * @param start Позиция начала копирования.
+      * @param length Длина копируемого сигнала (если -1, то копируются все сэмплы, начиная с позиции start).
+      */
+    Signal subSignal(int start, int length = -1) const;
 private:
+    Signal(const QVector<Sample>& samplesVector);
+    template <typename Type>
+    inline void init(Type* array);
 
-    void doublesToByteArray();
-    void byteArrayToDoubles();
-
-    QByteArray bytes;
-    QAudioFormat bytesFormat;
-    bool bytesSetFlag;
-    double* values;
-    unsigned int valuesSize;
-    bool valuesSetFlag;
-
-    static QByteArray convertByteArray(QByteArray array, QAudioFormat oldFormat, QAudioFormat newFormat);
-    static const int PCM8MaxAmplitude = 255;
-    static const int PCM16MaxAmplitude = 65535;
+    QVector<Sample> samples;
+    //Sample::ByteOrder byteOrd;
 };
 
+template <typename Type>
+inline void Signal::init(Type* array)
+{
+    for (int i = 0; i < samples.size(); i++)
+        samples[i] = array[i];
+}

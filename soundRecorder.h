@@ -13,7 +13,7 @@ using namespace std;
 
 
 /**
-  * Класс используется для записи звука с микрофона (поддерживается только моно запись)
+  * Класс используется для записи звука с микрофона (поддерживается только моно запись).
   */
 class SoundRecorder : public QObject
 {
@@ -21,17 +21,17 @@ class SoundRecorder : public QObject
 public:
     /**
       * Конструктор.
-      * При создании нового объекта используется устройство и формат записи по умолчанию
+      * При создании нового объекта используется устройство и формат записи по умолчанию.
       */
     SoundRecorder();
     /**
-      * При вызове этого конструктора, используется формат записи по умолчанию
+      * При вызове этого конструктора, используется формат записи по умолчанию.
       *
       * @param device Устройство для записи
       */
     SoundRecorder(const QAudioDeviceInfo& device);
     /**
-      * При вызове этого конструктора, используется устройство для записи по умолчанию
+      * При вызове этого конструктора, используется устройство для записи по умолчанию.
       *
       * @param format Формат записи
       */
@@ -46,35 +46,39 @@ public:
       * или доступный для чтения участок записи (от начала) если запись продолжается.
       */
     Signal getSignal() const;
-    QAudioFormat getAudioFormat() const;
-    QAudioDeviceInfo getAudioDevice() const;
+    /**
+      * Возвращает используемый в данный момент формат записи.
+      */
+    QAudioFormat getFormat() const;
+    /**
+      * Возвращает используемое в данный момент устройство.
+      */
+    QAudioDeviceInfo getDevice() const;
     /**
       * Устанавливает длину фрейма.
       * При записи звука, через промежутки времени, равные длине фрейма, генерируется сигнал
       * содержащий объект-сигнал, который хранит записанные байты.
       */
     void setFrameLength(int length);
+    /**
+      * Возвращает длину фрейма.
+      */
     int getFrameLength() const;
     /**
-      * Возвращает формат записи, используемый по умолчанию
+      * Возвращает формат записи, используемый по умолчанию.
       */
     static QAudioFormat defaultAudioFormat();
 public slots:
     /**
       * Начинает запись звука.
-      * Данные, полученные от устройства сохраняются в QByteArray.
+      * Данные, полученные от устройства сохраняются в объект Signal.
       * После начала записи объект генерирует сигнал frameRecorded каждые frameLength миллисекунд.
       */
-    void startRecording();
+    void start();
     /**
       * Завершение записи.
       */
-    void stopRecording();
-private slots:
-    /**
-      * Копирует последний записанный фрейм.
-      */
-    void recordFrame();
+    void stop();
 signals:
     /**
       * Вызывается каждые frameLength секунд и содержит объект-сигнал с записанным фреймом.
@@ -84,12 +88,18 @@ signals:
       * Вызывается после окончания записи и содержит объект-сигнал с записью.
       */
     void recordingStopped(Signal);
+private slots:
+    /**
+      * Копирует последний записанный фрейм.
+      */
+    void recordFrame();
 private:
     QAudioDeviceInfo audioDevice;
     QAudioInput audioIn;
     QByteArray byteArray;
     QBuffer buffer;
     quint64 currentFramePos;
+
     static const int defaultFrameLength = 128;
 };
 

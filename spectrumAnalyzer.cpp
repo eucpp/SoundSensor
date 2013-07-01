@@ -29,7 +29,7 @@ void SpectrumAnalyzer::calclulateSpectrum(QByteArray byteArray)
     for (int i = 0; i < analyzedDataSize; i++)
         // фиксированное преобразование (подразумевается, что sample size = 8 bit)
         // to do: норм. преобразование, учитывающее формат
-        input[i] = pcmToFloat(static_cast<int>(byteArray[i]));
+        input[i] = Sample(static_cast<char>(byteArray[i])).toFloat();
     float* output = new float[analyzedDataSize];
     fourierTransformer->forwardTransform(input, output);
 

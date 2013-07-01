@@ -28,9 +28,9 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
     if (uttReturn < 0)
         throw PocketSphinxInitExc();
 
-    short* samples = signal.get16bitSamples();
+    short* samples = signal.toPcm16Array();
     int decodeReturn = ps_process_raw(recognizer, samples,
-                                  signal.size() * 2, false, false);
+                                  signal.size(), false, false);
     delete[] samples;
 
     if (decodeReturn < 0)

@@ -6,7 +6,6 @@
 #include "Alglib/alglibinternal.h"
 #include "Alglib/fasttransforms.h"
 #include "signal.h"
-#include "utils.h"
 
 /**
   * Класс служит для выполнения операций корреляции сигналов
