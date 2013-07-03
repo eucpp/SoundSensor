@@ -2,7 +2,12 @@
 
 #include <cmath>
 #include <QtEndian>
-#include <QtMultimediaKit/QAudioFormat>
+
+#ifdef DESKTOP
+    #include <QtMultimediaKit/QAudioFormat>
+#else
+    #include <QtMultimedia/QAudioFormat>
+#endif
 
 /**
   * Класс-контейнер для сэмплов звука.

@@ -14,6 +14,8 @@ CONFIG += desktop
 trik {
     QT += multimedia
     DESTDIR = ../trik-build-bin
+    OBJECTS_DIR = ../trik-build-bin
+    MOC_DIR = ../trik-build-bin
 }
 desktop {
     CONFIG += mobility
