@@ -95,7 +95,7 @@ void TestWindow::compareSignals()
             maxInd = i;
         }
     }
-    QByteArray match = signal.toByteArray(recorder->getFormat()).mid(maxInd, pattern.size());
+    QByteArray match = signal.toByteArray().mid(maxInd, pattern.size());
     Signal matchSignal(match, recorder->getFormat());
 
     WavFile file("matchingFragment.wav");

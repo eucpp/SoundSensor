@@ -8,25 +8,22 @@
 #include "tests/sampleTest.h"
 #include "tests/signalTest.h"
 #include "tests/wavFileTest.h"
-
+#include "tests/recordtest.h"
 
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    TestWindow w;
-    w.show();
 
     SampleTest sampleTest;
     QTest::qExec(&sampleTest);
     SignalTest signalTest;
     QTest::qExec(&signalTest);
-
     WavFileTest wavFileTest;
     QTest::qExec(&wavFileTest);
 
-
-    //printStatistics();
+    RecordTest recordTest;
+    recordTest.record(10 * 1000);
 
     return a.exec();
 }

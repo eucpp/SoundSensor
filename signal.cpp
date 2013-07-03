@@ -4,53 +4,84 @@ Signal::Signal():
     samples()
 {}
 
-Signal::Signal(int n):
+Signal::Signal(int n, int sampleRate):
     samples()
 {
     samples.resize(n);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
 }
 
-Signal::Signal(double* array, int arraySize):
+Signal::Signal(double* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
     init(array);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
 }
 
-Signal::Signal(float* array, int arraySize):
+Signal::Signal(float* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
     init(array);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
 }
 
-Signal::Signal(char* array, int arraySize):
+Signal::Signal(char* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
     init(array);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
+    format.setSampleSize(8);
+    format.setSampleType(QAudioFormat::SignedInt);
 }
 
-Signal::Signal(short* array, int arraySize, Sample::ByteOrder byteOrder):
+Signal::Signal(short* array, int arraySize, Sample::ByteOrder byteOrder, int sampleRate):
     samples(arraySize)
 {
     for (int i = 0; i < samples.size(); i++)
         samples[i].setPcm16(array[i], byteOrder);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
+    format.setSampleSize(16);
+    format.setSampleType(QAudioFormat::SignedInt);
+    if (byteOrder == Sample::LittleEndian)
+        format.setByteOrder(QAudioFormat::LittleEndian);
+    else
+        format.setByteOrder(QAudioFormat::BigEndian);
 }
 
-Signal::Signal(unsigned char* array, int arraySize):
+Signal::Signal(unsigned char* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
     init(array);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
+    format.setSampleSize(8);
+    format.setSampleType(QAudioFormat::UnSignedInt);
 }
 
-Signal::Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder):
+Signal::Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder, int sampleRate):
     samples(arraySize)
 {
     for (int i = 0; i < samples.size(); i++)
         samples[i].setUPcm16(array[i], byteOrder);
+    format.setChannels(1);
+    format.setSampleRate(sampleRate);
+    format.setSampleSize(16);
+    format.setSampleType(QAudioFormat::UnSignedInt);
+    if (byteOrder == Sample::LittleEndian)
+        format.setByteOrder(QAudioFormat::LittleEndian);
+    else
+        format.setByteOrder(QAudioFormat::BigEndian);
 }
 
-Signal::Signal(const QByteArray& byteArray, const QAudioFormat& format):
+Signal::Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat):
     samples()
 {
+    format = signalFormat;
     int sampleSize = format.sampleSize();
     if (sampleSize == 8)
         samples.resize(byteArray.size());
@@ -125,7 +156,7 @@ unsigned short* Signal::toUPcm16Array(Sample::ByteOrder byteOrder) const
     return array;
 }
 
-QByteArray Signal::toByteArray(const QAudioFormat &format)
+QByteArray Signal::toByteArray()
 {
     if (format.sampleSize() == 8)
     {
@@ -139,6 +170,16 @@ QByteArray Signal::toByteArray(const QAudioFormat &format)
         short* bytes = toPcm16Array(byteOrd);
         return QByteArray(reinterpret_cast<char*>(bytes), size() * 2);
     }
+}
+
+QAudioFormat Signal::getFormat()
+{
+    return format;
+}
+
+void Signal::setFormat(const QAudioFormat &signalFormat)
+{
+    format = signalFormat;
 }
 
 Sample& Signal::operator[](int i) throw(OutOfSignalRangeExc)
@@ -172,10 +213,11 @@ void Signal::resize(int n)
 
 Signal Signal::subSignal(int start, int length) const
 {
-    return Signal(samples.mid(start, length));
+    return Signal(samples.mid(start, length), format);
 }
 
-Signal::Signal(const QVector<Sample> &samplesVector)
+Signal::Signal(const QVector<Sample> &samplesVector, const QAudioFormat& signalFormat)
 {
     samples = samplesVector;
+    format = signalFormat;
 }

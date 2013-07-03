@@ -29,6 +29,10 @@ public:
       */
     class ReadDisabledExc {};
     /**
+      * Класс исключений, бросаемых в случае, если при записи формат сигнала не совпадает с форматом файла.
+      */
+    class FormatMismatchExc {};
+    /**
       * Содержит режимы работы с файлом.
       */
     enum OpenModes
@@ -89,14 +93,12 @@ public:
     bool headerSet() const;
     /**
       * Устанавливает заголовок.
-      * Если файл открыт в режиме WriteOnly и до вызова метода какие-то данные уже были записаны,
-      * и новый заголовок отличается от старого, то
-      * метод перекодирует содержимое файла в соответствии с новым форматом.
+      * Метод может вызываться только до открытия файла, если файл будет открыт в режиме
+      * ReadOnly/Append, то вместо установленного заголовка используется заголовок, прочитанный из файла.
       *
       * @param format Новый заголовок.
-      * @throw WriteDisabledExc Если файл открыт в режиме ReadOnly/Append, модификация заголовка запрещена.
       */
-    void setHeader(const QAudioFormat& format) throw(WriteDisabledExc);
+    void setHeader(const QAudioFormat& format);
     /**
       * Возвращает текущий заголовок wav файла.
       * Если заголовок не был установлен, возвращает объект QAudioFormat, создаваемый конструктором по умолчанию.
@@ -140,8 +142,9 @@ public:
       *     будет записан весь сигнал.
       * @return Кол-во сэмплов, реально записанных в файл (либо 0, если файл не был открыт).
       * @throw WriteDisabledExc Если файл открыт только на чтение.
+      * @throw FormatMismatchExc Если форматы файла и сигнала не совпадают.
       */
-    int write(Signal signal, int length = -1) throw(WriteDisabledExc);
+    int write(Signal signal, int length = -1) throw(WriteDisabledExc, FormatMismatchExc);
 private:
     /**
       * Класс исключений, генерируемых при чтении заголовка (если заголовок оказался некорректным).

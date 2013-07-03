@@ -25,6 +25,7 @@ private slots:
         (*signal)[1] = 0.5;
         (*signal)[2] = -0.85;
         (*signal)[3] = -0.1;
+        signal->setFormat(*header);
     }
     void cleanup()
     {
@@ -91,6 +92,7 @@ private slots:
         Signal signal2(2);
         signal2[0] = 0.8;
         signal2[1] = 0.4;
+        signal2.setFormat(*header);
         file->write(signal2);
         QCOMPARE(file->size(), 6);
     }
@@ -112,71 +114,6 @@ private slots:
         {
         }
     }
-
-    /*
-    void init()
-    {
-        file = new WavFile(QString("test.wav"));
-        file->open(WavFile::WriteOnly);
-    }
-    void cleanup()
-    {
-        if (file->isOpen())
-            file->close();
-        delete file;
-    }
-    void seekTest()
-    {
-        QVERIFY(file->seek(10));
-    }
-    void posTest()
-    {
-        QCOMPARE(file->pos(), (unsigned int)0);
-        file->seek(10);
-        QCOMPARE(file->pos(), (unsigned int)10);
-    }
-    void dataSizeTest()
-    {
-        file->close();
-        file->open(WavFile::ReadOnly);
-        QCOMPARE(file->dataSize(), (unsigned int)0);
-    }
-    void writeSignalTest()
-    {
-        QByteArray bytes;
-        bytes[0] = 127;
-        bytes[1] = 64;
-        bytes[2] = 0;
-        bytes[3] = -64;
-        Signal signal(bytes, SoundRecorder::defaultAudioFormat());
-        file->writeSignal(signal);
-        file->close();
-        file->open(WavFile::ReadOnly);
-        QCOMPARE(file->dataSize(), (unsigned int)4);
-    }
-    void readSignalTest()
-    {
-        /*
-        QByteArray bytes;
-        bytes[0] = 127;
-        bytes[1] = 64;
-        bytes[2] = 0;
-        bytes[3] = -64;
-        Signal signal(bytes, SoundRecorder::defaultAudioFormat());
-        file->writeSignal(signal);
-        file->close();
-
-        file->open(WavFile::ReadOnly);
-        Signal readSignal = file->readSignal();
-        QByteArray readBytes = readSignal.toByteArray();
-        QCOMPARE(char(readBytes[0]), char(127));
-        QCOMPARE(char(readBytes[1]), char(64));
-        QCOMPARE(char(readBytes[2]), char(0));
-        QCOMPARE(char(readBytes[3]), char(-64));
-        */
-    /*
-    }
-    */
 private:
     WavFile* file;
     QAudioFormat* header;

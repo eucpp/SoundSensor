@@ -21,7 +21,7 @@ class Signal
 {
 public:
     /**
-      * Класс исключений, генерируемых при попытке доступа к значению сигнала вне диапозона
+      * Класс исключений, генерируемых при попытке доступа к значению сигнала вне диапозона.
       */
     class OutOfSignalRangeExc {};
     /**
@@ -30,14 +30,16 @@ public:
     Signal();
     /**
       * Создание сигнала длиной n сэмплов, инициализированного нулями.
+      *
+      * @param sampleRate Частота дискретизации сигнала.
       */
-    Signal(int n);
-    Signal(double* array, int arraySize);
-    Signal(float* array, int size);
-    Signal(char* array, int arraySize);
-    Signal(short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian);
-    Signal(unsigned char* array, int arraySize);
-    Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian);
+    Signal(int n, int sampleRate = 16000);
+    Signal(double* array, int arraySize, int sampleRate = 16000);
+    Signal(float* array, int size, int sampleRate = 16000);
+    Signal(char* array, int arraySize, int sampleRate = 16000);
+    Signal(short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian, int sampleRate = 16000);
+    Signal(unsigned char* array, int arraySize, int sampleRate = 16000);
+    Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian, int sampleRate = 16000);
     /**
       * Создание сигнала по массиву байт.
       *
@@ -82,11 +84,17 @@ public:
       */
     unsigned short* toUPcm16Array(Sample::ByteOrder byteOrder = Sample::LittleEndian) const;
     /**
-      * Возвращает массив байт, кодирующих сигнал в соответствии с переданным форматом.
-      *
-      * @param format Формат устанавливает размер сэмпла и порядок байт (для 16-битного сэмпла).
+      * Возвращает массив байт, кодирующих сигнал в соответствии с его форматом.
       */
-    QByteArray toByteArray(const QAudioFormat& format);
+    QByteArray toByteArray();
+    /**
+      * Возвращает формат сигнала.
+      */
+    QAudioFormat getFormat();
+    /**
+      * Устанавливает формат сигнала.
+      */
+    void setFormat(const QAudioFormat& signalFormat);
     /**
       * Оператор возвращает сэмпл в позиции i сигнала.
       */
@@ -116,12 +124,12 @@ public:
       */
     Signal subSignal(int start, int length = -1) const;
 private:
-    Signal(const QVector<Sample>& samplesVector);
+    Signal(const QVector<Sample>& samplesVector, const QAudioFormat& signalFormat);
     template <typename Type>
     inline void init(Type* array);
 
     QVector<Sample> samples;
-    //Sample::ByteOrder byteOrd;
+    QAudioFormat format;
 };
 
 template <typename Type>

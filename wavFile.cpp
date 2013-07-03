@@ -48,7 +48,7 @@ void WavFile::open(OpenModes mode, const QAudioFormat& format)
         }
         else if (openmode == Append)
         {
-            // сначала открываем на чтение, чтобы проситать заголовок.
+            // сначала открываем на чтение, чтобы прочитать заголовок.
             if (!file.open(QIODevice::ReadOnly))
                 throw OpenFileExc();
             // проверяем размер заголовка файла
@@ -115,24 +115,12 @@ bool WavFile::headerSet() const
     return headerSetFlag;
 }
 
-void WavFile::setHeader(const QAudioFormat &format) throw(WriteDisabledExc)
+void WavFile::setHeader(const QAudioFormat &format)
 {
-    if ((openmode == ReadOnly) || (openmode == WriteOnly))
-        throw WriteDisabledExc();
-    else if (!headerSetFlag)
+    if (openmode == NotOpen)
     {
         header = format;
-        writeHeader(header);
-    }
-    else if (header != format)
-    {
-        int currPos = pos();
-        Signal fileData = readAll();
-        writeHeader(format);
-        header = format;
-        seek(0);
-        write(fileData);
-        seek(currPos);
+        headerSetFlag = true;
     }
 }
 
@@ -190,13 +178,15 @@ Signal WavFile::readAll() throw(ReadDisabledExc)
     return Signal(bytes, header);
 }
 
-int WavFile::write(Signal signal, int length) throw(WriteDisabledExc)
+int WavFile::write(Signal signal, int length) throw(WriteDisabledExc, FormatMismatchExc)
 {
     if ((openmode == NotOpen) || !headerSetFlag)
         return 0;
     if (openmode == ReadOnly)
         throw WriteDisabledExc();
-    QByteArray bytes = signal.subSignal(0, length).toByteArray(header);
+    if (header != signal.getFormat())
+        throw FormatMismatchExc();
+    QByteArray bytes = signal.subSignal(0, length).toByteArray();
     int n = file.write(bytes);
     setDataSize(size());
     return n / (header.sampleSize() / 8);

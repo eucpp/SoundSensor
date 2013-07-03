@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     signal.cpp \
     wavFile.cpp \
     voiceCommandSensor.cpp \
-    sample.cpp
+    sample.cpp \
+    tests/recordtest.cpp
 
 HEADERS  += testwindow.h \
     soundRecorder.h \
@@ -74,7 +75,8 @@ HEADERS  += testwindow.h \
     voiceCommandSensor.h \
     tests/wavFileTest.h \
     sample.h \
-    tests/sampleTest.h
+    tests/sampleTest.h \
+    tests/recordtest.h
 
 FORMS    += testwindow.ui \
 

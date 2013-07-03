@@ -100,6 +100,6 @@ private:
     QBuffer buffer;
     quint64 currentFramePos;
 
-    static const int defaultFrameLength = 128;
+    static const int defaultFrameLength = 1000;
 };
 
