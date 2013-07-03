@@ -1,9 +1,17 @@
 #pragma once
 
+#include "buildParam.h"
+
 #include <iostream>
 #include <cstring>
 #include <QObject>
-#include <QAudioFormat>
+
+#ifdef DESKTOP
+    #include <QtMultimediaKit/QAudioFormat>
+#else
+    #include <QtMultimedia/QAudioFormat>
+#endif
+
 #include <QFile>
 #include "signal.h"
 #include "soundRecorder.h"

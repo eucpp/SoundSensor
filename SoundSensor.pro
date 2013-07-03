@@ -4,87 +4,96 @@
 #
 #-------------------------------------------------
 
-QT       += core gui testlib
+QT       += core testlib #gui
 
 
 TARGET = SoundSensor
 TEMPLATE = app
-CONFIG += mobility
-MOBILITY = multimedia
+CONFIG += desktop
+
+trik {
+    QT += multimedia
+    DESTDIR = ../trik-build-bin
+}
+desktop {
+    CONFIG += mobility
+    MOBILITY = multimedia
+    INCLUDEPATH += /usr/include/QtMultimediaKit
+    INCLUDEPATH += /usr/include/QtMobility
+}
 
 SOURCES += main.cpp\
-        testwindow.cpp \
+#        testwindow.cpp \
     soundRecorder.cpp \
-    QRealFourier/code/sources/qwindowfunction.cpp \
-    QRealFourier/code/sources/qfouriervariablecalculator.cpp \
-    QRealFourier/code/sources/qfouriertransformer.cpp \
-    QRealFourier/code/sources/qfourierfixedcalculator.cpp \
-    QRealFourier/code/sources/qfouriercalculator.cpp \
-    QRealFourier/code/sources/qcomplexnumber.cpp \
-    spectrumAnalyzer.cpp \
-    spectrogram.cpp \
-    Alglib/fasttransforms.cpp \
-    Alglib/ap.cpp \
-    Alglib/alglibmisc.cpp \
-    correlator.cpp \
-    Alglib/alglibinternal.cpp \
+#    QRealFourier/code/sources/qwindowfunction.cpp \
+#    QRealFourier/code/sources/qfouriervariablecalculator.cpp \
+#    QRealFourier/code/sources/qfouriertransformer.cpp \
+#    QRealFourier/code/sources/qfourierfixedcalculator.cpp \
+#    QRealFourier/code/sources/qfouriercalculator.cpp \
+#    QRealFourier/code/sources/qcomplexnumber.cpp \
+#    spectrumAnalyzer.cpp \
+#    spectrogram.cpp \
+#    Alglib/fasttransforms.cpp \
+#    Alglib/ap.cpp \
+#    Alglib/alglibmisc.cpp \
+#    correlator.cpp \
+#    Alglib/alglibinternal.cpp \
     signal.cpp \
     wavFile.cpp \
-    voiceCommandSensor.cpp \
+#    voiceCommandSensor.cpp \
     sample.cpp \
     tests/recordtest.cpp
 
-HEADERS  += testwindow.h \
-    soundRecorder.h \
-    QRealFourier/code/headers/qwindowfunction.h \
-    QRealFourier/code/headers/qfouriervariablecalculator.h \
-    QRealFourier/code/headers/qfouriertransformer.h \
-    QRealFourier/code/headers/qfourierfixedcalculator.h \
-    QRealFourier/code/headers/qfouriercalculator.h \
-    QRealFourier/code/headers/qcomplexnumber.h \
-    QRealFourier/code/fftreal/OscSinCos.hpp \
-    QRealFourier/code/fftreal/OscSinCos.h \
-    QRealFourier/code/fftreal/FFTRealUseTrigo.hpp \
-    QRealFourier/code/fftreal/FFTRealUseTrigo.h \
-    QRealFourier/code/fftreal/FFTRealSelect.hpp \
-    QRealFourier/code/fftreal/FFTRealSelect.h \
-    QRealFourier/code/fftreal/FFTRealPassInverse.hpp \
-    QRealFourier/code/fftreal/FFTRealPassInverse.h \
-    QRealFourier/code/fftreal/FFTRealPassDirect.hpp \
-    QRealFourier/code/fftreal/FFTRealPassDirect.h \
-    QRealFourier/code/fftreal/FFTRealFixLenParam.h \
-    QRealFourier/code/fftreal/FFTRealFixLen.hpp \
-    QRealFourier/code/fftreal/FFTRealFixLen.h \
-    QRealFourier/code/fftreal/FFTReal.hpp \
-    QRealFourier/code/fftreal/FFTReal.h \
-    QRealFourier/code/fftreal/DynArray.hpp \
-    QRealFourier/code/fftreal/DynArray.h \
-    QRealFourier/code/fftreal/def.h \
-    QRealFourier/code/fftreal/Array.hpp \
-    QRealFourier/code/fftreal/Array.h \
-    spectrumAnalyzer.h \
-    spectrogram.h \
-    Alglib/fasttransforms.h \
-    Alglib/ap.h \
-    Alglib/alglibinternal.h \
-    correlator.h \
-    Alglib/alglibmisc.h \
+HEADERS  += soundRecorder.h \
+    #testwindow.h \
+    #QRealFourier/code/headers/qwindowfunction.h \
+    #QRealFourier/code/headers/qfouriervariablecalculator.h \
+    #QRealFourier/code/headers/qfouriertransformer.h \
+    #QRealFourier/code/headers/qfourierfixedcalculator.h \
+    #QRealFourier/code/headers/qfouriercalculator.h \
+    #QRealFourier/code/headers/qcomplexnumber.h \
+    #QRealFourier/code/fftreal/OscSinCos.hpp \
+    #QRealFourier/code/fftreal/OscSinCos.h \
+    #QRealFourier/code/fftreal/FFTRealUseTrigo.hpp \
+    #QRealFourier/code/fftreal/FFTRealUseTrigo.h \
+    #QRealFourier/code/fftreal/FFTRealSelect.hpp \
+    #QRealFourier/code/fftreal/FFTRealSelect.h \
+    #QRealFourier/code/fftreal/FFTRealPassInverse.hpp \
+    #QRealFourier/code/fftreal/FFTRealPassInverse.h \
+    #QRealFourier/code/fftreal/FFTRealPassDirect.hpp \
+    #QRealFourier/code/fftreal/FFTRealPassDirect.h \
+    #QRealFourier/code/fftreal/FFTRealFixLenParam.h \
+    #QRealFourier/code/fftreal/FFTRealFixLen.hpp \
+    #QRealFourier/code/fftreal/FFTRealFixLen.h \
+    #QRealFourier/code/fftreal/FFTReal.hpp \
+    #QRealFourier/code/fftreal/FFTReal.h \
+    #QRealFourier/code/fftreal/DynArray.hpp \
+    #QRealFourier/code/fftreal/DynArray.h \
+    #QRealFourier/code/fftreal/def.h \
+    #QRealFourier/code/fftreal/Array.hpp \
+    #QRealFourier/code/fftreal/Array.h \
+    #spectrumAnalyzer.h \
+    #spectrogram.h \
+    #Alglib/fasttransforms.h \
+    #Alglib/ap.h \
+    #Alglib/alglibinternal.h \
+    #correlator.h \
+    #Alglib/alglibmisc.h \
     signal.h \
     wavFile.h \
     tests/signalTest.h \
-    voiceCommandSensor.h \
+    #voiceCommandSensor.h \
     tests/wavFileTest.h \
     sample.h \
     tests/sampleTest.h \
-    tests/recordtest.h
+    tests/recordtest.h \
+    buildParam.h
 
-FORMS    += testwindow.ui \
-
-INCLUDEPATH += /usr/include/QtMultimediaKit
-INCLUDEPATH += /usr/include/QtMobility
+#FORMS    += testwindow.ui \
 
 # подключаем pocketsphinx
-INCLUDEPATH +=  /usr/local/include/sphinxbase \
-    /usr/local/include/pocketsphinx
+#INCLUDEPATH +=  /usr/local/include/sphinxbase \
+#    /usr/local/include/pocketsphinx
 
-LIBS+=  -L/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm
+#  -L/usr/local/lib
+LIBS+= -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm

@@ -17,10 +17,10 @@ private slots:
         values[2] = 0.25;
         values[3] = 0.125;
         Signal signal(values, 4);
-        QCOMPARE(signal[0].toDouble(), 1.0);
-        QCOMPARE(signal[1].toDouble(), 0.5);
-        QCOMPARE(signal[2].toDouble(), 0.25);
-        QCOMPARE(signal[3].toDouble(), 0.125);
+        QCOMPARE(signal[0].toPcm16(), (short)32767);
+        QCOMPARE(signal[1].toPcm16(), (short)16384);
+        QCOMPARE(signal[2].toPcm16(), (short)8192);
+        QCOMPARE(signal[3].toPcm16(), (short)4096);
     }
     // тестирование создания объекта-сигнала из QByteArray
     void ConstructFromQByteArrayTest()

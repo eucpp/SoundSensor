@@ -8,15 +8,40 @@ class SampleTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void constructFromUPcm8Test()
+    {
+        unsigned char ch = 220;
+        Sample sample(ch);
+        QCOMPARE(sample.toPcm8(), (char)92);
+    }
+    void constructFromUPcm16Test()
+    {
+        short sh = 16300;
+        Sample sample(sh);
+        QCOMPARE(sample.toPcm16(), (short)16300);
+    }
+
+    void AssignmentOperatorTest()
+    {
+        Sample s;
+        s = char(127);
+        QCOMPARE(s.toDouble(), 1.0);
+    }
+    void ComparisonOperatorTest()
+    {
+        Sample s;
+        s = 0.2;
+        QVERIFY(s.toPcm16() == 6553);
+    }
     void toDoubleTest()
     {
         Sample s(0.25);
-        QCOMPARE(s.toDouble(), 0.25);
+        QVERIFY(qAbs(s.toDouble() - 0.25) < 0.01);
     }
     void toFloatTest()
     {
         Sample s(0.25);
-        QCOMPARE(s.toFloat(), (float)0.25);
+        QVERIFY(qAbs(s.toFloat() - (float)0.25) < 0.01);
     }
     void toPcm8Test()
     {
@@ -54,16 +79,16 @@ private slots:
         QCOMPARE(bytes[0], (char)0x40);
         QCOMPARE(bytes[1], (char)0x00);
     }
-    void AssignmentOperatorTest()
+    void getSampleSizeTest()
     {
-        Sample s;
-        s = char(127);
-        QCOMPARE(s.toDouble(), 1.0);
+        Sample sample((short)100);
+        QCOMPARE(sample.getSampleSize(), Sample::PCM8);
     }
-    void ComparisonOperatorTest()
+    void setSampleSizeTest()
     {
-        Sample s;
-        s = 0.2;
-        QVERIFY(s.toPcm16() == 6553);
+        Sample sample((char) 64);
+        sample.setSampleSize(Sample::PCM16);
+        QCOMPARE(sample.getSampleSize(), Sample::PCM16);
+        QCOMPARE(sample.toPcm16(), (short)16384);
     }
 };

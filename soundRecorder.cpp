@@ -90,6 +90,9 @@ void SoundRecorder::stop()
     audioIn.stop();
     buffer.close();
     emit recordingStopped(getSignal());
+
+    std::cout << "Bytes written: " <<  byteArray.size() << std::endl;
+    std::cout << "Error: " << audioIn.error() << std::endl;
 }
 
 void SoundRecorder::recordFrame()

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <QtEndian>
+#include <QtMultimediaKit/QAudioFormat>
 
 /**
   * Класс-контейнер для сэмплов звука.
@@ -12,6 +13,11 @@
 class Sample
 {
 public:
+    enum PCMSize
+    {
+      PCM8,
+      PCM16
+    };
     enum ByteOrder
     {
         LittleEndian,
@@ -83,24 +89,33 @@ public:
       */
     unsigned short toUPcm16(ByteOrder byteOrder = LittleEndian) const;
     bool operator==(const Sample& sample) const;
-
+    /**
+      * Устанавливает размер хранимого сэмпла.
+      * При несовпадении текущего и нового размера метод конвертирует текущее значение.
+      */
+    void setSampleSize(PCMSize size);
+    /**
+      * Возвращает размер сэмпла.
+      */
+    PCMSize getSampleSize();
 private:
     /**
       * Конвертация pcm в double.
       *
       * @param pcm конвертируемое значение.
-      * @param pcmSize размер значения pcm в битах (8 или 16).
+      * @param size размер значения pcm в битах (8 или 16).
       */
-    static double pcmToDouble(int pcm, int pcmSize);
+    static double pcmToDouble(int pcm, PCMSize size);
     /**
       * Конвертация double в pcm.
       *
       * @param pcm конвертируемое значение.
-      * @param pcmSize размер значения pcm в битах (8 или 16).
+      * @param size размер значения pcm в битах (8 или 16).
       */
-    static int doubleToPcm(double val, int pcmSize);
+    static int doubleToPcm(double val, PCMSize size);
 
-    double value;
+    short value;
+    PCMSize pcmSize;
 
     /**
       * Максимальные значения амплитуд в pcm.
@@ -112,9 +127,17 @@ private:
 
 inline void Sample::setPcm16(short pcm, ByteOrder byteOrder)
 {
-    value = Sample(pcm, byteOrder).value;
+    pcmSize = PCM16;
+    if (byteOrder == LittleEndian)
+        value = qFromLittleEndian(pcm);
+    else
+        value = qFromBigEndian(pcm);
 }
 inline void Sample::setUPcm16(unsigned short pcm, ByteOrder byteOrder)
 {
-    value = Sample(pcm, byteOrder).value;
+    pcmSize = PCM16;
+    if (byteOrder == LittleEndian)
+        value = qFromLittleEndian(pcm - PCM16MaxAmplitude - 1);
+    else
+        value = qFromBigEndian(pcm - PCM16MaxAmplitude - 1);
 }

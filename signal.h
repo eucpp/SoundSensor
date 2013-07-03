@@ -1,11 +1,19 @@
 #pragma once
 
+#include "buildParam.h"
+
 #include <cmath>
 #include <cstring>
 #include <QObject>
 #include <QtEndian>
 #include <QVector>
-#include <QAudioFormat>
+
+#ifdef DESKTOP
+    #include <QtMultimediaKit/QAudioFormat>
+#else
+    #include <QtMultimedia/QAudioFormat>
+#endif
+
 #include "sample.h"
 
 /**

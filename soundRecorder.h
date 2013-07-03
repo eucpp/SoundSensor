@@ -1,10 +1,22 @@
 #pragma once
 
+#include "buildParam.h"
+
 #include <iostream>
 #include <QObject>
-#include <QtMultimediaKit/QAudioInput>
-#include <QtMultimediaKit/QAudioFormat>
-#include <QAudioOutput>
+
+#ifdef DESKTOP
+    #include <QtMultimediaKit/QAudioInput>
+    #include <QtMultimediaKit/QAudioFormat>
+    #include <QtMultimediaKit/QAudioOutput>
+    #include <QtMultimediaKit/QAudioDeviceInfo>
+#else
+    #include <QtMultimedia/QAudioInput>
+    #include <QtMultimedia/QAudioFormat>
+    #include <QtMultimedia/QAudioOutput>
+    #include <QtMultimedia/QAudioDeviceInfo>
+#endif
+
 #include <QBuffer>
 #include <QByteArray>
 #include "signal.h"

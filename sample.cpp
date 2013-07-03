@@ -5,92 +5,113 @@ Sample::Sample():
 {}
 
 Sample::Sample(double d):
-    value(d)
-{}
+    pcmSize(PCM16)
+{
+    value = doubleToPcm(d, pcmSize);
+}
 
 Sample::Sample(char pcm)
 {
-    value = pcmToDouble(pcm, 8);
+    pcmSize = PCM8;
+    value = pcm;
 }
 
 Sample::Sample(short pcm, ByteOrder byteOrder)
 {
+    pcmSize = PCM16;
     short newPcm = pcm;
     if (byteOrder == LittleEndian)
         newPcm =  qFromLittleEndian(pcm);
     else
         newPcm = qFromBigEndian(pcm);
-    value = pcmToDouble(newPcm, 16);
+    value = newPcm;
 }
 
 Sample::Sample(unsigned char pcm)
 {
-    value = pcmToDouble(pcm - PCM8MaxAmplitude - 1, 8);
+    pcmSize = PCM8;
+    value = pcm - PCM8MaxAmplitude - 1;
 }
 
 Sample::Sample(unsigned short pcm, ByteOrder byteOrder)
 {
+    pcmSize = PCM16;
     short newPcm = pcm;
     if (byteOrder == LittleEndian)
         newPcm =  qFromLittleEndian(pcm);
     else
         newPcm = qFromBigEndian(pcm);
-    value = pcmToDouble(newPcm - PCM16MaxAmplitude - 1, 16);
+    value = newPcm - PCM16MaxAmplitude - 1;
 }
 
 double Sample::toDouble() const
 {
-    return value;
+    return pcmToDouble(value, pcmSize);
 }
 
 float Sample::toFloat() const
 {
-    return static_cast<float>(value);
+    return static_cast<float>(pcmToDouble(value, pcmSize));
 }
 
 char Sample::toPcm8() const
 {
-    return static_cast<char>(doubleToPcm(value, 8));
+    if (pcmSize == PCM8)
+        return static_cast<char>(value);
+    else if (pcmSize == PCM16)
+    {
+        double d = pcmToDouble(value, PCM16);
+        return static_cast<char>(doubleToPcm(d, PCM8));
+    }
 }
 
 short Sample::toPcm16(ByteOrder byteOrder) const
 {
-    if (byteOrder == LittleEndian)
+    if (pcmSize == PCM16)
+        if (byteOrder == LittleEndian)
+            return qToLittleEndian(value);
+        else
+            return qToBigEndian(value);
+    else if (pcmSize == PCM8)
     {
-        short pcm;
-        unsigned char* ptr = reinterpret_cast<unsigned char*>(&pcm);
-        qToLittleEndian(static_cast<short>(doubleToPcm(value, 16)), ptr);
-        return pcm;
-    }
-    else
-    {
-        short pcm;
-        unsigned char* ptr = reinterpret_cast<unsigned char*>(&pcm);
-        qToBigEndian(static_cast<short>(doubleToPcm(value, 16)), ptr);
-        return pcm;
+        double d = pcmToDouble(value, PCM8);
+        short pcm16 = static_cast<short>(doubleToPcm(d, PCM16));
+        if (byteOrder == LittleEndian)
+            return qToLittleEndian(pcm16);
+        else
+            return qToBigEndian(pcm16);
     }
 }
 
 unsigned char Sample::toUPcm8() const
 {
-    return static_cast<unsigned char>(doubleToPcm(value, 8) + PCM8MaxAmplitude + 1);
+    if (pcmSize == PCM8)
+        return static_cast<unsigned char>(value) + PCM8MaxAmplitude + 1;
+    else if (pcmSize == PCM16)
+    {
+        double d = pcmToDouble(value, PCM16);
+        return static_cast<unsigned short>(doubleToPcm(d, PCM8)) + PCM8MaxAmplitude + 1;
+    }
 }
 
 unsigned short Sample::toUPcm16(ByteOrder byteOrder) const
-{
-    if (byteOrder == LittleEndian)
+{ 
+    if (pcmSize == PCM16)
     {
-        unsigned short pcm;
-        unsigned char* ptr = reinterpret_cast<unsigned char*>(&pcm);
-        qToLittleEndian(static_cast<unsigned short>(doubleToPcm(value, 16) + PCM16MaxAmplitude + 1), ptr);
-        return pcm;
+        unsigned short uval = static_cast<unsigned short>(value) + PCM16MaxAmplitude + 1;
+        if (byteOrder == LittleEndian)
+            return qToLittleEndian(uval);
+        else
+            return qToBigEndian(uval);
     }
-    else
+    else if (pcmSize == PCM8)
     {
-        unsigned short pcm;
-        unsigned char* ptr = reinterpret_cast<unsigned char*>(&pcm);
-        qToBigEndian(static_cast<unsigned short>(doubleToPcm(value, 16) + PCM16MaxAmplitude + 1), ptr);
-        return pcm;
+        double d = pcmToDouble(value, PCM8);
+        short pcm16 = static_cast<unsigned short>(doubleToPcm(d, PCM16) + PCM16MaxAmplitude + 1);
+        if (byteOrder == LittleEndian)
+            return qToLittleEndian(pcm16);
+        else
+            return qToBigEndian(pcm16);
     }
 }
 
@@ -100,30 +121,45 @@ bool Sample::operator==(const Sample &sample) const
     return (qAbs(this->toDouble() - sample.toDouble()) < eps);
 }
 
-double Sample::pcmToDouble(int pcm, int pcmSize)
+void Sample::setSampleSize(Sample::PCMSize size)
 {
-    if (pcmSize == 8)
+    if (size != pcmSize)
+    {
+        double d = pcmToDouble(value, pcmSize);
+        value = doubleToPcm(d, size);
+        pcmSize = size;
+    }
+}
+Sample::PCMSize Sample::getSampleSize()
+{
+    return pcmSize;
+}
+
+double Sample::pcmToDouble(int pcm, PCMSize size)
+{
+    if (size == PCM8)
         if (pcm == -128)
             return -1.0;
         else
             return static_cast<double>(pcm) / PCM8MaxAmplitude;
-    else if (pcmSize == 16)
+    else if (size == PCM16)
         if (pcm == -32768)
             return -1.0;
         else
             return static_cast<double>(pcm) / PCM16MaxAmplitude;
 }
 
-int Sample::doubleToPcm(double val, int pcmSize)
+int Sample::doubleToPcm(double val, PCMSize size)
 {
-    if (pcmSize == 8)
+    if (size == PCM8)
         if (val == -1.0)
             return -128;
         else
             return static_cast<int>(round(val * PCM8MaxAmplitude));
-    else if (pcmSize == 16)
+    else if (size == PCM16)
         if (val == -1.0)
             return -32768;
         else
             return static_cast<int>(round(val * PCM16MaxAmplitude));
 }
+
