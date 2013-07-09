@@ -17,7 +17,7 @@ private:
 };
 
 template <typename Type>
-SpectrumElement::SpectrumElement<Type>():
+SpectrumElement<Type>::SpectrumElement():
     value(0)
 {}
 

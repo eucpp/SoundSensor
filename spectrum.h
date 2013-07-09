@@ -50,7 +50,7 @@ inline SpectrumElement<Type>& Spectrum<Type>::operator[](int i)
 }
 
 template <typename Type>
-inline const SpectrumElement<Type>& Spectrum<Type>::operatro[](int i) const
+inline const SpectrumElement<Type>& Spectrum<Type>::operator[](int i) const
 {
     return elements[i];
 }
