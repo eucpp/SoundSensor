@@ -14,21 +14,22 @@ private slots:
     {
         header = new QAudioFormat();
         header->setCodec("audio/pcm");
-        header->setSampleRate(8000);
-        header->setSampleSize(8);
+        header->setSampleRate(16000);
+        header->setSampleSize(16);
         header->setChannels(1);
-        header->setSampleType(QAudioFormat::UnSignedInt);
+        header->setSampleType(QAudioFormat::SignedInt);
         file = new WavFile("wavFileTest.wav");
         file->open(WavFile::WriteOnly, *header);
         signal = new Signal(4);
-        (*signal)[0] = 1.0;
-        (*signal)[1] = 0.5;
-        (*signal)[2] = -0.85;
-        (*signal)[3] = -0.1;
+        (*signal)[0] = (short) 32767;
+        (*signal)[1] = (short)16384;
+        (*signal)[2] = (short)-256;
+        (*signal)[3] = (short)-32768;
         signal->setFormat(*header);
     }
     void cleanup()
     {
+        file->close();
         delete file;
         delete header;
     }
@@ -41,18 +42,25 @@ private slots:
         QAudioFormat readFormat = file->getHeader();
         QCOMPARE(readFormat, *header);
     }
-    // тестируем запись/чтение сигнала в файл
+    // тестируем кол-во записанных байт
     void readWriteSignalTest1()
     {
         int samplesWritten = file->write(*signal);
         QCOMPARE(samplesWritten, 4);
+    }
+
+    // тестируем запись/чтение сигнала в файл
+    void readWriteSignalTest2()
+    {
+        file->write(*signal);
         file->close();
         file->open(WavFile::ReadOnly);
         Signal readSignal = file->readAll();
+
         QCOMPARE(readSignal, *signal);
     }
     // тестируем запись чтение части сигнала
-    void readWriteSignalTest2()
+    void readWriteSignalTest3()
     {
         file->write(*signal, 3);
         file->close();
@@ -73,7 +81,7 @@ private slots:
         file->seek(1);
         QCOMPARE(file->pos(), 1);
         Signal signal(file->read(1));
-        QCOMPARE(signal[0], Sample(0.5));
+        QCOMPARE(signal[0], Sample((short)16384));
     }
     // проверяем запись "с наложением" данных.
     void writeTest()

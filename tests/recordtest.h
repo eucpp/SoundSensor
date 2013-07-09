@@ -11,7 +11,7 @@ class RecordTest : public QObject
 {
     Q_OBJECT
 public:
-    RecordTest();
+    RecordTest(const QAudioDeviceInfo& device);
     void record(int ms);
 private slots:
     void frameHandler(Signal frame);

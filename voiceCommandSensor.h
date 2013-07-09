@@ -39,7 +39,6 @@ public:
           * Точность распознавания (в диапозоне от 0 до 1)
           */
         double accuracy;
-        char* uttid;
     };
 
     /**
@@ -57,7 +56,7 @@ public slots:
       * Метод пытается распознать голосовую команду в переданном сигнале.
       * После окончания работы генерирует сигнал commandRecognized.
       */
-    Command recognizeCommand(Signal signal);
+    Command recognize(Signal signal);
 signals:
     /**
       * Сигнал, генерируемый после распознавания команды.

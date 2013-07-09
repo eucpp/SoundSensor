@@ -7,7 +7,8 @@ VoiceCommandSensor::VoiceCommandSensor(QString pathToHmm, QString pathToLm, QStr
                          "-hmm", pathToHmm.toAscii().data(),
                          "-lm", pathToLm.toAscii().data(),
                          "-dict", pathToDict.toAscii().data(),
-                         "-dither", "1",
+
+                         //"-dither", "1",
                          NULL);
     if (config == NULL)
         throw PocketSphinxInitExc();
@@ -21,7 +22,7 @@ VoiceCommandSensor::~VoiceCommandSensor()
     ps_free(recognizer);
 }
 
-VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
+VoiceCommandSensor::Command VoiceCommandSensor::recognize(Signal signal)
 {
     const char* uttid;
     int uttReturn = ps_start_utt(recognizer, NULL);
@@ -31,7 +32,7 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
     short* samples = signal.toPcm16Array();
     int decodeReturn = ps_process_raw(recognizer, samples,
                                   signal.size(), false, false);
-    delete[] samples;
+    //delete[] samples;
 
     if (decodeReturn < 0)
         throw PocketSphinxRecognizeExc();
@@ -52,7 +53,6 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognizeCommand(Signal signal)
     {
         cmd.command = hyp;
         cmd.accuracy = static_cast<double>(MAX_INT16 + ps_get_prob(recognizer, &uttid)) / MAX_INT16;
-        cmd.uttid = const_cast<char*>(uttid);
     }
 
     //delete uttid;

@@ -1,7 +1,8 @@
 #include "sample.h"
 
 Sample::Sample():
-    value(0)
+    value(0),
+    pcmSize(PCM16)
 {}
 
 Sample::Sample(double d):
@@ -117,8 +118,7 @@ unsigned short Sample::toUPcm16(ByteOrder byteOrder) const
 
 bool Sample::operator==(const Sample &sample) const
 {
-    const double eps = 0.01;
-    return (qAbs(this->toDouble() - sample.toDouble()) < eps);
+    return ((pcmSize == sample.pcmSize) && (value == value));
 }
 
 void Sample::setSampleSize(Sample::PCMSize size)

@@ -1,6 +1,7 @@
 #include "recordtest.h"
 
-RecordTest::RecordTest():
+RecordTest::RecordTest(const QAudioDeviceInfo& device):
+    recorder(device, device.preferredFormat()),
     frameCounter(0)
 {
     //connect(&timer, SIGNAL(timeout()), &recorder, SLOT(stop()));

@@ -81,14 +81,15 @@ private slots:
     }
     void getSampleSizeTest()
     {
-        Sample sample((short)100);
+        Sample sample((char)100);
         QCOMPARE(sample.getSampleSize(), Sample::PCM8);
     }
     void setSampleSizeTest()
     {
-        Sample sample((char) 64);
-        sample.setSampleSize(Sample::PCM16);
-        QCOMPARE(sample.getSampleSize(), Sample::PCM16);
-        QCOMPARE(sample.toPcm16(), (short)16384);
+        Sample sample1((char) 64);
+        sample1.setSampleSize(Sample::PCM16);
+        Sample sample2((short) 16384);
+        QCOMPARE(sample1.getSampleSize(), Sample::PCM16);
+        QVERIFY(qAbs(sample1.toDouble() - sample2.toDouble()) < 0.01);
     }
 };

@@ -4,11 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core testlib #gui
+QT       += core testlib
+QT -= gui
 
 
 TARGET = SoundSensor
 TEMPLATE = app
+CONFIG +=  console
+CONFIG -= app_bundle
 CONFIG += desktop
 
 trik {
@@ -35,16 +38,18 @@ SOURCES += main.cpp\
 #    QRealFourier/code/sources/qcomplexnumber.cpp \
 #    spectrumAnalyzer.cpp \
 #    spectrogram.cpp \
-#    Alglib/fasttransforms.cpp \
-#    Alglib/ap.cpp \
-#    Alglib/alglibmisc.cpp \
-#    correlator.cpp \
-#    Alglib/alglibinternal.cpp \
+    Alglib/fasttransforms.cpp \
+    Alglib/ap.cpp \
+    Alglib/alglibmisc.cpp \
+    Alglib/alglibinternal.cpp \
     signal.cpp \
     wavFile.cpp \
-#    voiceCommandSensor.cpp \
+    voiceCommandSensor.cpp \
     sample.cpp \
-    tests/recordtest.cpp
+    tests/recordtest.cpp \
+    tests/signaldetector.cpp \
+    alglibCorrelator.cpp \
+    simpleCorrelator.cpp
 
 HEADERS  += soundRecorder.h \
     #testwindow.h \
@@ -76,26 +81,30 @@ HEADERS  += soundRecorder.h \
     #QRealFourier/code/fftreal/Array.h \
     #spectrumAnalyzer.h \
     #spectrogram.h \
-    #Alglib/fasttransforms.h \
-    #Alglib/ap.h \
-    #Alglib/alglibinternal.h \
-    #correlator.h \
-    #Alglib/alglibmisc.h \
+    Alglib/fasttransforms.h \
+    Alglib/ap.h \
+    Alglib/alglibinternal.h \
+    Alglib/alglibmisc.h \
     signal.h \
     wavFile.h \
     tests/signalTest.h \
-    #voiceCommandSensor.h \
+    voiceCommandSensor.h \
     tests/wavFileTest.h \
     sample.h \
     tests/sampleTest.h \
     tests/recordtest.h \
-    buildParam.h
+    buildParam.h \
+    tests/correlatorTest.h \
+    tests/signaldetector.h \
+    alglibCorrelator.h \
+    correlator.h \
+    simpleCorrelator.h
 
 #FORMS    += testwindow.ui \
 
 # подключаем pocketsphinx
-#INCLUDEPATH +=  /usr/local/include/sphinxbase \
-#    /usr/local/include/pocketsphinx
+INCLUDEPATH +=  /usr/local/include/sphinxbase \
+    /usr/local/include/pocketsphinx
 
 #  -L/usr/local/lib
 LIBS+= -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm

@@ -139,19 +139,24 @@ bool WavFile::isOpen() const
 
 bool WavFile::seek(int pos)
 {
-    return file.seek(pos + 44);
+    return (file.seek(pos * (header.sampleSize() / 8) + 44));
 }
 
 int WavFile::pos()
 {
-    return file.pos() - 44;
+    if (file.pos() < 44)
+        return 0;
+    if (headerSet())
+        return ((file.pos() - 44) / (header.sampleSize() / 8));
+    else
+        return 0;
 }
 
 int WavFile::size()
 {
     if (openmode == NotOpen)
         return 0;
-    return file.size() - 44;
+    return (file.size() - 44) / (header.sampleSize() / 8);
 }
 
 Signal WavFile::read(int length) throw(ReadDisabledExc)

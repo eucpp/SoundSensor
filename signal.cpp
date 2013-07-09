@@ -10,6 +10,8 @@ Signal::Signal(int n, int sampleRate):
     samples.resize(n);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
+    format.setSampleSize(16);
+    format.setSampleType(QAudioFormat::SignedInt);
 }
 
 Signal::Signal(double* array, int arraySize, int sampleRate):
@@ -18,6 +20,8 @@ Signal::Signal(double* array, int arraySize, int sampleRate):
     init(array);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
+    format.setSampleSize(16);
+    format.setSampleType(QAudioFormat::SignedInt);
 }
 
 Signal::Signal(float* array, int arraySize, int sampleRate):
@@ -26,6 +30,8 @@ Signal::Signal(float* array, int arraySize, int sampleRate):
     init(array);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
+    format.setSampleSize(16);
+    format.setSampleType(QAudioFormat::SignedInt);
 }
 
 Signal::Signal(char* array, int arraySize, int sampleRate):
@@ -198,7 +204,7 @@ const Sample& Signal::operator[](int i) const throw(OutOfSignalRangeExc)
 
 bool Signal::operator==(const Signal &signal) const
 {
-    return (samples == signal.samples);
+    return ((samples == signal.samples) && (format == signal.format));
 }
 
 int Signal::size() const
@@ -209,6 +215,12 @@ int Signal::size() const
 void Signal::resize(int n)
 {
     samples.resize(n);
+}
+
+int Signal::time(int i)
+{
+    double samplesPerMs = static_cast<double>(format.sampleRate()) / 1000;
+    return round(i / samplesPerMs);
 }
 
 Signal Signal::subSignal(int start, int length) const

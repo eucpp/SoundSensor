@@ -1,5 +1,7 @@
 #pragma once
 
+#include "buildParam.h"
+
 #include <cmath>
 #include <QtEndian>
 

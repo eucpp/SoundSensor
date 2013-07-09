@@ -22,6 +22,16 @@ private slots:
         QCOMPARE(signal[2].toPcm16(), (short)8192);
         QCOMPARE(signal[3].toPcm16(), (short)4096);
     }
+    void EqualityOperatorTest()
+    {
+        Signal signal1(2);
+        signal1[0] = (short)16000;
+        signal1[1] = (short)0;
+        Signal signal2(2);
+        signal2[0] = (short)16000;
+        signal2[1] = (short)0;
+        QVERIFY(signal1 == signal2);
+    }
     // тестирование создания объекта-сигнала из QByteArray
     void ConstructFromQByteArrayTest()
     {
@@ -87,6 +97,14 @@ private slots:
         QCOMPARE((char)bytes[6], (char)0xE6);
         QCOMPARE((char)bytes[7], (char)0x67);
     }
+    void timeTest()
+    {
+        Signal signal(44100, 44100);
+        QCOMPARE(signal.time(44099), 1000);
+        QCOMPARE(signal.time(22050), 500);
+        QCOMPARE(signal.time(0), 0);
+    }
+
 private:
     bool compare(double d1, double d2)
     {
