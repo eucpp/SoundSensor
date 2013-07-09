@@ -1,23 +1,27 @@
-#pragma once
+#ifndef CORRELATOR_H
+#define CORRELATOR_H
 
 #include <QObject>
-#include <QByteArray>
 #include "Alglib/ap.h"
-#include "Alglib/alglibinternal.h"
-#include "Alglib/fasttransforms.h"
 #include "signal.h"
 
 /**
-  * Класс служит для выполнения операций корреляции сигналов
+  * Абстрактный класс, предоставляет интерфейс для алгоритмов корреляции.
   */
 class Correlator : public QObject
 {
     Q_OBJECT
 public:
-    Correlator();
+    /**
+      * Исключение, генерируемое, если размер шаблона больше размера сигнала.
+      */
+    class SignalsSizeExc {};
+    virtual ~Correlator()
+    {}
 public slots:
-    Signal calcCorrelation(Signal signal, Signal pattern);
+    virtual alglib::real_1d_array correlation(Signal signal, Signal pattern) const = 0;
 signals:
-    void correlationCalculated(Signal);
+    void correlationCalculated(double*) const;
 };
 
+#endif // CORRELATOR_H
