@@ -63,9 +63,19 @@ public:
       */
     QAudioFormat getFormat() const;
     /**
+      * Устанавливает новый формат записи.
+      * Если в момент вызова метода идёт запись, она будет остановлена.
+      */
+    void setFormat(const QAudioFormat& format);
+    /**
       * Возвращает используемое в данный момент устройство.
       */
     QAudioDeviceInfo getDevice() const;
+    /**
+      * Устанавливает новое устройство в качестве устройства записи.
+      * Если в момент вызова метода идёт запись, она будет остановлена.
+      */
+    void setDevice(const QAudioDeviceInfo& device);
     /**
       * Устанавливает длину фрейма.
       * При записи звука, через промежутки времени, равные длине фрейма, генерируется сигнал
@@ -107,7 +117,7 @@ private slots:
     void recordFrame();
 private:
     QAudioDeviceInfo audioDevice;
-    QAudioInput audioIn;
+    QScopedPointer<QAudioInput> audioIn;
     QByteArray byteArray;
     QBuffer buffer;
     quint64 currentFramePos;
