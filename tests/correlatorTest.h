@@ -8,6 +8,7 @@
 #include "../correlator.h"
 #include "../alglibCorrelator.h"
 #include "../simpleCorrelator.h"
+#include "../fftCorrelator.h"
 
 class CorrelatorTest : public QObject
 {
@@ -15,7 +16,7 @@ class CorrelatorTest : public QObject
 private slots:
     void init()
     {
-        correlator = new AlglibCorrelator();
+        correlator = new FFTCorrelator();
     }
     void cleanup()
     {
@@ -25,31 +26,33 @@ private slots:
     // для данных сигналов максимум должен быть в позиции 1.
     void correlationTest1()
     {
-        Signal signal(8);
-        signal[0] = (short)0;
-        signal[1] = (short)10;
-        signal[2] = (short)20;
-        signal[3] = (short)100;
-        signal[4] = (short)80;
-        signal[5] = (short)-100;
-        signal[6] = (short)-10;
-        signal[7] = (short)0;
-        Signal pattern(4);
-        pattern[0] = (short)0;
-        pattern[1] = (short)10;
-        pattern[2] = (short)10;
-        pattern[3] = (short)10;
+        QScopedArrayPointer<RealNum> signal(new RealNum[8]);
+        signal[0] = 0;
+        signal[1] = 10;
+        signal[2] = 20;
+        signal[3] = 100;
+        signal[4] = 80;
+        signal[5] = -100;
+        signal[6] = -10;
+        signal[7] = 0;
+        QScopedArrayPointer<RealNum> pattern(new RealNum[4]);
+        pattern[0] = 0;
+        pattern[1] = 10;
+        pattern[2] = 10;
+        pattern[3] = 10;
 
-        alglib::real_1d_array correlation = correlator->correlation(signal, pattern);
+        QScopedArrayPointer<RealNum> corr(new RealNum[8 + 4 - 1]);
+        correlator->correlation(signal.data(), 8, pattern.data(), 4, corr.data());
 
         int max = 0;
-        for (int i = 1; i < signal.size(); i++)
-            if (correlation[max] < correlation[i])
+        for (int i = 1; i < 8 + 4 - 1; i++)
+            if (corr[max] < corr[i])
                 max = i;
-        //delete[] correlation;
 
         QCOMPARE(max, 1);
     }
+
+    /*
     // проверяем, бросается ли исключение, если размер шаблона больше размера сигнала
     void correlationTest2()
     {
@@ -63,9 +66,10 @@ private slots:
         catch (Correlator::SignalsSizeExc)
         {}
     }
+    */
 
     // тест корреляции, использует тестовые wav файлы
-    void correlationTest3()
+    void correlationTest2()
     {
         try
         {
@@ -76,11 +80,14 @@ private slots:
             patternFile.open(WavFile::ReadOnly);
             Signal pattern = patternFile.readAll();
 
-            alglib::real_1d_array correlation = correlator->correlation(signal, pattern);
+            QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
+            QScopedArrayPointer<RealNum> s(signal.toFloatArray());
+            QScopedArrayPointer<RealNum> p(pattern.toFloatArray());
+            correlator->correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
 
             int max = 0;
-            for (int i = 1; i < signal.size(); i++)
-                if (correlation[max] < correlation[i])
+            for (int i = 1; i < signal.size() + pattern.size() - 1; i++)
+                if (corr[max] < corr[i])
                     max = i;
 
             // погрешность максимума корреляции = 100 сэмплов

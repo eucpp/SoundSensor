@@ -58,6 +58,21 @@ private slots:
         QVERIFY(compare(signal[2].toDouble(), -0.5));
         QVERIFY(compare(signal[3].toDouble(), -0.75));
     }
+    void toFloatTest()
+    {
+        Signal signal(4);
+        signal[0] = (short)32767;
+        signal[1] = (short)16384;
+        signal[2] = (short)8192;
+        signal[3] = (short)4096;
+
+        float* values = signal.toFloatArray();
+        QVERIFY(compare(values[0], (float)1.0));
+        QVERIFY(compare(values[1], (float)0.5));
+        QVERIFY(compare(values[2], (float)0.25));
+        QVERIFY(compare(values[3], (float)0.125));
+    }
+
     void toByteArrayTest1()
     {
         Signal signal(4);

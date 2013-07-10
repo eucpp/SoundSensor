@@ -1,10 +1,11 @@
 #ifndef FOURIERTRANSFORM_H
 #define FOURIERTRANSFORM_H
 
+#include "define.h"
 #include "spectrum.h"
 #include "signal.h"
 
-typedef float RealNum;
+
 
 /**
   * Абстрактный класс, предоставляет интерфейс для алгоритмов преобразования Фурье.

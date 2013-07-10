@@ -11,12 +11,12 @@
 /**
   * Реализация корреляции, использующая библиотеку alglib.
   */
-class AlglibCorrelator : public Correlator
+class AlglibCorrelator : public QObject /* : public Correlator */
 {
     Q_OBJECT
 public slots:
     alglib::real_1d_array correlation(Signal signal, Signal pattern) const;
-signals:
-    void correlationCalculated(double*) const;
+//signals:
+    //void correlationCalculated(double*) const;
 };
 

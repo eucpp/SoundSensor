@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "Alglib/ap.h"
+#include "define.h"
 #include "signal.h"
 
 /**
@@ -15,13 +16,13 @@ public:
     /**
       * Исключение, генерируемое, если размер шаблона больше размера сигнала.
       */
-    class SignalsSizeExc {};
+    //class SignalsSizeExc {};
     virtual ~Correlator()
     {}
 public slots:
-    virtual alglib::real_1d_array correlation(Signal signal, Signal pattern) const = 0;
-signals:
-    void correlationCalculated(double*) const;
+    virtual void correlation(RealNum* signal, int n, RealNum* pattern, int m, RealNum* out) = 0;
+//signals:
+    //void correlationCalculated(RealNum*) const;
 };
 
 #endif // CORRELATOR_H

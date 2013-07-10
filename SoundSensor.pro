@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     tests/recordtest.cpp \
     tests/signaldetector.cpp \
     alglibCorrelator.cpp \
-    simpleCorrelator.cpp
+    simpleCorrelator.cpp \
+    fftCorrelator.cpp
 
 HEADERS  += soundRecorder.h \
     #testwindow.h \
@@ -87,7 +88,10 @@ HEADERS  += soundRecorder.h \
     spectrumElement.h \
     fourierTransform.h \
     fftrealWrap.h \
-    tests/fourierTransformTest.h
+    tests/fourierTransformTest.h \
+    fftCorrelator.h \
+    define.h \
+    tests/correlatorsTimeTest.h
 
 #FORMS    += testwindow.ui \
 

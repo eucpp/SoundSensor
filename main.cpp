@@ -20,6 +20,8 @@
 #include "tests/recordtest.h"
 #include "tests/signaldetector.h"
 #include "tests/correlatorTest.h"
+#include "tests/correlatorsTimeTest.h"
+#include "tests/fourierTransformTest.h"
 #include "alglibCorrelator.h"
 #include "simpleCorrelator.h"
 
@@ -30,12 +32,21 @@ void tests()
 {
     SampleTest sampleTest;
     QTest::qExec(&sampleTest);
+
     SignalTest signalTest;
     QTest::qExec(&signalTest);
+
     WavFileTest wavFileTest;
     QTest::qExec(&wavFileTest);
+
+    FourierTransformTest ftTest;
+    QTest::qExec(&ftTest);
+
     CorrelatorTest correlatorTest;
     QTest::qExec(&correlatorTest);
+
+    CorrelatorsTimeTest corrTTest;
+    QTest::qExec(&corrTTest);
 }
 
 int detectSignal(const QCoreApplication& app, char* argv[])
@@ -62,14 +73,17 @@ void corr(char* argv[])
     }
 
 
-    alglib::real_1d_array correlation = AlglibCorrelator().correlation(signal, pattern);
+    QScopedArrayPointer<RealNum> s(signal.toFloatArray());
+    QScopedArrayPointer<RealNum> p(pattern.toFloatArray());
+    QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
+    FFTCorrelator().correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
     int max = 0;
-    for (int i = 1; i < signal.size(); i++)
-        if (correlation[max] < correlation[i])
+    for (int i = 1; i < signal.size() + pattern.size() - 1; i++)
+        if (corr[max] < corr[i])
             max = i;
 
     cout << "Correlation maximum at pos: " << max << "; Time pos in signal: " << signal.time(max)
-         << "; Value: " << correlation[max] << endl;
+         << "; Value: " << corr[max] << endl;
 
     //delete[] correlation;
     exit(EXIT_SUCCESS);

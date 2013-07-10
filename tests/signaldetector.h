@@ -24,7 +24,7 @@ private:
     Signal pattern;
     SoundRecorder recorder;
     QTimer timer;
-    Correlator* correlator;
+    AlglibCorrelator* correlator;
 
     static const double coeff = 12.0;
 };

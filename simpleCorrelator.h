@@ -10,7 +10,7 @@ class SimpleCorrelator : public Correlator
 {
     Q_OBJECT
 public:
-    alglib::real_1d_array correlation(Signal signal, Signal pattern) const;
+    void correlation(RealNum* signal, int n, RealNum* pattern, int m, RealNum* out) const;
 signals:
     void correlationCalculated(double*) const;
 };
