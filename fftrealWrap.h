@@ -12,13 +12,13 @@ public:
     FFTRealWrap(int length):
         fft(length)
     {}
-    void inline fourierTransform(RealNum* in, RealNum* out);
-    void inline inverseFourierTransform(RealNum* in, RealNum* out);
+    inline void fourierTransform(RealNum* in, RealNum* out);
+    inline void inverseFourierTransform(RealNum* in, RealNum* out);
 private:
     ffft::FFTReal<RealNum> fft;
 };
 
-void inline FFTRealWrap::fourierTransform(RealNum *in, RealNum *out)
+inline void FFTRealWrap::fourierTransform(RealNum *in, RealNum *out)
 {
     //clock_t time1 = clock();
     fft.do_fft(out, in);
@@ -26,7 +26,7 @@ void inline FFTRealWrap::fourierTransform(RealNum *in, RealNum *out)
     //std::cout << "Algorytm time: " << (time2 - time1) / (CLOCKS_PER_SEC / 1000) << std::endl;
 }
 
-void inline FFTRealWrap::inverseFourierTransform(RealNum *in, RealNum *out)
+inline void FFTRealWrap::inverseFourierTransform(RealNum *in, RealNum *out)
 {
     fft.do_ifft(in, out);
 }

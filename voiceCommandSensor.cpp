@@ -5,7 +5,7 @@ VoiceCommandSensor::VoiceCommandSensor(QString pathToHmm, QString pathToLm, QStr
 {
     config = cmd_ln_init(NULL, ps_args(), TRUE,
                          "-hmm", pathToHmm.toAscii().data(),
-                         "-lm", pathToLm.toAscii().data(),
+                         "-jsgf", pathToLm.toAscii().data(),
                          "-dict", pathToDict.toAscii().data(),
 
                          //"-dither", "1",
@@ -29,10 +29,9 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognize(Signal signal)
     if (uttReturn < 0)
         throw PocketSphinxInitExc();
 
-    short* samples = signal.toPcm16Array();
-    int decodeReturn = ps_process_raw(recognizer, samples,
+    QScopedArrayPointer<short> samples(signal.toPcm16Array());
+    int decodeReturn = ps_process_raw(recognizer, samples.data(),
                                   signal.size(), false, false);
-    //delete[] samples;
 
     if (decodeReturn < 0)
         throw PocketSphinxRecognizeExc();
@@ -54,9 +53,6 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognize(Signal signal)
         cmd.command = hyp;
         cmd.accuracy = static_cast<double>(MAX_INT16 + ps_get_prob(recognizer, &uttid)) / MAX_INT16;
     }
-
-    //delete uttid;
-    //delete hyp;
 
     emit commandRecognized(cmd);
     return cmd;

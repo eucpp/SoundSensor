@@ -10,8 +10,8 @@ public:
     SpectrumElement(const std::complex<Type>& z);
 
     void inline set(const std::complex<Type>& z);
-    Type inline amplitude() const;
-    Type inline phase() const;
+    inline Type amplitude() const;
+    inline Type phase() const;
 private:
     std::complex<Type> value;
 };
@@ -33,13 +33,13 @@ void inline SpectrumElement<Type>::set(const std::complex<Type>& z)
 }
 
 template <typename Type>
-Type inline SpectrumElement<Type>::amplitude() const
+inline Type SpectrumElement<Type>::amplitude() const
 {
     return std::abs(value);
 }
 
 template <typename Type>
-Type inline SpectrumElement<Type>::phase() const
+inline Type SpectrumElement<Type>::phase() const
 {
     return std::arg(value);
 }

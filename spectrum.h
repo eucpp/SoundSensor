@@ -16,7 +16,7 @@ public:
     void set(std::complex<Type> array[], int size);
     inline SpectrumElement<Type>&  operator[](int i);
     inline const SpectrumElement<Type>&  operator[](int i) const;
-    int inline size() const;
+    inline int size() const;
 private:
     typedef SpectrumElement<Type> Element;
     QVector<Element> elements;
@@ -56,7 +56,7 @@ inline const SpectrumElement<Type>& Spectrum<Type>::operator[](int i) const
 }
 
 template <typename Type>
-int inline Spectrum<Type>::size() const
+inline int Spectrum<Type>::size() const
 {
     return elements.size();
 }

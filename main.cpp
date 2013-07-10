@@ -93,11 +93,20 @@ void voiceCommand(char* argv[])
 {
     try
     {
-        VoiceCommandSensor cmdSensor("../voxforge-ru-0.2/model_parameters/msu_ru_nsh.cd_cont_1000_8gau_16000",
-                                     "../voxforge-ru-0.2/etc/msu_ru_nsh.lm.dmp", "../voxforge-ru-0.2/etc/msu_ru_nsh.dic");
-        WavFile file(argv[1]);
+        VoiceCommandSensor cmdSensor("sphinx_data/msu_ru_nsh.cd_cont_1000_8gau_16000_adapt/",
+                                     "sphinx_data/robot.gram", "sphinx_data/adapt.dic");
+
+        WavFile file(argv[2]);
+        file.open(WavFile::ReadOnly);
         Signal signal = file.readAll();
+
+        std::cout << "/--------------------------------------------------------------------------------------/" << std::endl;
+        std::cout << "START RECOGNITION" << std::endl;
+
+        clock_t time1 = clock();
         VoiceCommandSensor::Command cmd = cmdSensor.recognize(signal);
+        clock_t time2 = clock();
+        std::cout << "Recognition time: " << (time2 - time1) / (CLOCKS_PER_SEC / 1000) << std::endl;
 
         cout << "Command: " << cmd.command.toStdString() << "; Accuracy: " << cmd.accuracy << endl;
         exit(EXIT_SUCCESS);
