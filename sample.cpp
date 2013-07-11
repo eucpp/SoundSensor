@@ -55,6 +55,11 @@ float Sample::toFloat() const
     return static_cast<float>(pcmToDouble(value, pcmSize));
 }
 
+fixed_point Sample::toFixedPoint() const
+{
+    return fixed_point(toDouble());
+}
+
 char Sample::toPcm8() const
 {
     if (pcmSize == PCM8)

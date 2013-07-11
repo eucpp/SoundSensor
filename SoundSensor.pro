@@ -42,7 +42,9 @@ SOURCES += main.cpp\
     tests/signaldetector.cpp \
     alglibCorrelator.cpp \
     simpleCorrelator.cpp \
-    fftCorrelator.cpp
+    fftCorrelator.cpp \
+    fixed_point/fixed_func.cpp \
+    tests/fourierTransformTest.cpp
 
 HEADERS  += soundRecorder.h \
     #testwindow.h \
@@ -91,7 +93,11 @@ HEADERS  += soundRecorder.h \
     tests/fourierTransformTest.h \
     fftCorrelator.h \
     define.h \
-    tests/correlatorsTimeTest.h
+    tests/correlatorsTimeTest.h \
+    fixed_point/stdint.h \
+    fixed_point/fixsintab.h \
+    fixed_point/fixed_func.h \
+    fixed_point/fixed_class.h
 
 #FORMS    += testwindow.ui \
 

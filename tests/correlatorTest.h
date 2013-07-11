@@ -81,17 +81,19 @@ private slots:
             Signal pattern = patternFile.readAll();
 
             QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
-            QScopedArrayPointer<RealNum> s(signal.toFloatArray());
-            QScopedArrayPointer<RealNum> p(pattern.toFloatArray());
+            QScopedArrayPointer<RealNum> s(signal.toFixedPointArray());
+            QScopedArrayPointer<RealNum> p(pattern.toFixedPointArray());
             correlator->correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
+
 
             int max = 0;
             for (int i = 1; i < signal.size() + pattern.size() - 1; i++)
                 if (corr[max] < corr[i])
                     max = i;
 
-            // погрешность максимума корреляции = 100 сэмплов
-            QVERIFY(qAbs(max - 14633) < 100);
+            std::cout << "MAX: " << max << std::endl;
+            // погрешность максимума корреляции = 10 миллисекунд
+            QVERIFY(qAbs(max - 14633) < 10 * signal.getFormat().sampleRate() / 1000);
         }
         catch (WavFile::OpenFileExc)
         {

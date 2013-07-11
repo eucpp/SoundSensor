@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "fixed_point/fixed_func.h"
 #include "soundRecorder.h"
 #include "voiceCommandSensor.h"
 #include "tests/sampleTest.h"
@@ -73,8 +74,8 @@ void corr(char* argv[])
     }
 
 
-    QScopedArrayPointer<RealNum> s(signal.toFloatArray());
-    QScopedArrayPointer<RealNum> p(pattern.toFloatArray());
+    QScopedArrayPointer<RealNum> s(signal.toFixedPointArray());
+    QScopedArrayPointer<RealNum> p(pattern.toFixedPointArray());
     QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
     FFTCorrelator().correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
     int max = 0;
@@ -83,7 +84,7 @@ void corr(char* argv[])
             max = i;
 
     cout << "Correlation maximum at pos: " << max << "; Time pos in signal: " << signal.time(max)
-         << "; Value: " << corr[max] << endl;
+         << "; Value: " << fixedpoint::fix2float<16>(corr[max].intValue) << endl;
 
     //delete[] correlation;
     exit(EXIT_SUCCESS);

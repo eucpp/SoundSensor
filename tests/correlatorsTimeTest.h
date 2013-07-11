@@ -25,8 +25,8 @@ private slots:
             Signal pattern = patternFile.readAll();
 
             QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
-            QScopedArrayPointer<RealNum> s(signal.toFloatArray());
-            QScopedArrayPointer<RealNum> p(signal.toFloatArray());
+            QScopedArrayPointer<RealNum> s(signal.toFixedPointArray());
+            QScopedArrayPointer<RealNum> p(signal.toFixedPointArray());
 
             clock_t time1 = clock();
             FFTCorrelator().correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());

@@ -130,6 +130,14 @@ float* Signal::toFloatArray() const
     return array;
 }
 
+fixed_point *Signal::toFixedPointArray() const
+{
+    fixed_point* array = new fixed_point[size()];
+    for (int i = 0; i < size(); i++)
+        array[i] = samples[i].toFixedPoint();
+    return array;
+}
+
 char* Signal::toPcm8Array() const
 {
     char* array = new char[size()];

@@ -21,7 +21,7 @@ private slots:
 
         QScopedArrayPointer<RealNum> signal(new RealNum[size]);
         for (int i = 0; i < size; i++)
-            signal[i] = static_cast<RealNum>(3 * cos(2 * Pi * i / 16));
+            signal[i] = RealNum(3 * cos(2 * Pi * i / 16));
         QScopedArrayPointer<RealNum> spectrum(new RealNum[size]);
         ft->fourierTransform(signal.data(), spectrum.data());
 
@@ -52,8 +52,9 @@ private slots:
     }
 
 private:
-    static const RealNum Pi = 3.141592653589;
-    static const RealNum eps = 0.01;
+    static const RealNum Pi;
+    static const RealNum eps;
 };
+
 
 #endif // FOURIERTRANSFORMTEST_H
