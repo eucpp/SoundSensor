@@ -13,10 +13,12 @@
 class FourierTransform
 {
 public:
+    class SizeExc {};
+
     virtual ~FourierTransform()
     {}
-    virtual void fourierTransform(RealNum* in, RealNum* out) = 0;
-    virtual void inverseFourierTransform(RealNum* in, RealNum* out) = 0;
+    virtual void fourierTransform(Signal signal, RealNum* spectrum) = 0;
+    virtual Signal inverseFourierTransform(RealNum* spectrum) = 0;
 };
 
 #endif // FOURIERTRANSFORM_H

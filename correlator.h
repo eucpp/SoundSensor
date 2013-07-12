@@ -20,7 +20,7 @@ public:
     virtual ~Correlator()
     {}
 public slots:
-    virtual void correlation(RealNum* signal, int n, RealNum* pattern, int m, RealNum* out) = 0;
+    virtual void correlation(Signal signal, Signal pattern, RealNum* out) = 0;
 //signals:
     //void correlationCalculated(RealNum*) const;
 };

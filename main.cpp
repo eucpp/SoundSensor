@@ -73,18 +73,15 @@ void corr(char* argv[])
         exit(EXIT_FAILURE);
     }
 
-
-    QScopedArrayPointer<RealNum> s(signal.toFixedPointArray());
-    QScopedArrayPointer<RealNum> p(pattern.toFixedPointArray());
     QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
-    FFTCorrelator().correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
+    FFTCorrelator().correlation(signal, pattern, corr.data());
     int max = 0;
     for (int i = 1; i < signal.size() + pattern.size() - 1; i++)
         if (corr[max] < corr[i])
             max = i;
 
     cout << "Correlation maximum at pos: " << max << "; Time pos in signal: " << signal.time(max)
-         << "; Value: " << fixedpoint::fix2float<16>(corr[max].intValue) << endl;
+         << "; Value: " << corr[max] << endl;
 
     //delete[] correlation;
     exit(EXIT_SUCCESS);

@@ -19,12 +19,17 @@ private slots:
         const int size = 64;
         QScopedPointer<FourierTransform> ft(new FFTRealWrap(size));
 
-        QScopedArrayPointer<RealNum> signal(new RealNum[size]);
+        Signal signal(size);
+        // тут надо переделать, убрать коэфф. 3 перед косинусом
         for (int i = 0; i < size; i++)
-            signal[i] = RealNum(3 * cos(2 * Pi * i / 16));
+            signal[i] = 3 * cos(2 * Pi * i / 16);
         QScopedArrayPointer<RealNum> spectrum(new RealNum[size]);
-        ft->fourierTransform(signal.data(), spectrum.data());
+        ft->fourierTransform(signal, spectrum.data());
 
+        /*
+        for (int i = 0; i < size; i++)
+            std::cout << "Спектр [" << i << "]" << spectrum[i] << std::endl;
+        */
         for (int i = 0; i < size; i++)
             if (i != 4)
                 QVERIFY(qAbs(spectrum[i] - 0) < eps);
@@ -36,18 +41,17 @@ private slots:
         const int size = 8;
         QScopedPointer<FourierTransform> ft(new FFTRealWrap(size));
 
-        QScopedArrayPointer<RealNum> signal(new RealNum[size]);
+        Signal signal(size);
         for (int i = 0; i < size; i++)
             signal[i] = cos(2* Pi * i / size);
         QScopedArrayPointer<RealNum> spectrum(new RealNum[size]);
-        ft->fourierTransform(signal.data(), spectrum.data());
-        QScopedArrayPointer<RealNum> newSignal(new RealNum[size]);
-        ft->inverseFourierTransform(spectrum.data(), newSignal.data());
+        ft->fourierTransform(signal, spectrum.data());
+        Signal newSignal = ft->inverseFourierTransform(spectrum.data());
 
         for (int i = 0; i < size; i++)
         {
-            newSignal[i] = newSignal[i] / size;
-            QVERIFY(qAbs(newSignal[i] - signal[i]) < eps);
+            newSignal[i] = newSignal[i].toFloat() / size;
+            QVERIFY(qAbs(newSignal[i].toFloat() - signal[i].toFloat()) < eps);
         }
     }
 

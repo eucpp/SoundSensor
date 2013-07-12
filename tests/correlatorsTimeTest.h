@@ -25,11 +25,11 @@ private slots:
             Signal pattern = patternFile.readAll();
 
             QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
-            QScopedArrayPointer<RealNum> s(signal.toFixedPointArray());
-            QScopedArrayPointer<RealNum> p(signal.toFixedPointArray());
+            QScopedArrayPointer<RealNum> s(signal.toFloatArray());
+            QScopedArrayPointer<RealNum> p(signal.toFloatArray());
 
             clock_t time1 = clock();
-            FFTCorrelator().correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
+            FFTCorrelator().correlation(signal, pattern, corr.data());
             clock_t time2 = clock();
             std::cout << "Algorythm using FFTReal time: " << (time2 - time1) / (CLOCKS_PER_SEC / 1000) << "ms" << std::endl;
 

@@ -26,23 +26,23 @@ private slots:
     // для данных сигналов максимум должен быть в позиции 1.
     void correlationTest1()
     {
-        QScopedArrayPointer<RealNum> signal(new RealNum[8]);
-        signal[0] = 0;
-        signal[1] = 10;
-        signal[2] = 20;
-        signal[3] = 100;
-        signal[4] = 80;
-        signal[5] = -100;
-        signal[6] = -10;
-        signal[7] = 0;
-        QScopedArrayPointer<RealNum> pattern(new RealNum[4]);
-        pattern[0] = 0;
-        pattern[1] = 10;
-        pattern[2] = 10;
-        pattern[3] = 10;
+        Signal signal(8);
+        signal[0] = (char)0;
+        signal[1] = (char)10;
+        signal[2] = (char)20;
+        signal[3] = (char)100;
+        signal[4] = (char)80;
+        signal[5] = (char)-100;
+        signal[6] = (char)-10;
+        signal[7] = (char)0;
+        Signal pattern(4);
+        pattern[0] = (char)0;
+        pattern[1] = (char)10;
+        pattern[2] = (char)10;
+        pattern[3] = (char)10;
 
         QScopedArrayPointer<RealNum> corr(new RealNum[8 + 4 - 1]);
-        correlator->correlation(signal.data(), 8, pattern.data(), 4, corr.data());
+        correlator->correlation(signal, pattern, corr.data());
 
         int max = 0;
         for (int i = 1; i < 8 + 4 - 1; i++)
@@ -81,9 +81,7 @@ private slots:
             Signal pattern = patternFile.readAll();
 
             QScopedArrayPointer<RealNum> corr(new RealNum[signal.size() + pattern.size() - 1]);
-            QScopedArrayPointer<RealNum> s(signal.toFixedPointArray());
-            QScopedArrayPointer<RealNum> p(pattern.toFixedPointArray());
-            correlator->correlation(s.data(), signal.size(), p.data(), pattern.size(), corr.data());
+            correlator->correlation(signal, pattern, corr.data());
 
 
             int max = 0;
