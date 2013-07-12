@@ -53,10 +53,10 @@ private slots:
 
         Signal signal(bytes, format);
 
-        QVERIFY(compare(signal[0].toDouble(), 1.0));
-        QVERIFY(compare(signal[1].toDouble(), 0));
-        QVERIFY(compare(signal[2].toDouble(), -0.5));
-        QVERIFY(compare(signal[3].toDouble(), -0.75));
+        QVERIFY(compare(signal[0].toFloat(), 1.0));
+        QVERIFY(compare(signal[1].toFloat(), 0));
+        QVERIFY(compare(signal[2].toFloat(), -0.5));
+        QVERIFY(compare(signal[3].toFloat(), -0.75));
     }
     void toFloatTest()
     {
