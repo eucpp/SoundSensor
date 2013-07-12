@@ -46,9 +46,9 @@ public:
     Signal(double* array, int arraySize, int sampleRate = 16000);
     Signal(float* array, int size, int sampleRate = 16000);
     Signal(char* array, int arraySize, int sampleRate = 16000);
-    Signal(short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian, int sampleRate = 16000);
+    Signal(short* array, int arraySize, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian, int sampleRate = 16000);
     Signal(unsigned char* array, int arraySize, int sampleRate = 16000);
-    Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder = Sample::LittleEndian, int sampleRate = 16000);
+    Signal(unsigned short* array, int arraySize, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian, int sampleRate = 16000);
     /**
       * Создание сигнала по массиву байт.
       *
@@ -82,7 +82,7 @@ public:
       *
       * @param byteOrd порядок байт в сэмплах массива.
       */
-    short* toPcm16Array(Sample::ByteOrder byteOrder = Sample::LittleEndian) const;
+    short* toPcm16Array(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
     /**
       * Возвращает массив 8-битных pcm сэмплов (unsigned), кодирующих данный сигнал.
       * Массив размещается в динамической памяти, после использования её необходимо очистить.
@@ -95,7 +95,7 @@ public:
       *
       * @param byteOrd порядок байт в сэмплах массива.
       */
-    unsigned short* toUPcm16Array(Sample::ByteOrder byteOrder = Sample::LittleEndian) const;
+    unsigned short* toUPcm16Array(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
     /**
       * Возвращает массив байт, кодирующих сигнал в соответствии с его форматом.
       */

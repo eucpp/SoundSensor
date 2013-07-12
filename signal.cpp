@@ -44,7 +44,7 @@ Signal::Signal(char* array, int arraySize, int sampleRate):
     format.setSampleType(QAudioFormat::SignedInt);
 }
 
-Signal::Signal(short* array, int arraySize, Sample::ByteOrder byteOrder, int sampleRate):
+Signal::Signal(short* array, int arraySize, QAudioFormat::Endian byteOrder, int sampleRate):
     samples(arraySize)
 {
     for (int i = 0; i < samples.size(); i++)
@@ -53,10 +53,7 @@ Signal::Signal(short* array, int arraySize, Sample::ByteOrder byteOrder, int sam
     format.setSampleRate(sampleRate);
     format.setSampleSize(16);
     format.setSampleType(QAudioFormat::SignedInt);
-    if (byteOrder == Sample::LittleEndian)
-        format.setByteOrder(QAudioFormat::LittleEndian);
-    else
-        format.setByteOrder(QAudioFormat::BigEndian);
+    format.setByteOrder(byteOrder);
 }
 
 Signal::Signal(unsigned char* array, int arraySize, int sampleRate):
@@ -69,7 +66,7 @@ Signal::Signal(unsigned char* array, int arraySize, int sampleRate):
     format.setSampleType(QAudioFormat::UnSignedInt);
 }
 
-Signal::Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder, int sampleRate):
+Signal::Signal(unsigned short* array, int arraySize, QAudioFormat::Endian byteOrder, int sampleRate):
     samples(arraySize)
 {
     for (int i = 0; i < samples.size(); i++)
@@ -78,10 +75,7 @@ Signal::Signal(unsigned short* array, int arraySize, Sample::ByteOrder byteOrder
     format.setSampleRate(sampleRate);
     format.setSampleSize(16);
     format.setSampleType(QAudioFormat::UnSignedInt);
-    if (byteOrder == Sample::LittleEndian)
-        format.setByteOrder(QAudioFormat::LittleEndian);
-    else
-        format.setByteOrder(QAudioFormat::BigEndian);
+    format.setByteOrder(byteOrder);
 }
 
 Signal::Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat):
@@ -93,9 +87,7 @@ Signal::Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat):
         samples.resize(byteArray.size());
     else if (sampleSize == 16)
         samples.resize(byteArray.size() / 2);
-    Sample::ByteOrder byteOrd = Sample::LittleEndian;
-    if (format.byteOrder() == QAudioFormat::BigEndian)
-        byteOrd = Sample::BigEndian;
+    QAudioFormat::Endian byteOrd = format.byteOrder();
     for (int i = 0; i < size(); i++)
     {
         if (sampleSize == 8)
@@ -118,7 +110,7 @@ double* Signal::toDoubleArray() const
 {
     double* array = new double[size()];
     for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toDouble();
+        array[i] = samples[i].toFloat();
     return array;
 }
 
@@ -146,7 +138,7 @@ char* Signal::toPcm8Array() const
     return array;
 }
 
-short* Signal::toPcm16Array(Sample::ByteOrder byteOrder) const
+short* Signal::toPcm16Array(QAudioFormat::Endian byteOrder) const
 {
     short* array = new short[size()];
     for (int i = 0; i < size(); i++)
@@ -162,7 +154,7 @@ unsigned char* Signal::toUPcm8Array() const
     return array;
 }
 
-unsigned short* Signal::toUPcm16Array(Sample::ByteOrder byteOrder) const
+unsigned short* Signal::toUPcm16Array(QAudioFormat::Endian byteOrder) const
 {
     unsigned short* array = new unsigned short[size()];
     for (int i = 0; i < size(); i++)
@@ -178,10 +170,7 @@ QByteArray Signal::toByteArray()
     }
     else if (format.sampleSize() == 16)
     {
-        Sample::ByteOrder byteOrd = Sample::LittleEndian;
-        if (format.byteOrder() == QAudioFormat::BigEndian)
-            byteOrd = Sample::BigEndian;
-        short* bytes = toPcm16Array(byteOrd);
+        short* bytes = toPcm16Array(format.byteOrder());
         return QByteArray(reinterpret_cast<char*>(bytes), size() * 2);
     }
 }

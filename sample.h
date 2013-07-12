@@ -22,23 +22,33 @@
 class Sample
 {
 public:
-    enum PCMSize
+
+    enum Type
     {
+      Unset,
       PCM8,
-      PCM16
+      PCM16,
+      Float
     };
+    /*
     enum ByteOrder
     {
         LittleEndian,
         BigEndian
     };
+    */
 
     /**
-      * Конструктор инициализирует объект нулевым значением.
+      * Конструктор создаёт пустой объект, устанавливает тип сэмпла Unset.
+      * Перед использованием объект должен быть проинициализирован одним из set методов.
       */
     Sample();
     /**
-      * Инициализация значением double (от -1.0 до 1.0).
+      * Инициализация значением float (от -1.0 до 1.0).
+      */
+    Sample(float f);
+    /**
+      * Инициализация значением double (от -1.0 до 1.0), которое приводится к float
       */
     Sample(double d);
     /**
@@ -50,7 +60,7 @@ public:
       *
       * @param byteOrd порядок байт аргумента.
       */
-    Sample(short pcm, ByteOrder byteOrder = LittleEndian);
+    Sample(short pcm, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian);
     /**
       * Инициализация 8-битным беззнаковым pcm значением.
       */
@@ -60,15 +70,27 @@ public:
       *
       * @param byteOrd порядок байт аргумента.
       */
-    Sample(unsigned short pcm, ByteOrder byteOrder = LittleEndian);
+    Sample(unsigned short pcm, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian);
+    /**
+      * Установка значения сэмпла (float от -1.0 до 1.0)
+      */
+    void setFloat(float value);
+    /**
+      * Установка значения сэмпла (8-битный знаковый pcm)
+      */
+    void setPcm8(char pcm);
+    /**
+      * Установка значения сэмпла (8-битный беззнаковый pcm)
+      */
+    void setUPcm8(unsigned char pcm);
     /**
       * Установка значения сэмпла (16-битный знаковый pcm).
       */
-    inline void setPcm16(short pcm, ByteOrder byteOrder = LittleEndian);
+    void setPcm16(short pcm, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian);
     /**
       * Установка значения сэмпла (16-битный беззнаковый pcm).
       */
-    inline void setUPcm16(unsigned short pcm, ByteOrder byteOrder = LittleEndian);
+    void setUPcm16(unsigned short pcm, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian);
     /**
       * Возвращает значение сэмпла в виде double.
       */
@@ -90,7 +112,7 @@ public:
       *
       * @param byteOrd порядок байт возвращаемого значения.
       */
-    short toPcm16(ByteOrder byteOrder = LittleEndian) const;
+    short toPcm16(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
     /**
       * Возвращает значение сэмпла в виде 8-битного беззнакового pcm.
       */
@@ -100,17 +122,18 @@ public:
       *
       * @param byteOrd порядок байт возвращаемого значения.
       */
-    unsigned short toUPcm16(ByteOrder byteOrder = LittleEndian) const;
+    unsigned short toUPcm16(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
     bool operator==(const Sample& sample) const;
+    //Sample& operator=(const Sample& sample);
     /**
       * Устанавливает размер хранимого сэмпла.
       * При несовпадении текущего и нового размера метод конвертирует текущее значение.
       */
-    void setSampleSize(PCMSize size);
+    //void setSampleSize(PCMSize size);
     /**
-      * Возвращает размер сэмпла.
+      * Возвращает тип сэмпла.
       */
-    PCMSize getSampleSize();
+    Type getSampleType() const;
 private:
     /**
       * Конвертация pcm в double.
@@ -118,39 +141,27 @@ private:
       * @param pcm конвертируемое значение.
       * @param size размер значения pcm в битах (8 или 16).
       */
-    static double pcmToDouble(int pcm, PCMSize size);
+    static float pcmToFloat(int pcm, int size);
     /**
       * Конвертация double в pcm.
       *
       * @param pcm конвертируемое значение.
       * @param size размер значения pcm в битах (8 или 16).
       */
-    static int doubleToPcm(double val, PCMSize size);
+    static int floatToPcm(float val, int size);
 
-    short value;
-    PCMSize pcmSize;
+    float floatValue;
+    short pcmValue;
+    Type type;
 
     /**
       * Максимальные значения амплитуд в pcm.
       * Используются при конвертации.
       */
-    static const int PCM8MaxAmplitude = 127;
-    static const int PCM16MaxAmplitude = 32767;
+    static const int PCM8MaxAmplitude;
+    static const int PCM16MaxAmplitude;
+    /**
+      * Погрешность при сравнении float.
+      */
+    static const float eps;
 };
-
-inline void Sample::setPcm16(short pcm, ByteOrder byteOrder)
-{
-    pcmSize = PCM16;
-    if (byteOrder == LittleEndian)
-        value = qFromLittleEndian(pcm);
-    else
-        value = qFromBigEndian(pcm);
-}
-inline void Sample::setUPcm16(unsigned short pcm, ByteOrder byteOrder)
-{
-    pcmSize = PCM16;
-    if (byteOrder == LittleEndian)
-        value = qFromLittleEndian(pcm - PCM16MaxAmplitude - 1);
-    else
-        value = qFromBigEndian(pcm - PCM16MaxAmplitude - 1);
-}
