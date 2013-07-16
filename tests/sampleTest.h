@@ -8,52 +8,104 @@ class SampleTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void getSampleTypeTest()
+    {
+        Sample sample;
+        QCOMPARE(sample.getSampleType(), Sample::Unset);
+    }
+    void constructFromPcm8Test()
+    {
+        char a = 127;
+        Sample sample(a);
+        QCOMPARE(sample.toPcm8(), a);
+        QCOMPARE(sample.getSampleType(), Sample::PCM8);
+    }
+    void constructFromPcm16Test()
+    {
+        short a = 32760;
+        Sample sample(a);
+        QCOMPARE(sample.toPcm16(), (short)32760);
+        QCOMPARE(sample.getSampleType(), Sample::PCM16);
+    }
     void constructFromUPcm8Test()
     {
         unsigned char ch = 220;
         Sample sample(ch);
         QCOMPARE(sample.toPcm8(), (char)92);
+        QCOMPARE(sample.getSampleType(), Sample::PCM8);
     }
     void constructFromUPcm16Test()
     {
         short sh = 16300;
         Sample sample(sh);
         QCOMPARE(sample.toPcm16(), (short)16300);
+        QCOMPARE(sample.getSampleType(), Sample::PCM16);
     }
-
-    void AssignmentOperatorTest()
+    void constructFromFloatTest()
+    {
+        float a = 0.5;
+        Sample sample(a);
+        QCOMPARE(sample.toFloat() , a);
+        QCOMPARE(sample.getSampleType(), Sample::Float);
+    }
+    void AssignmentOperatorTest1()
     {
         Sample s;
         s = char(127);
-        QCOMPARE(s.toFloat(), (float)1.0);
+        QCOMPARE(s.toPcm8(), (char)127);
+        QCOMPARE(s.getSampleType(), Sample::PCM8);
     }
-    void ComparisonOperatorTest()
+    void AssignmentOperatorTest2()
     {
-        Sample s;
-        s = (float)0.2;
-        QVERIFY(s.toPcm16() == 6553);
+        Sample s((short) 0);
+        s = 0.1;
+        QCOMPARE(s.toPcm16(), (short)0);
+        QCOMPARE(s.getSampleType(), Sample::PCM16);
     }
-    void toDoubleTest()
+    void ComparisonOperatorTest1()
     {
-        Sample s((float)0.25);
+        Sample s1((short) 1000);
+        Sample s2((short)1000);
+        QCOMPARE(s1, s2);
+    } 
+    void ComparisonOperatorTest2()
+    {
+        Sample s1 = 0.01;
+        Sample s2 = 0.010005;
+        QCOMPARE(s1, s2);
+    }
+    void pcm8ToFloatTest()
+    {
+        Sample s((char)32);
         QVERIFY(qAbs(s.toFloat() - 0.25) < 0.01);
     }
-    void toFloatTest()
+    void pcm16ToFloatTest()
     {
-        Sample s((float)0.25);
-        QVERIFY(qAbs(s.toFloat() - (float)0.25) < 0.01);
+        Sample s((short)16384);
+        QVERIFY(qAbs(s.toFloat() - 0.5) < 0.01);
     }
-    void toPcm8Test()
+    void pcm8ToPcm16Test()
+    {
+        Sample s((short)-16384);
+        QCOMPARE(s.toPcm8(), (char)-64);
+    }
+    void pcm8ToUPcm8Test()
+    {
+        Sample s((char)-120);
+        QCOMPARE(s.toUPcm8(), (unsigned char)8);
+    }
+
+    void floatToPcm8Test()
     {
         Sample s((float)-0.5);
         QCOMPARE(s.toPcm8(), (char)-64);
     }
-    void toPcm16LittleEndTest()
+    void floatToPcm16LittleEndTest()
     {
         Sample s((float)-0.5);
         QCOMPARE(s.toPcm16(), (short)-16384);
     }
-    void toPcm16BigEndTest()
+    void floatToPcm16BigEndTest()
     {
         Sample s((float)-0.5);
         short pcm = s.toPcm16(QAudioFormat::BigEndian);
@@ -61,17 +113,17 @@ private slots:
         QCOMPARE(bytes[0], (char)0xC0);
         QCOMPARE(bytes[1], (char)0x00);
     }
-    void toUPcm8Test()
+    void floatToUPcm8Test()
     {
         Sample s((float)-0.5);
         QCOMPARE(s.toUPcm8(), (unsigned char)64);
     }
-    void toUPcm16LittleEndTest()
+    void floatToUPcm16LittleEndTest()
     {
         Sample s((float)-0.5);
         QCOMPARE(s.toUPcm16(), (unsigned short)16384);
     }
-    void toUPcm16BigEndTest()
+    void floatToUPcm16BigEndTest()
     {
         Sample s((float)-0.5);
         short pcm = s.toUPcm16(QAudioFormat::BigEndian);
@@ -79,11 +131,7 @@ private slots:
         QCOMPARE(bytes[0], (char)0x40);
         QCOMPARE(bytes[1], (char)0x00);
     }
-    void getSampleTypeTest()
-    {
-        Sample sample((char)100);
-        QCOMPARE(sample.getSampleType(), Sample::PCM8);
-    }
+
     /*
     void setSampleSizeTest()
     {

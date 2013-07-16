@@ -1,47 +1,75 @@
 #ifndef SPECTRUMELEMENT_H
 #define SPECTRUMELEMENT_H
 
-#include <complex>
+#include "define.h"
+#include <cmath>
 
-template <typename Type> class SpectrumElement
+class SpectrumElement
 {
 public:
-    SpectrumElement();
-    SpectrumElement(const std::complex<Type>& z);
+    class ComplexNullPhaseUndefExc {};
 
-    void inline set(const std::complex<Type>& z);
-    inline Type amplitude() const;
-    inline Type phase() const;
+    inline SpectrumElement();
+    inline SpectrumElement(RealNum rePart, RealNum imPart);
+
+    inline void set(RealNum rePart, RealNum imPart);
+    inline void setRe(RealNum val);
+    inline RealNum getRe();
+    inline void setIm(RealNum val);
+    inline RealNum getIm();
+    inline float amplitude() const;
+    inline float phase() const;
 private:
-    std::complex<Type> value;
+    RealNum re;
+    RealNum im;
 };
 
-template <typename Type>
-SpectrumElement<Type>::SpectrumElement():
-    value(0)
+inline SpectrumElement::SpectrumElement():
+    re(0),
+    im(0)
 {}
 
-template <typename Type>
-SpectrumElement<Type>::SpectrumElement(const std::complex<Type>& z):
-    value(z)
+inline SpectrumElement::SpectrumElement(RealNum rePart, RealNum imPart):
+    re(rePart),
+    im(imPart)
 {}
 
-template <typename Type>
-void inline SpectrumElement<Type>::set(const std::complex<Type>& z)
+void inline SpectrumElement::set(RealNum rePart, RealNum imPart)
 {
-    value = z;
+    re = rePart;
+    im = imPart;
 }
 
-template <typename Type>
-inline Type SpectrumElement<Type>::amplitude() const
+void inline SpectrumElement::setRe(RealNum val)
 {
-    return std::abs(value);
+    re = val;
 }
 
-template <typename Type>
-inline Type SpectrumElement<Type>::phase() const
+RealNum SpectrumElement::getRe()
 {
-    return std::arg(value);
+    return re;
+}
+
+void inline SpectrumElement::setIm(RealNum val)
+{
+    im = val;
+}
+
+RealNum SpectrumElement::getIm()
+{
+    return im;
+}
+
+inline float SpectrumElement::amplitude() const
+{
+    return sqrt(realNumToFloat(re*re + im*im));
+}
+
+inline float SpectrumElement::phase() const
+{
+    if ((re == (RealNum)0) && (im == (RealNum)0))
+        throw ComplexNullPhaseUndefExc();
+    return atan2(realNumToFloat(im), realNumToFloat(re));
 }
 
 #endif // SPECTRUMELEMENT_H

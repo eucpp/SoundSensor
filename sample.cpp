@@ -6,31 +6,33 @@ const float Sample::eps = 0.001;
 
 Sample::Sample():
     type(Unset),
-    pcmValue(0),
-    floatValue(0)
+    pcmValue(0)
 {}
 
 Sample::Sample(float f):
     type(Float),
-    pcmValue(0),
     floatValue(f)
 {}
 
 Sample::Sample(double d):
     type(Float),
-    pcmValue(0),
     floatValue(static_cast<float>(d))
 {}
 
 Sample::Sample(char pcm):
     type(PCM8),
-    pcmValue(pcm),
-    floatValue(0)
+    pcmValue(pcm)
 {}
 
-Sample::Sample(short pcm, QAudioFormat::Endian byteOrder):
-    type(PCM16),
+Sample::Sample(unsigned char pcm):
+    type(PCM8),
     floatValue(0)
+{
+    pcmValue = pcm - PCM8MaxAmplitude - 1;
+}
+
+Sample::Sample(short pcm, QAudioFormat::Endian byteOrder):
+    type(PCM16)
 {
     short newPcm = pcm;
     if (byteOrder == QAudioFormat::LittleEndian)
@@ -38,6 +40,18 @@ Sample::Sample(short pcm, QAudioFormat::Endian byteOrder):
     else
         newPcm = qFromBigEndian(pcm);
     pcmValue = newPcm;
+}
+
+Sample::Sample(unsigned short pcm, QAudioFormat::Endian byteOrder):
+    type(PCM8),
+    floatValue(0)
+{
+    short newPcm = pcm;
+    if (byteOrder == QAudioFormat::LittleEndian)
+        newPcm =  qFromLittleEndian(pcm);
+    else
+        newPcm = qFromBigEndian(pcm);
+    pcmValue = newPcm - PCM16MaxAmplitude - 1;
 }
 
 void Sample::setFloat(float value)
@@ -128,24 +142,6 @@ void Sample::setUPcm16(unsigned short pcm, QAudioFormat::Endian byteOrder)
 }
 
 
-Sample::Sample(unsigned char pcm):
-    type(PCM8),
-    floatValue(0)
-{
-    pcmValue = pcm - PCM8MaxAmplitude - 1;
-}
-
-Sample::Sample(unsigned short pcm, QAudioFormat::Endian byteOrder):
-    type(PCM8),
-    floatValue(0)
-{
-    short newPcm = pcm;
-    if (byteOrder == QAudioFormat::LittleEndian)
-        newPcm =  qFromLittleEndian(pcm);
-    else
-        newPcm = qFromBigEndian(pcm);
-    pcmValue = newPcm - PCM16MaxAmplitude - 1;
-}
 
 /*
 double Sample::toDouble() const
@@ -239,17 +235,17 @@ bool Sample::operator==(const Sample &sample) const
         return (pcmValue == sample.pcmValue);
 }
 
-/*
 Sample& Sample::operator=(const Sample &sample)
 {
-    if (type == sample.type)
+    if ((type == Unset) || (type == sample.type))
     {
+        type = sample.type;
         pcmValue = sample.pcmValue;
         floatValue = sample.floatValue;
     }
     return *this;
 }
-*/
+
 
 /*
 void Sample::setSampleSize(Sample::PCMSize size)

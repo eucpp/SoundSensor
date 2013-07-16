@@ -7,56 +7,39 @@
 /**
   * Класс-контейнер для спектра.
   */
-template <typename Type> class Spectrum
+class Spectrum
 {
 public:
-    Spectrum(int size);
-    Spectrum(std::complex<Type> array[], int size);
+    class IncorrectInputArray {};
 
-    void set(std::complex<Type> array[], int size);
-    inline SpectrumElement<Type>&  operator[](int i);
-    inline const SpectrumElement<Type>&  operator[](int i) const;
-    inline int size() const;
+    Spectrum();
+    Spectrum(int size);
+    // подразумевается, что в массиве все вещественные части расположены в первых N/2 ячейках,
+    // комплексные в последних N/2 ячейках (со знаком минус)
+    // (это всё для FFTReal)
+    // size - размер входного массива, должен быть чётным числом
+    Spectrum(RealNum array[], int size);
+
+    void set(RealNum array[], int size);
+    inline SpectrumElement&  operator[](int i);
+    inline const SpectrumElement&  operator[](int i) const;
+    int size() const;
+    RealNum* data();
 private:
-    typedef SpectrumElement<Type> Element;
-    QVector<Element> elements;
+    QVector<SpectrumElement> elements;
 };
 
-template <typename Type>
-Spectrum<Type>::Spectrum(int size):
-    elements(size)
-{}
-
-template <typename Type>
-Spectrum<Type>::Spectrum(std::complex<Type> array[], int size):
-    elements(size)
-{
-    for (int i = 0; i < size; i++)
-        elements[i] = array[i];
-}
-
-template <typename Type>
-void Spectrum<Type>::set(std::complex<Type> array[], int size)
-{
-    elements.resize(size);
-    for (int i = 0; i < size; i++)
-        elements[i] = array[i];
-}
-
-template <typename Type>
-inline SpectrumElement<Type>& Spectrum<Type>::operator[](int i)
+inline SpectrumElement& Spectrum::operator[](int i)
 {
     return elements[i];
 }
 
-template <typename Type>
-inline const SpectrumElement<Type>& Spectrum<Type>::operator[](int i) const
+inline const SpectrumElement& Spectrum::operator[](int i) const
 {
     return elements[i];
 }
 
-template <typename Type>
-inline int Spectrum<Type>::size() const
+inline int Spectrum::size() const
 {
     return elements.size();
 }

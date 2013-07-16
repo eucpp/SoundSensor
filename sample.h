@@ -124,7 +124,7 @@ public:
       */
     unsigned short toUPcm16(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
     bool operator==(const Sample& sample) const;
-    //Sample& operator=(const Sample& sample);
+    Sample& operator=(const Sample& sample);
     /**
       * Устанавливает размер хранимого сэмпла.
       * При несовпадении текущего и нового размера метод конвертирует текущее значение.
@@ -150,8 +150,11 @@ private:
       */
     static int floatToPcm(float val, int size);
 
-    float floatValue;
-    short pcmValue;
+    union
+    {
+        float floatValue;
+        short pcmValue;
+    };
     Type type;
 
     /**
