@@ -10,6 +10,7 @@
 #endif
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 #include "fixed_point/fixed_func.h"
@@ -81,7 +82,7 @@ void corr(char* argv[])
             max = i;
 
     cout << "Correlation maximum at pos: " << max << "; Time pos in signal: " << signal.time(max)
-         << "; Value: " << corr[max] << endl;
+         << "; Value: " << realNumToFloat(corr[max]) << endl;
 
     //delete[] correlation;
     exit(EXIT_SUCCESS);

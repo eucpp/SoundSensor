@@ -27,19 +27,19 @@ private slots:
     void correlationTest1()
     {
         Signal signal(8);
-        signal[0] = (char)0;
-        signal[1] = (char)10;
-        signal[2] = (char)20;
-        signal[3] = (char)100;
-        signal[4] = (char)80;
-        signal[5] = (char)-100;
-        signal[6] = (char)-10;
-        signal[7] = (char)0;
+        signal[0] = (float)0;
+        signal[1] = 0.01;
+        signal[2] = 0.02;
+        signal[3] = 0.1;
+        signal[4] = 0.08;
+        signal[5] = -0.1;
+        signal[6] = -0.01;
+        signal[7] = (float)0;
         Signal pattern(4);
-        pattern[0] = (char)0;
-        pattern[1] = (char)10;
-        pattern[2] = (char)10;
-        pattern[3] = (char)10;
+        pattern[0] = (float)0;
+        pattern[1] = 0.01;
+        pattern[2] = 0.01;
+        pattern[3] = 0.01;
 
         QScopedArrayPointer<RealNum> corr(new RealNum[8 + 4 - 1]);
         correlator->correlation(signal, pattern, corr.data());
@@ -50,6 +50,35 @@ private slots:
                 max = i;
 
         QCOMPARE(max, 1);
+
+
+        alglib::real_1d_array aCorr = AlglibCorrelator().correlation(signal, pattern);
+
+        int size = signal.size() + pattern.size() - 1;
+        float error[size];
+        for (int i = 0 ; i < size; i++)
+        {
+            RealNum c(aCorr[i]);
+            if ((corr[i] == 0) || (c == 0))
+                error[i] = realNumToFloat((corr[i] + 1) / (c + 1));
+            else
+                error[i] = realNumToFloat(corr[i] / c);
+        }
+
+        int errInd = 0;
+        float aver = error[0];
+        for (int i = 1; i < size; i++)
+        {
+            if (qAbs(error[i] - 1) > qAbs(error[errInd] - 1))
+                errInd = i;
+            aver += error[i];
+        }
+        std::cout << "Max Error: " << error[errInd] << ",  at pos: " << errInd << std::endl;
+        std::cout << "Average: " << aver / size << std::endl;
+        std::cout << size << std::endl;
+
+        for (int i = 0; i < size; i++)
+            std::cout << "fixed [" << i << "] = " << realNumToFloat(corr[i]) << ", float [" << i << "] = " << aCorr[i] << std::endl;
     }
 
     /*

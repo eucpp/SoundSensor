@@ -44,7 +44,10 @@ SOURCES += main.cpp\
     simpleCorrelator.cpp \
     fftCorrelator.cpp \
     fixed_point/fixed_func.cpp \
-    tests/fourierTransformTest.cpp
+    tests/fourierTransformTest.cpp \
+    fftrealWrap.cpp \
+    hannWindow.cpp \
+    spectrum.cpp
 
 HEADERS  += soundRecorder.h \
     #testwindow.h \
@@ -97,7 +100,10 @@ HEADERS  += soundRecorder.h \
     fixed_point/stdint.h \
     fixed_point/fixsintab.h \
     fixed_point/fixed_func.h \
-    fixed_point/fixed_class.h
+    fixed_point/fixed_class.h \
+    windowFunction.h \
+    hannWindow.h \
+    fpml/fixed_point.h
 
 #FORMS    += testwindow.ui \
 
