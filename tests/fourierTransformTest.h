@@ -23,17 +23,35 @@ private slots:
         // тут надо переделать, убрать коэфф. 3 перед косинусом
         for (int i = 0; i < size; i++)
             signal[i] = 3 * cos(2 * Pi * i / 16);
-        QScopedArrayPointer<RealNum> spectrum(new RealNum[size]);
-        ft->fourierTransform(signal, spectrum.data());
+        Spectrum spectrum = ft->fourierTransform(signal);
 
-        /*
-        for (int i = 0; i < size; i++)
-            std::cout << "Спектр [" << i << "]" << spectrum[i] << std::endl;
-        */
-        for (int i = 0; i < size; i++)
+        float error[size];
+        for (int i = 0; i < spectrum.size(); i++)
+        {
+            std::cout << "Спектр [" << i << "] Re: " << realNumToFloat(spectrum[i].getRe())
+                      << ", Im: " << realNumToFloat(spectrum[i].getIm()) << std::endl;
+            if (i == 4)
+                error[i] = realNumToFloat(spectrum[i].getRe() / 96);
+            else
+                error[i] = realNumToFloat((spectrum[i].getRe() + 1) / 1);
+            error[size / 2 + i] = realNumToFloat((spectrum[i].getIm() + 1) / 1);
+        }
+
+        int errInd = 0;
+        for (int i = 1; i < size; i++)
+            if (qAbs(error[i] - 1) > qAbs(error[errInd] - 1))
+                errInd = i;
+        std::cout << "Max Error: " << error[errInd] << ",  at pos: " << errInd << std::endl;
+
+
+        for (int i = 0; i < spectrum.size(); i++)
             if (i != 4)
-                QVERIFY(qAbs(spectrum[i] - 0) < eps);
-        QVERIFY(qAbs(spectrum[4] - 96) < eps);
+            {
+                QVERIFY(qAbs(spectrum[i].getRe() - 0) < eps);
+                QVERIFY(qAbs(spectrum[i].getIm() - 0) < eps);
+            }
+        QVERIFY(qAbs(spectrum[4].getRe() - 96) < eps);
+        QVERIFY(qAbs(spectrum[4].getIm() - 0) < eps);
     }
     // считаем прямое и обратное БПФ и сравниваем исходный сигнал с получившимся после преобразований
     void IFTTest()
@@ -44,20 +62,34 @@ private slots:
         Signal signal(size);
         for (int i = 0; i < size; i++)
             signal[i] = cos(2* Pi * i / size);
-        QScopedArrayPointer<RealNum> spectrum(new RealNum[size]);
-        ft->fourierTransform(signal, spectrum.data());
-        Signal newSignal = ft->inverseFourierTransform(spectrum.data());
+        Spectrum spectrum = ft->fourierTransform(signal);
+        Signal newSignal = ft->inverseFourierTransform(spectrum);
 
+        float error[size];
         for (int i = 0; i < size; i++)
         {
             newSignal[i] = newSignal[i].toFloat() / size;
+            std::cout << "origin [" << i << "] = " << signal[i].toFloat();
+            std::cout << "; ifft [" << i << "] = " << newSignal[i].toFloat() << std::endl;
+
+            if ((newSignal[i].toFloat() == 0) || (signal[i].toFloat() == 0))
+                error[i] = (newSignal[i].toFloat() + 1) / (signal[i].toFloat() + 1);
+            else
+                error[i] = newSignal[i].toFloat() / signal[i].toFloat();
+
             QVERIFY(qAbs(newSignal[i].toFloat() - signal[i].toFloat()) < eps);
         }
+
+        int errInd = 0;
+        for (int i = 1; i < size; i++)
+            if (qAbs(error[i] - 1) > qAbs(error[errInd] - 1))
+                errInd = i;
+        std::cout << "Max Error: " << error[errInd] << ",  at pos: " << errInd << std::endl;
     }
 
 private:
-    static const RealNum Pi;
-    static const RealNum eps;
+    static const float Pi;
+    static const float eps;
 };
 
 

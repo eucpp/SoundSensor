@@ -13,8 +13,8 @@ public:
         length(transformLength),
         fft(transformLength)
     {}
-    void fourierTransform(Signal signal, RealNum* spectrum);
-    Signal inverseFourierTransform(RealNum *spectrum);
+    Spectrum fourierTransform(Signal signal);
+    Signal inverseFourierTransform(Spectrum spectrum);
 private:
     inline void fourierTransform(RealNum* in, RealNum* out);
     inline void inverseFourierTransform(RealNum* in, RealNum* out);

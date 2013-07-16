@@ -17,8 +17,8 @@ public:
 
     virtual ~FourierTransform()
     {}
-    virtual void fourierTransform(Signal signal, RealNum* spectrum) = 0;
-    virtual Signal inverseFourierTransform(RealNum* spectrum) = 0;
+    virtual Spectrum fourierTransform(Signal signal) = 0;
+    virtual Signal inverseFourierTransform(Spectrum spectrum) = 0;
 };
 
 #endif // FOURIERTRANSFORM_H
