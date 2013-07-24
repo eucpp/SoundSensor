@@ -4,11 +4,11 @@
 #include <iostream>
 #include <QObject>
 #include <QtTest/QtTest>
-#include "../wavFile.h"
-#include "../correlator.h"
-#include "../alglibCorrelator.h"
-#include "../simpleCorrelator.h"
-#include "../fftCorrelator.h"
+#include "../recording/wavFile.h"
+#include "../signal/correlation/correlator.h"
+#include "../signal/correlation/alglibCorrelator.h"
+#include "../signal/correlation/simpleCorrelator.h"
+#include "../signal/correlation/fftCorrelator.h"
 
 class CorrelatorTest : public QObject
 {

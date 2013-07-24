@@ -3,7 +3,7 @@
 
 #include "define.h"
 #include "spectrum.h"
-#include "signal.h"
+#include "../signal.h"
 
 
 

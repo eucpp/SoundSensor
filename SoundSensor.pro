@@ -29,25 +29,25 @@ desktop {
 
 SOURCES += main.cpp\
 #        testwindow.cpp \
-    soundRecorder.cpp \
     Alglib/fasttransforms.cpp \
     Alglib/ap.cpp \
     Alglib/alglibmisc.cpp \
     Alglib/alglibinternal.cpp \
-    signal.cpp \
-    wavFile.cpp \
     voiceCommandSensor.cpp \
-    sample.cpp \
     tests/recordtest.cpp \
     tests/signaldetector.cpp \
-    alglibCorrelator.cpp \
-    simpleCorrelator.cpp \
-    fftCorrelator.cpp \
     fixed_point/fixed_func.cpp \
     tests/fourierTransformTest.cpp \
-    fftrealWrap.cpp \
-    hannWindow.cpp \
-    spectrum.cpp
+    signal/correlation/simpleCorrelator.cpp \
+    signal/correlation/fftCorrelator.cpp \
+    recording/wavFile.cpp \
+    recording/soundRecorder.cpp \
+    signal/signal.cpp \
+    signal/sample.cpp \
+    signal/fourierTransform/spectrum.cpp \
+    signal/fourierTransform/hannWindow.cpp \
+    signal/fourierTransform/fftrealWrap.cpp \
+    signal/correlation/alglibCorrelator.cpp
 
 HEADERS  += soundRecorder.h \
     #testwindow.h \
@@ -55,21 +55,14 @@ HEADERS  += soundRecorder.h \
     Alglib/ap.h \
     Alglib/alglibinternal.h \
     Alglib/alglibmisc.h \
-    signal.h \
-    wavFile.h \
     tests/signalTest.h \
     voiceCommandSensor.h \
     tests/wavFileTest.h \
-    sample.h \
     tests/sampleTest.h \
     tests/recordtest.h \
     buildParam.h \
     tests/correlatorTest.h \
     tests/signaldetector.h \
-    alglibCorrelator.h \
-    correlator.h \
-    simpleCorrelator.h \
-    spectrum.h \
     fftreal/ffft/OscSinCos.hpp \
     fftreal/ffft/OscSinCos.h \
     fftreal/ffft/FFTRealUseTrigo.hpp \
@@ -90,20 +83,48 @@ HEADERS  += soundRecorder.h \
     fftreal/ffft/def.h \
     fftreal/ffft/Array.hpp \
     fftreal/ffft/Array.h \
-    spectrumElement.h \
-    fourierTransform.h \
-    fftrealWrap.h \
     tests/fourierTransformTest.h \
-    fftCorrelator.h \
     define.h \
     tests/correlatorsTimeTest.h \
     fixed_point/stdint.h \
     fixed_point/fixsintab.h \
     fixed_point/fixed_func.h \
     fixed_point/fixed_class.h \
-    windowFunction.h \
-    hannWindow.h \
-    fpml/fixed_point.h
+    fpml/fixed_point.h \
+    signal/correlation/simpleCorrelator.h \
+    signal/correlation/fftCorrelator.h \
+    signal/correlation/correlator.h \
+    signal/correlation/alglibCorrelator.h \
+    signal/fourierTransform/fftreal/ffft/OscSinCos.hpp \
+    signal/fourierTransform/fftreal/ffft/OscSinCos.h \
+    signal/fourierTransform/fftreal/ffft/FFTRealUseTrigo.hpp \
+    signal/fourierTransform/fftreal/ffft/FFTRealUseTrigo.h \
+    signal/fourierTransform/fftreal/ffft/FFTRealSelect.hpp \
+    signal/fourierTransform/fftreal/ffft/FFTRealSelect.h \
+    signal/fourierTransform/fftreal/ffft/FFTRealPassInverse.hpp \
+    signal/fourierTransform/fftreal/ffft/FFTRealPassInverse.h \
+    signal/fourierTransform/fftreal/ffft/FFTRealPassDirect.hpp \
+    signal/fourierTransform/fftreal/ffft/FFTRealPassDirect.h \
+    signal/fourierTransform/fftreal/ffft/FFTRealFixLenParam.h \
+    signal/fourierTransform/fftreal/ffft/FFTRealFixLen.hpp \
+    signal/fourierTransform/fftreal/ffft/FFTRealFixLen.h \
+    signal/fourierTransform/fftreal/ffft/FFTReal.hpp \
+    signal/fourierTransform/fftreal/ffft/FFTReal.h \
+    signal/fourierTransform/fftreal/ffft/DynArray.hpp \
+    signal/fourierTransform/fftreal/ffft/DynArray.h \
+    signal/fourierTransform/fftreal/ffft/def.h \
+    signal/fourierTransform/fftreal/ffft/Array.hpp \
+    signal/fourierTransform/fftreal/ffft/Array.h \
+    recording/wavFile.h \
+    recording/soundRecorder.h \
+    signal/signal.h \
+    signal/sample.h \
+    signal/fourierTransform/windowFunction.h \
+    signal/fourierTransform/spectrumElement.h \
+    signal/fourierTransform/spectrum.h \
+    signal/fourierTransform/hannWindow.h \
+    signal/fourierTransform/fourierTransform.h \
+    signal/fourierTransform/fftrealWrap.h
 
 #FORMS    += testwindow.ui \
 

@@ -14,7 +14,7 @@
 #include <iostream>
 
 #include "fixed_point/fixed_func.h"
-#include "soundRecorder.h"
+#include "recording/soundRecorder.h"
 #include "voiceCommandSensor.h"
 #include "tests/sampleTest.h"
 #include "tests/signalTest.h"
@@ -24,8 +24,8 @@
 #include "tests/correlatorTest.h"
 #include "tests/correlatorsTimeTest.h"
 #include "tests/fourierTransformTest.h"
-#include "alglibCorrelator.h"
-#include "simpleCorrelator.h"
+#include "signal/correlation/alglibCorrelator.h"
+#include "signal/correlation/simpleCorrelator.h"
 
 using std::cout;
 using std::endl;
@@ -67,6 +67,8 @@ void corr(char* argv[])
     WavFile patternFile(argv[3]);
     patternFile.open(WavFile::ReadOnly);
     Signal pattern = patternFile.readAll();
+
+    std::cout << signal.size() << std::endl;
 
     if (signal.getFormat() != pattern.getFormat())
     {
@@ -142,6 +144,20 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    const int _size = 64;
+    const double Pi = 3.141592653589;
+    Signal signal(_size);
+    // тут надо переделать, убрать коэфф. 3 перед косинусом
+    for (int i = 0; i < _size; i++)
+        signal[i] = cos(2 * Pi * i / 16);
+
+    Signal signalCopy(signal.toPcm16Array(), signal.size());
+
+    WavFile file("cos2nPiOver16.wav");
+    file.open(WavFile::WriteOnly, signalCopy.getFormat());
+    file.write(signalCopy);
+    file.close();
+
     QString cmd(argv[1]);
     if (cmd == "tests")
         tests();
@@ -153,6 +169,7 @@ int main(int argc, char *argv[])
         voiceCommand(argv);
     else if (cmd == "rec")
         rec(a);
+
 
 
     //return app.exec();

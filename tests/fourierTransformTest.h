@@ -6,8 +6,8 @@
 #include <iostream>
 #include <QObject>
 #include <QtTest/QtTest>
-#include "../fourierTransform.h"
-#include "../fftrealWrap.h"
+#include "../signal/fourierTransform/fourierTransform.h"
+#include "../signal/fourierTransform/fftrealWrap.h"
 
 class FourierTransformTest : public QObject
 {

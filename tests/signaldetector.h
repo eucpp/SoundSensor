@@ -3,11 +3,11 @@
 
 #include <iostream>
 #include <QTimer>
-#include "../wavFile.h"
-#include "../correlator.h"
-#include "../soundRecorder.h"
-#include "../simpleCorrelator.h"
-#include "../alglibCorrelator.h"
+#include "../recording/wavFile.h"
+#include "../signal/correlation/correlator.h"
+#include "../recording/soundRecorder.h"
+#include "../signal/correlation/simpleCorrelator.h"
+#include "../signal/correlation/alglibCorrelator.h"
 
 class SignalDetector : public QObject
 {

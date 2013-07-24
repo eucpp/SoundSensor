@@ -3,7 +3,7 @@
 alglib::real_1d_array AlglibCorrelator::correlation(Signal signal, Signal pattern) const
 {
     //if (pattern.size() > signal.size())
-    //    throw SignalsSizeExc();
+    // throw SignalsSizeExc();
 
     clock_t time1 = clock();
     alglib::real_1d_array signalArray;

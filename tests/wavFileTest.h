@@ -3,8 +3,8 @@
 #include <iostream>
 #include <QObject>
 #include <QtTest/QtTest>
-#include "../wavFile.h"
-#include "../soundRecorder.h"
+#include "../recording/wavFile.h"
+#include "../recording/soundRecorder.h"
 
 class WavFileTest : public QObject
 {

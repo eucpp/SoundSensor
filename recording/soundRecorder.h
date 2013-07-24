@@ -19,7 +19,7 @@
 
 #include <QBuffer>
 #include <QByteArray>
-#include "signal.h"
+#include "../signal/signal.h"
 
 using namespace std;
 

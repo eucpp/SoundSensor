@@ -2,8 +2,8 @@
 
 #include <QObject>
 #include <QtTest/QtTest>
-#include "../signal.h"
-#include "../soundRecorder.h"
+#include "../signal/signal.h"
+#include "../recording/soundRecorder.h"
 
 class SignalTest : public QObject
 {

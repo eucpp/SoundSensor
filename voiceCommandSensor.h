@@ -4,7 +4,7 @@
 #include <QObject>
 #include <pocketsphinx/cmdln_macro.h>
 #include <pocketsphinx/pocketsphinx.h>
-#include "signal.h"
+#include "signal/signal.h"
 
 /**
   * Класс-обёртка для библиотеки pocketsphinx.

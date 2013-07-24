@@ -5,9 +5,9 @@
 #include <iostream>
 #include <QObject>
 #include <QtTest>
-#include "fftCorrelator.h"
-#include "alglibCorrelator.h"
-#include "../wavFile.h"
+#include "../signal/correlation/fftCorrelator.h"
+#include "../signal/correlation/alglibCorrelator.h"
+#include "../recording/wavFile.h"
 
 class CorrelatorsTimeTest : public QObject
 {

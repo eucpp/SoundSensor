@@ -2,7 +2,7 @@
 
 //#include <QObject>
 #include <QVector>
-#include <spectrumElement.h>
+#include "spectrumElement.h"
 
 /**
   * Класс-контейнер для спектра.

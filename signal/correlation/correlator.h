@@ -4,7 +4,7 @@
 #include <QObject>
 #include "Alglib/ap.h"
 #include "define.h"
-#include "signal.h"
+#include "../signal.h"
 
 /**
   * Абстрактный класс, предоставляет интерфейс для алгоритмов корреляции.

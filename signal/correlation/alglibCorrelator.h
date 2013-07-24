@@ -3,9 +3,9 @@
 #include <ctime>
 #include <iostream>
 #include <QObject>
-#include "Alglib/ap.h"
-#include "Alglib/alglibinternal.h"
-#include "Alglib/fasttransforms.h"
+#include "../../Alglib/ap.h"
+#include "../../Alglib/alglibinternal.h"
+#include "../../Alglib/fasttransforms.h"
 #include "correlator.h"
 
 /**

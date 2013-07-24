@@ -4,8 +4,8 @@
 #include <iostream>
 #include <QObject>
 #include <QTimer>
-#include "../soundRecorder.h"
-#include "../wavFile.h"
+#include "../recording/soundRecorder.h"
+#include "../recording/wavFile.h"
 
 class RecordTest : public QObject
 {
