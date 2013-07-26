@@ -193,7 +193,7 @@ int WavFile::write(Signal signal, int length) throw(WriteDisabledExc, FormatMism
         throw FormatMismatchExc();
     QByteArray bytes = signal.subSignal(0, length).toByteArray();
     int n = file.write(bytes);
-    setDataSize(size());
+    setDataSize(size() * (header.sampleSize() / 8));
     return n / (header.sampleSize() / 8);
 }
 
