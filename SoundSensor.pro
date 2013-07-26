@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     signal/fourierTransform/spectrum.cpp \
     signal/fourierTransform/hannWindow.cpp \
     signal/fourierTransform/fftrealWrap.cpp \
-    signal/correlation/alglibCorrelator.cpp
+    signal/correlation/alglibCorrelator.cpp \
+    motorFilterTest.cpp
 
 HEADERS  += soundRecorder.h \
     #testwindow.h \
@@ -124,7 +125,8 @@ HEADERS  += soundRecorder.h \
     signal/fourierTransform/spectrum.h \
     signal/fourierTransform/hannWindow.h \
     signal/fourierTransform/fourierTransform.h \
-    signal/fourierTransform/fftrealWrap.h
+    signal/fourierTransform/fftrealWrap.h \
+    motorFilterTest.h
 
 #FORMS    += testwindow.ui \
 

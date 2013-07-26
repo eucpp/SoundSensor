@@ -26,6 +26,7 @@
 #include "tests/fourierTransformTest.h"
 #include "signal/correlation/alglibCorrelator.h"
 #include "signal/correlation/simpleCorrelator.h"
+#include "motorFilterTest.h"
 
 using std::cout;
 using std::endl;
@@ -144,6 +145,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    /*
     const int _size = 64;
     const double Pi = 3.141592653589;
     Signal signal(_size);
@@ -157,6 +159,9 @@ int main(int argc, char *argv[])
     file.open(WavFile::WriteOnly, signalCopy.getFormat());
     file.write(signalCopy);
     file.close();
+    */
+
+    motorFilterTest();
 
     QString cmd(argv[1]);
     if (cmd == "tests")

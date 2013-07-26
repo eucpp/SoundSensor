@@ -17,7 +17,7 @@ Signal::Signal(int n, int sampleRate):
 Signal::Signal(double* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
-    init(array);
+    init<double>(array);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
     format.setSampleSize(16);
@@ -27,7 +27,7 @@ Signal::Signal(double* array, int arraySize, int sampleRate):
 Signal::Signal(float* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
-    init(array);
+    init<float>(array);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
     format.setSampleSize(16);
@@ -37,7 +37,7 @@ Signal::Signal(float* array, int arraySize, int sampleRate):
 Signal::Signal(char* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
-    init(array);
+    init<char>(array);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
     format.setSampleSize(8);
@@ -59,7 +59,7 @@ Signal::Signal(short* array, int arraySize, QAudioFormat::Endian byteOrder, int 
 Signal::Signal(unsigned char* array, int arraySize, int sampleRate):
     samples(arraySize)
 {
-    init(array);
+    init<unsigned char>(array);
     format.setChannels(1);
     format.setSampleRate(sampleRate);
     format.setSampleSize(8);
