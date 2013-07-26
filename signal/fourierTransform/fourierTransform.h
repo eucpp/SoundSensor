@@ -4,6 +4,7 @@
 #include "define.h"
 #include "spectrum.h"
 #include "../signal.h"
+#include "windowFunction.h"
 
 
 
@@ -18,6 +19,7 @@ public:
     virtual ~FourierTransform()
     {}
     virtual Spectrum fourierTransform(Signal signal) = 0;
+    virtual Spectrum fourierTransform(Signal signal, WindowFunction* winFunc) = 0;
     virtual Signal inverseFourierTransform(Spectrum spectrum) = 0;
 };
 

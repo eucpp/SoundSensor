@@ -8,5 +8,5 @@ HannWindow::HannWindow(int windowWidth):
 
 double HannWindow::operator()(double n)
 {
-    return (0.5 * (1 - cos(2 * Pi * n / (width - 1))));
+    return ((cos(2 * Pi * n / (width - 1))));
 }

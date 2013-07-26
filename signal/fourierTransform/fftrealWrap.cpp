@@ -5,24 +5,25 @@ Spectrum FFTRealWrap::fourierTransform(Signal signal)
     if (signal.size() != length)
         throw SizeExc();
 
-    clock_t time1 = clock();
     QScopedArrayPointer<RealNum> ptrSignal(signal.toFloatArray());
     QScopedArrayPointer<RealNum> out(new RealNum[length]);
-    clock_t time2 = clock();
-    std::cout << "Init fft data time: " << (time2 - time1) / (CLOCKS_PER_SEC / 1000) << std::endl;
 
-    time1 = clock();
     fourierTransform(ptrSignal.data(), out.data());
-    time2 = clock();
-    std::cout << "do_fft time: " << (time2 - time1) / (CLOCKS_PER_SEC / 1000) << std::endl;
 
-    time1 = clock();
     Spectrum spectrum;
-    spectrum.set(out.data(), length);
-    time2 = clock();
-    std::cout << "Spectrum object init: " << (time2 - time1) / (CLOCKS_PER_SEC / 1000) << std::endl;
+    spectrum.set(out.data(), length, signal.getFormat().sampleRate());
 
     return spectrum;
+}
+
+Spectrum FFTRealWrap::fourierTransform(Signal signal, WindowFunction* winFunc)
+{
+    Signal frame(signal.toFloatArray(), signal.size());
+    for (int i = 0; i < signal.size(); i++)
+    {
+        frame[i] = (*winFunc)(static_cast<float>(frame[i].toPcm16()));
+    }
+    return fourierTransform(frame);
 }
 
 Signal FFTRealWrap::inverseFourierTransform(Spectrum spectrum)

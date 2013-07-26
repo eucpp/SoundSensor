@@ -10,8 +10,8 @@ public:
     class ComplexNullPhaseUndefExc {};
 
     inline SpectrumElement();
+    inline SpectrumElement(int freq);
     inline SpectrumElement(RealNum rePart, RealNum imPart);
-
     inline void set(RealNum rePart, RealNum imPart);
     inline void setRe(RealNum val);
     inline RealNum getRe();
@@ -19,19 +19,31 @@ public:
     inline RealNum getIm();
     inline float amplitude() const;
     inline float phase() const;
+    inline int getFrequency() const;
+    inline void setFrequency(int freq);
 private:
-    RealNum re;
-    RealNum im;
+    float re;
+    float im;
+    int frequency;
 };
 
 inline SpectrumElement::SpectrumElement():
     re(0),
-    im(0)
+    im(0),
+    frequency(0)
 {}
+
+SpectrumElement::SpectrumElement(int freq):
+    re(0),
+    im(0),
+    frequency(freq)
+{
+}
 
 inline SpectrumElement::SpectrumElement(RealNum rePart, RealNum imPart):
     re(rePart),
-    im(imPart)
+    im(imPart),
+    frequency(0)
 {}
 
 void inline SpectrumElement::set(RealNum rePart, RealNum imPart)
@@ -62,7 +74,7 @@ RealNum SpectrumElement::getIm()
 
 inline float SpectrumElement::amplitude() const
 {
-    return sqrt(realNumToFloat(re*re + im*im));
+    return sqrt(re*re + im*im);
 }
 
 inline float SpectrumElement::phase() const
@@ -71,5 +83,16 @@ inline float SpectrumElement::phase() const
         throw ComplexNullPhaseUndefExc();
     return atan2(realNumToFloat(im), realNumToFloat(re));
 }
+
+int SpectrumElement::getFrequency() const
+{
+    return frequency;
+}
+
+void SpectrumElement::setFrequency(int freq)
+{
+    frequency = freq;
+}
+
 
 #endif // SPECTRUMELEMENT_H

@@ -1,34 +1,44 @@
 #include "spectrum.h"
 
 Spectrum::Spectrum():
-    elements(0)
+    elements(0),
+    frameSize(0),
+    sampleRate(0)
 {}
 
 Spectrum::Spectrum(int size):
-    elements(size)
+    elements(size),
+    frameSize(0),
+    sampleRate(0)
 {}
 
-Spectrum::Spectrum(RealNum array[], int size)
+Spectrum::Spectrum(RealNum array[], int size, int rate):
+    frameSize(size),
+    sampleRate(rate)
 {
-    if (size % 2 == 1)
+    if (size % 2 != 0)
         throw IncorrectInputArray();
     elements.resize(size / 2);
     for (int i = 0; i < size / 2; i++)
     {
         elements[i].setRe(array[i]);
         elements[i].setIm(-array[size / 2 + i]);
+        elements[i].setFrequency(i * sampleRate / frameSize);
     }
 }
 
-void Spectrum::set(RealNum array[], int size)
+void Spectrum::set(RealNum array[], int size, int rate)
 {
-    if (size % 2 == 1)
+    frameSize = size;
+    sampleRate = rate;
+    if (size % 2 != 0)
         throw IncorrectInputArray();
     elements.resize(size / 2);
     for (int i = 0; i < size / 2; i++)
     {
         elements[i].setRe(array[i]);
         elements[i].setIm(-array[size / 2 + i]);
+        elements[i].setFrequency(i * sampleRate / frameSize);
     }
 }
 

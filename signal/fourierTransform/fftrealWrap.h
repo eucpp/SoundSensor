@@ -14,6 +14,7 @@ public:
         fft(transformLength)
     {}
     Spectrum fourierTransform(Signal signal);
+    Spectrum fourierTransform(Signal signal, WindowFunction* winFunc);
     Signal inverseFourierTransform(Spectrum spectrum);
 private:
     inline void fourierTransform(RealNum* in, RealNum* out);
