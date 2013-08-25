@@ -22,9 +22,9 @@ void motorFilterTest()
     Spectrum noiseSpectr = fft.fourierTransform(noise, hannWin.data());
 
 
-    /*
-    ofstream out("motor_noise_spectrum_hann_window.txt");
+    ofstream out("motor_spectrum_without_noise.txt");
 
+    /*
     out << "frequency, amplitude, phase \n";
     for (int i = 0; i < spectrum.size(); i++)
     {
@@ -44,12 +44,12 @@ void motorFilterTest()
     while (samples > frameSize)
     {
         Signal frame = signal.subSignal(pos, frameSize);
-        Spectrum frameSpectr = fft.fourierTransform(frame, hannWin.data());
+        Spectrum frameSpectr = fft.fourierTransform(frame);
 
         for (int i = 0; i < frameSpectr.size(); i++)
         {
-            frameSpectr[i].setRe(qMax((frameSpectr[i].getRe() - K * noiseSpectr[i].getRe()), (double)0));
-            frameSpectr[i].setIm(qMax((frameSpectr[i].getIm() - K * noiseSpectr[i].getIm()), (double)0));
+            float ampl = frameSpectr[i].amplitude() - K * noiseSpectr[i].amplitude();
+            out << round(frameSpectr[i].getFrequency()) << ", " << round(100 * ampl) << "\n";
         }
 
         Signal clearFrame = fft.inverseFourierTransform(frameSpectr);
@@ -68,10 +68,12 @@ void motorFilterTest()
 
     outFile.write(signal);
 
+    /*
     cout << "time: " << signal.time(signal.size()) << std::endl;
     cout << "signal file sample rate = " << signalFile.getHeader().sampleRate() << "; out file sample rate = "
             << outFile.getHeader().sampleRate() << endl;
     cout << "signal file size = " << signalFile.size() << "; out file size = " << outFile.size() << endl;
+    */
 
     noiseFile.close();
     signalFile.close();
