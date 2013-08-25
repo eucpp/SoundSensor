@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SIGNAL_H
+#define SIGNAL_H
 
 #include "buildParam.h"
 
@@ -17,12 +18,11 @@
 #include "define.h"
 #include "sample.h"
 
+class Sample;
+
 /**
   * Класс-контейнер для цифрового звукового моно сигнала.
   * Объект хранит информацию об амплитуде звуковой волны.
-  * Информация о сигнале может храниться в объекте в двух разных формах,
-  * как массив байт или как массив переменных double.
-  * В первом случае, методы объекта будут сами осуществлять перевод байт в double.
   *
   * Класс поддерживает данные pcm, записанные с размером сэмпла (sample size) равным 8 или 16 бит.
   */
@@ -34,76 +34,47 @@ public:
       */
     class OutOfSignalRangeExc {};
     /**
+      *
+      */
+    class SampleSizeUnset {};
+    /**
+      *
+      */
+    class SampleRateUnset {};
+    /**
       * Создание пустого сигнала.
       */
     Signal();
     /**
       * Создание сигнала длиной n сэмплов, инициализированного нулями.
       *
-      * @param sampleRate Частота дискретизации сигнала.
+      * @param format Формат сигнала.
       */
-    Signal(int n, int sampleRate = 16000);
-    Signal(double* array, int arraySize, int sampleRate = 16000);
-    Signal(float* array, int size, int sampleRate = 16000);
-    Signal(char* array, int arraySize, int sampleRate = 16000);
-    Signal(short* array, int arraySize, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian, int sampleRate = 16000);
-    Signal(unsigned char* array, int arraySize, int sampleRate = 16000);
-    Signal(unsigned short* array, int arraySize, QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian, int sampleRate = 16000);
+    Signal(int n, const QAudioFormat& signalFormat);
     /**
-      * Создание сигнала по массиву байт.
+      * Создание сигнала из массива байт.
       *
       * @param byteArray Массив байт, кодирующих сигнал.
       * @param signalFormat Формат данных, содержащихся в byteArray.
       *     Должен определять размер сэмпла (8/16 бит) и порядок байт для 16-битного сэмпла (little-endian/big-endian)
-      *     тип сэмпла подразумевается знаковый
       */
     Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat);
     /**
-      * Возвращает массив значений амплитуды сигнала в виде double (в диапозоне от -1.0 до 1.0).
-      */
-    double* toDoubleArray() const;
-    /**
-      * Возвращает массив значений амплитуды сигнала в виде float (в диапозоне от -1.0 до 1.0).
-      */
-    float* toFloatArray() const;
-    /**
-      * Возвращает массив значений амплитуды сигнала в виде числа с фиксированной точкой (от -1.0 до 1.0)
-      */
-    fixed_point* toFixedPointArray() const;
-    /**
-      * Возвращает массив 8-битных pcm сэмплов (signed), кодирующих данный сигнал.
-      * Массив размещается в динамической памяти, после использования её необходимо очистить.
-      */
-    char* toPcm8Array() const;
-    /**
-      * Возвращает массив 16-битных pcm сэмплов (signed), кодирующих данный сигнал.
-      * Порядок байт в сэмпле устанавливается методом setByteOrder().
-      * Массив размещается в динамической памяти, после использования её необходимо очистить.
       *
-      * @param byteOrd порядок байт в сэмплах массива.
       */
-    short* toPcm16Array(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
+    void setData(const QByteArray& byteArray, const QAudioFormat& signalFormat);
     /**
-      * Возвращает массив 8-битных pcm сэмплов (unsigned), кодирующих данный сигнал.
-      * Массив размещается в динамической памяти, после использования её необходимо очистить.
-      */
-    unsigned char* toUPcm8Array() const;
-    /**
-      * Возвращает массив 16-битных pcm сэмплов (unsigned), кодирующих данный сигнал.
-      * Порядок байт в сэмпле устанавливается методом setByteOrder().
-      * Массив размещается в динамической памяти, после использования её необходимо очистить.
       *
-      * @param byteOrd порядок байт в сэмплах массива.
       */
-    unsigned short* toUPcm16Array(QAudioFormat::Endian byteOrder = QAudioFormat::LittleEndian) const;
+    char* data();
     /**
-      * Возвращает массив байт, кодирующих сигнал в соответствии с его форматом.
+      *
       */
-    QByteArray toByteArray();
+    const char* data() const;
     /**
       * Возвращает формат сигнала.
       */
-    QAudioFormat getFormat();
+    QAudioFormat getFormat() const;
     /**
       * Устанавливает формат сигнала.
       */
@@ -111,12 +82,23 @@ public:
     /**
       * Оператор возвращает сэмпл в позиции i сигнала.
       */
-    Sample& operator[](int i) throw(OutOfSignalRangeExc);
+    Sample operator[](int i) throw(OutOfSignalRangeExc, SampleSizeUnset);
     /**
       * Оператор возвращает сэмпл в позиции i сигнала.
       */
-    const Sample& operator[](int i) const throw(OutOfSignalRangeExc);
+    const Sample operator[](int i) const throw(OutOfSignalRangeExc, SampleSizeUnset);
+    /**
+      *
+      */
     bool operator==(const Signal& signal) const;
+    /**
+      * Возвращает размер сэмпла в байтах.
+      */
+    int sampleSize() const throw(SampleSizeUnset);
+    /**
+      * Возвращает частоту дискретизации.
+      */
+    int sampleRate() const throw(SampleRateUnset);
     /**
       * Возвращает размер сигнала (кол-во сэмплов).
       */
@@ -126,13 +108,13 @@ public:
       * Если новая длина больше, увеличивает размер и заполняет новые сэмплы нулями.
       * Иначе удаляет часть сигнала.
       *
-      * @param n Новая длина сигнала.
+      * @param n Новая длина сигнала в сэмплах.
       */
     void resize(int n);
     /**
       *
       */
-    int time(int i);
+    int time(int i) const throw(OutOfSignalRangeExc, SampleRateUnset);
     /**
       * Возвращает копию части сигнала.
       *
@@ -141,17 +123,11 @@ public:
       */
     Signal subSignal(int start, int length = -1) const;
 private:
-    Signal(const QVector<Sample>& samplesVector, const QAudioFormat& signalFormat);
-    template <typename Type>
-    inline void init(Type* array);
+    bool sampleSizeSet() const;
+    bool sampleRateSet() const;
 
-    QVector<Sample> samples;
+    QByteArray bytes;
     QAudioFormat format;
 };
 
-template <typename Type>
-inline void Signal::init(Type* array)
-{
-    for (int i = 0; i < samples.size(); i++)
-        samples[i] = array[i];
-}
+#endif // SIGNAL_H

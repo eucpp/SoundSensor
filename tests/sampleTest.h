@@ -8,11 +8,57 @@ class SampleTest : public QObject
 {
     Q_OBJECT
 private slots:
-    void getSampleTypeTest()
+    // проверяем создание 8 битного знакового сэмпла из int.
+    void AssignmentOperatorTest1()
     {
-        Sample sample;
-        QCOMPARE(sample.getSampleType(), Sample::Unset);
+        QAudioFormat format;
+        format.setSampleSize(8);
+        format.setSampleType(QAudioFormat::SignedInt);
+        Signal signal(4, format);
+        signal[1] = 127;
+        char* data = signal.data();
+        QCOMPARE(data[1], (char)127);
     }
+    // проверяем создание 8 битного беззнакового сэмпла из int.
+    void AssignmentOperatorTest2()
+    {
+        QAudioFormat format;
+        format.setSampleSize(8);
+        format.setSampleType(QAudioFormat::UnSignedInt);
+        Signal signal(4, format);
+        signal[1] = 250;
+        char* data = signal.data();
+        QCOMPARE((unsigned char)data[1], (unsigned char)250);
+    }
+    // проверяем создание 16 битного знакового сэмпла (в big endian) из int.
+    void AssignmentOperatorTest3()
+    {
+        QAudioFormat format;
+        format.setSampleSize(16);
+        format.setSampleType(QAudioFormat::SignedInt);
+        format.setByteOrder(QAudioFormat::BigEndian);
+        Signal signal(4, format);
+        signal[1] = -32768;
+        char* data = signal.data();
+        QCOMPARE(data[2], (char)0x80);
+        QCOMPARE(data[3], (char)0x00);
+    }
+    // проверяем создание 16 битного беззнакового сэмпла (в little endian) из int.
+    void AssignmentOperatorTest4()
+    {
+        QAudioFormat format;
+        format.setSampleSize(16);
+        format.setSampleType(QAudioFormat::UnSignedInt);
+        format.setByteOrder(QAudioFormat::LittleEndian);
+        Signal signal(4, format);
+        signal[1] = 16000;
+        char* data = signal.data();
+        QCOMPARE(data[2], (char)0x80);
+        QCOMPARE(data[3], (char)0x3E);
+    }
+
+
+    /*
     void constructFromPcm8Test()
     {
         char a = 127;
@@ -131,6 +177,7 @@ private slots:
         QCOMPARE(bytes[0], (char)0x40);
         QCOMPARE(bytes[1], (char)0x00);
     }
+    */
 
     /*
     void setSampleSizeTest()

@@ -20,12 +20,11 @@ private slots:
         header->setSampleType(QAudioFormat::SignedInt);
         file = new WavFile("wavFileTest.wav");
         file->open(WavFile::WriteOnly, *header);
-        signal = new Signal(4);
-        (*signal)[0] = (short) 32767;
-        (*signal)[1] = (short)16384;
-        (*signal)[2] = (short)-256;
-        (*signal)[3] = (short)-32768;
-        signal->setFormat(*header);
+        signal = new Signal(4, *header);
+        (*signal)[0] = 32767;
+        (*signal)[1] = 16384;
+        (*signal)[2] = -256;
+        (*signal)[3] = -32768;
     }
     void cleanup()
     {
@@ -81,7 +80,7 @@ private slots:
         file->seek(1);
         QCOMPARE(file->pos(), 1);
         Signal signal(file->read(1));
-        QCOMPARE(signal[0], Sample((short)16384));
+        QCOMPARE(signal[0].toInt(), 16384);
     }
     // проверяем запись "с наложением" данных.
     void writeTest()
@@ -97,10 +96,9 @@ private slots:
         file->write(*signal);
         file->close();
         file->open(WavFile::Append);
-        Signal signal2(2);
+        Signal signal2(2, *header);
         signal2[0] = 0.8;
         signal2[1] = 0.4;
-        signal2.setFormat(*header);
         file->write(signal2);
         QCOMPARE(file->size(), 6);
     }

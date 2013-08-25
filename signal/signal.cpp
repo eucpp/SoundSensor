@@ -1,86 +1,20 @@
 #include "signal.h"
 
 Signal::Signal():
-    samples()
+    bytes(),
+    format()
 {}
 
-Signal::Signal(int n, int sampleRate):
-    samples()
-{
-    samples.resize(n);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(16);
-    format.setSampleType(QAudioFormat::SignedInt);
-}
-
-Signal::Signal(double* array, int arraySize, int sampleRate):
-    samples(arraySize)
-{
-    init<double>(array);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(16);
-    format.setSampleType(QAudioFormat::SignedInt);
-}
-
-Signal::Signal(float* array, int arraySize, int sampleRate):
-    samples(arraySize)
-{
-    init<float>(array);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(16);
-    format.setSampleType(QAudioFormat::SignedInt);
-}
-
-Signal::Signal(char* array, int arraySize, int sampleRate):
-    samples(arraySize)
-{
-    init<char>(array);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(8);
-    format.setSampleType(QAudioFormat::SignedInt);
-}
-
-Signal::Signal(short* array, int arraySize, QAudioFormat::Endian byteOrder, int sampleRate):
-    samples(arraySize)
-{
-    for (int i = 0; i < samples.size(); i++)
-        samples[i].setPcm16(array[i], byteOrder);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(16);
-    format.setSampleType(QAudioFormat::SignedInt);
-    format.setByteOrder(byteOrder);
-}
-
-Signal::Signal(unsigned char* array, int arraySize, int sampleRate):
-    samples(arraySize)
-{
-    init<unsigned char>(array);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(8);
-    format.setSampleType(QAudioFormat::UnSignedInt);
-}
-
-Signal::Signal(unsigned short* array, int arraySize, QAudioFormat::Endian byteOrder, int sampleRate):
-    samples(arraySize)
-{
-    for (int i = 0; i < samples.size(); i++)
-        samples[i].setUPcm16(array[i], byteOrder);
-    format.setChannels(1);
-    format.setSampleRate(sampleRate);
-    format.setSampleSize(16);
-    format.setSampleType(QAudioFormat::UnSignedInt);
-    format.setByteOrder(byteOrder);
-}
+Signal::Signal(int n, const QAudioFormat& signalFormat):
+    bytes(n * (signalFormat.sampleSize() / 8), 0),
+    format(signalFormat)
+{}
 
 Signal::Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat):
-    samples()
+    bytes(byteArray),
+    format(signalFormat)
 {
+    /*
     format = signalFormat;
     int sampleSize = format.sampleSize();
     if (sampleSize == 8)
@@ -104,78 +38,26 @@ Signal::Signal(const QByteArray& byteArray, const QAudioFormat& signalFormat):
                 samples[i].setUPcm16(ptr[0], byteOrd);
         }
     }
+    */
 }
 
-double* Signal::toDoubleArray() const
+void Signal::setData(const QByteArray& byteArray, const QAudioFormat& signalFormat)
 {
-    double* array = new double[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toFloat();
-    return array;
+    bytes = byteArray;
+    format = signalFormat;
 }
 
-float* Signal::toFloatArray() const
+char* Signal::data()
 {
-    float* array = new float[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toFloat();
-    return array;
+    return bytes.data();
 }
 
-fixed_point *Signal::toFixedPointArray() const
+const char *Signal::data() const
 {
-    fixed_point* array = new fixed_point[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toFixedPoint();
-    return array;
+    return bytes.constData();
 }
 
-char* Signal::toPcm8Array() const
-{
-    char* array = new char[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toPcm8();
-    return array;
-}
-
-short* Signal::toPcm16Array(QAudioFormat::Endian byteOrder) const
-{
-    short* array = new short[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toPcm16(byteOrder);
-    return array;
-}
-
-unsigned char* Signal::toUPcm8Array() const
-{
-    unsigned char* array = new unsigned char[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toUPcm8();
-    return array;
-}
-
-unsigned short* Signal::toUPcm16Array(QAudioFormat::Endian byteOrder) const
-{
-    unsigned short* array = new unsigned short[size()];
-    for (int i = 0; i < size(); i++)
-        array[i] = samples[i].toUPcm16(byteOrder);
-    return array;
-}
-
-QByteArray Signal::toByteArray()
-{
-    if (format.sampleSize() == 8)
-    {
-        return QByteArray(toPcm8Array(), size());
-    }
-    else if (format.sampleSize() == 16)
-    {
-        short* bytes = toPcm16Array(format.byteOrder());
-        return QByteArray(reinterpret_cast<char*>(bytes), size() * 2);
-    }
-}
-
-QAudioFormat Signal::getFormat()
+QAudioFormat Signal::getFormat() const
 {
     return format;
 }
@@ -185,48 +67,93 @@ void Signal::setFormat(const QAudioFormat &signalFormat)
     format = signalFormat;
 }
 
-Sample& Signal::operator[](int i) throw(OutOfSignalRangeExc)
+
+Sample Signal::operator[](int i) throw(OutOfSignalRangeExc, SampleSizeUnset)
 {
     if (i < 0 || i >= size())
+    {
         throw OutOfSignalRangeExc();
-    return samples[i];
+    }
+    if (!sampleSizeSet())
+    {
+        throw SampleSizeUnset();
+    }
+    return Sample(bytes.data() + i * sampleSize(), this);
 }
 
-const Sample& Signal::operator[](int i) const throw(OutOfSignalRangeExc)
+const Sample Signal::operator[](int i) const throw(OutOfSignalRangeExc, SampleSizeUnset)
 {
     if (i < 0 || i >= size())
+    {
         throw OutOfSignalRangeExc();
-    return samples[i];
+    }
+    return Sample(bytes.data() + i * sampleSize(), this);
 }
 
 bool Signal::operator==(const Signal &signal) const
 {
-    return ((samples == signal.samples) && (format == signal.format));
+    return ((bytes == signal.bytes) && (format == signal.format));
+}
+
+int Signal::sampleSize() const throw(SampleSizeUnset)
+{
+    if (!sampleSizeSet())
+    {
+        throw SampleSizeUnset();
+    }
+    return (format.sampleSize() / 8);
+}
+
+int Signal::sampleRate() const throw(SampleRateUnset)
+{
+    if (!sampleRateSet())
+    {
+        throw SampleRateUnset();
+    }
+    return format.sampleRate();
 }
 
 int Signal::size() const
 {
-    return samples.size();
+    return (bytes.size() / sampleSize());
 }
 
 void Signal::resize(int n)
 {
-    samples.resize(n);
+    n *= sampleSize();
+    int oldSize = bytes.size();
+    bytes.resize(n);
+    if (n > oldSize)
+    {
+        for (int i = oldSize; i < n; i++)
+        {
+            bytes[i] = 0;
+        }
+    }
 }
 
-int Signal::time(int i)
+int Signal::time(int i) const throw(OutOfSignalRangeExc, SampleRateUnset)
 {
-    double samplesPerMs = static_cast<double>(format.sampleRate()) / 1000;
+    if (i < 0 || i >= size())
+    {
+        throw OutOfSignalRangeExc();
+    }
+    double samplesPerMs = static_cast<double>(sampleRate()) / 1000;
     return round(i / samplesPerMs);
 }
 
 Signal Signal::subSignal(int start, int length) const
 {
-    return Signal(samples.mid(start, length), format);
+    return Signal(bytes.mid(start, length), format);
 }
 
-Signal::Signal(const QVector<Sample> &samplesVector, const QAudioFormat& signalFormat)
+bool Signal::sampleSizeSet() const
 {
-    samples = samplesVector;
-    format = signalFormat;
+    return ((format.sampleSize() == 8) || (format.sampleSize() == 16));
 }
+
+bool Signal::sampleRateSet() const
+{
+    return (format.sampleRate() != -1);
+}
+
