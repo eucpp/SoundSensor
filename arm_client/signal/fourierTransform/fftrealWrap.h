@@ -6,6 +6,7 @@
 #include "fftreal/ffft/FFTReal.h"
 #include "fourierTransform.h"
 
+/*
 class FFTRealWrap : public FourierTransform
 {
 public:
@@ -36,5 +37,6 @@ inline void FFTRealWrap::inverseFourierTransform(RealNum *in, RealNum *out)
 {
     fft.do_ifft(in, out);
 }
+*/
 
 #endif // FFTREALWRAP_H

@@ -3,6 +3,7 @@
 
 using namespace std;
 
+/*
 void motorFilterTest()
 {
     const int frameSize = 1024;
@@ -24,7 +25,7 @@ void motorFilterTest()
 
     ofstream out("motor_spectrum_without_noise.txt");
 
-    /*
+
     out << "frequency, amplitude, phase \n";
     for (int i = 0; i < spectrum.size(); i++)
     {
@@ -32,7 +33,7 @@ void motorFilterTest()
             << ", " << round(spectrum[i].phase()) << " \n";
         std::cout << fixed << spectrum[i].amplitude() << endl;
     }
-    */
+
 
     WavFile signalFile("../motor_noise_2.wav");
     signalFile.open(WavFile::ReadOnly);
@@ -68,12 +69,12 @@ void motorFilterTest()
 
     outFile.write(signal);
 
-    /*
+
     cout << "time: " << signal.time(signal.size()) << std::endl;
     cout << "signal file sample rate = " << signalFile.getHeader().sampleRate() << "; out file sample rate = "
             << outFile.getHeader().sampleRate() << endl;
     cout << "signal file size = " << signalFile.size() << "; out file size = " << outFile.size() << endl;
-    */
+
 
     noiseFile.close();
     signalFile.close();
@@ -81,3 +82,4 @@ void motorFilterTest()
 
     //out.close();
 }
+*/

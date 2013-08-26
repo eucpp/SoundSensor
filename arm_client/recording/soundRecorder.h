@@ -1,6 +1,6 @@
 #pragma once
 
-#include "buildParam.h"
+#include "../buildParam.h"
 
 #include <iostream>
 #include <QObject>

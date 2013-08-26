@@ -1,7 +1,7 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
-#include "buildParam.h"
+#include "../buildParam.h"
 
 #include <cmath>
 #include <cstring>
@@ -15,7 +15,6 @@
     #include <QtMultimedia/QAudioFormat>
 #endif
 
-#include "define.h"
 #include "sample.h"
 
 class Sample;

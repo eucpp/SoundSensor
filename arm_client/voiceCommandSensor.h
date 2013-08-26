@@ -18,13 +18,16 @@ public:
       * Класс исключений, бросаемых при ошибке инициализации pocketsphinx
       * в конструкторе класса.
       */
-    class PocketSphinxInitExc
-    {};
+    class PocketSphinxInitExc {};
     /**
       * Класс исключений, бросаемых при ошибке распознавания команды
       */
-    class PocketSphinxRecognizeExc
-    {};
+    class PocketSphinxRecognizeExc {};
+    /**
+      * Класс исключений, бросаемых, если переданный для распознавания сигнал имеет некорректный формат.
+      * (должен быть 16 битный знаковый)
+      */
+    class IncorrectSignalFormat {};
     /**
       * Структура, описывающая опознанную голосовую команду.
       *

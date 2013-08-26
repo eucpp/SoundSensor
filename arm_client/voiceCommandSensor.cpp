@@ -29,7 +29,12 @@ VoiceCommandSensor::Command VoiceCommandSensor::recognize(Signal signal)
     if (uttReturn < 0)
         throw PocketSphinxInitExc();
 
-    QScopedArrayPointer<short> samples(signal.toPcm16Array());
+    if ((signal.sampleSize() != 2) || (signal.getFormat().sampleType() != QAudioFormat::SignedInt))
+    {
+        throw IncorrectSignalFormat();
+    }
+
+    QScopedArrayPointer<short> samples(reinterpret_cast<short*>(signal.data()));
     int decodeReturn = ps_process_raw(recognizer, samples.data(),
                                   signal.size(), false, false);
 

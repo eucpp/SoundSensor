@@ -13,26 +13,28 @@
 #include <cstring>
 #include <iostream>
 
-#include "fixed_point/fixed_func.h"
+//#include "fixed_point/fixed_func.h"
 #include "recording/soundRecorder.h"
+#include "recording/wavFile.h"
 #include "voiceCommandSensor.h"
-#include "tests/sampleTest.h"
-#include "tests/signalTest.h"
-#include "tests/wavFileTest.h"
-#include "tests/recordtest.h"
-#include "tests/signaldetector.h"
-#include "tests/correlatorTest.h"
-#include "tests/correlatorsTimeTest.h"
-#include "tests/fourierTransformTest.h"
-#include "signal/correlation/alglibCorrelator.h"
-#include "signal/correlation/simpleCorrelator.h"
-#include "motorFilterTest.h"
+//#include "tests/sampleTest.h"
+//#include "tests/signalTest.h"
+//#include "tests/wavFileTest.h"
+//#include "tests/recordtest.h"
+//#include "tests/signaldetector.h"
+//#include "tests/correlatorTest.h"
+//#include "tests/correlatorsTimeTest.h"
+//#include "tests/fourierTransformTest.h"
+//#include "signal/correlation/alglibCorrelator.h"
+//#include "signal/correlation/simpleCorrelator.h"
+//#include "motorFilterTest.h"
 
 using std::cout;
 using std::endl;
 
 void tests()
 {
+    /*
     SampleTest sampleTest;
     QTest::qExec(&sampleTest);
 
@@ -42,6 +44,7 @@ void tests()
     WavFileTest wavFileTest;
     QTest::qExec(&wavFileTest);
 
+
     FourierTransformTest ftTest;
     QTest::qExec(&ftTest);
 
@@ -50,8 +53,10 @@ void tests()
 
     CorrelatorsTimeTest corrTTest;
     QTest::qExec(&corrTTest);
+    */
 }
 
+/*
 int detectSignal(const QCoreApplication& app, char* argv[])
 {
     SignalDetector detector(argv[2]);
@@ -59,7 +64,9 @@ int detectSignal(const QCoreApplication& app, char* argv[])
 
     return app.exec();
 }
+*/
 
+/*
 void corr(char* argv[])
 {
     WavFile signalFile(argv[2]);
@@ -90,6 +97,7 @@ void corr(char* argv[])
     //delete[] correlation;
     exit(EXIT_SUCCESS);
 }
+*/
 
 void voiceCommand(char* argv[])
 {
@@ -132,11 +140,13 @@ void voiceCommand(char* argv[])
 
 int rec(const QCoreApplication& app)
 {
+    /*
     QAudioDeviceInfo defDev = QAudioDeviceInfo::defaultInputDevice();
     cout << "Default device: " << defDev.deviceName().toStdString() << "; isNull() = " << defDev.isNull() << endl;
 
     RecordTest recordTest(QAudioDeviceInfo::defaultInputDevice());
     recordTest.record(10 * 1000);
+    */
 
     return app.exec();
 }
@@ -161,15 +171,19 @@ int main(int argc, char *argv[])
     file.close();
     */
 
-    motorFilterTest();
+    //motorFilterTest();
 
     QString cmd(argv[1]);
     if (cmd == "tests")
         tests();
     else if (cmd == "detect")
-        detectSignal(a, argv);
+    {
+        //detectSignal(a, argv);
+    }
     else if (cmd == "corr")
-        corr(argv);
+    {
+        //corr(argv);
+    }
     else if (cmd == "cmd")
         voiceCommand(argv);
     else if (cmd == "rec")

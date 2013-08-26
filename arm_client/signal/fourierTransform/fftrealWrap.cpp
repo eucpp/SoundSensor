@@ -1,5 +1,6 @@
 #include "fftrealWrap.h"
 
+/*
 Spectrum FFTRealWrap::fourierTransform(Signal signal)
 {
     if (signal.size() != length)
@@ -14,6 +15,7 @@ Spectrum FFTRealWrap::fourierTransform(Signal signal)
     spectrum.set(out.data(), length, signal.getFormat().sampleRate());
 
     return spectrum;
+
 }
 
 Spectrum FFTRealWrap::fourierTransform(Signal signal, WindowFunction* winFunc)
@@ -23,6 +25,7 @@ Spectrum FFTRealWrap::fourierTransform(Signal signal, WindowFunction* winFunc)
     {
         frame[i] = (*winFunc)(static_cast<float>(frame[i].toPcm16()));
     }
+
     return fourierTransform(frame);
 }
 
@@ -36,3 +39,4 @@ Signal FFTRealWrap::inverseFourierTransform(Spectrum spectrum)
         signal[i] = realNumToFloat(ptrSignal[i]);
     return signal;
 }
+*/

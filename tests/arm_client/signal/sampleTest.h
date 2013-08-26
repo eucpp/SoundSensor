@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QtTest/QtTest>
-#include "../signal/sample.h"
+#include "signal/sample.h"
 
 class SampleTest : public QObject
 {

@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+/*
 #include "fixed_point/fixed_class.h"
 #include "fpml/fixed_point.h"
 
@@ -26,6 +27,6 @@ inline float realNumToFloat(RealNum r)
     return r.operator float();
 #endif
 }
-
+*/
 
 #endif // DEFINE_H

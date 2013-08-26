@@ -1,5 +1,6 @@
 #include "fftCorrelator.h"
 
+/*
 void FFTCorrelator::correlation(Signal signal, Signal pattern, RealNum* out)
 {
     //std::cout << "Signal size: " << n << std::endl;
@@ -63,7 +64,7 @@ void FFTCorrelator::correlation(Signal signal, Signal pattern, RealNum* out)
     //QScopedArrayPointer<RealNum> ptrCorrelation(correlation.toFixedPointArray());
     //memcpy(out, ptrCorrelation.data(), (n + m - 1) * sizeof(RealNum));
     for (int i = 0; i < n + m - 1; i++)
-        out[i] = correlation[i].toFloat();
+        out[i] = correlation[i].toInt();
 
     clock_t time16 = clock();
     std::cout << "Finalize time: " << (time16 - time15) / (CLOCKS_PER_SEC / 1000) << std::endl;
@@ -73,3 +74,4 @@ void FFTCorrelator::correlation(Signal signal, Signal pattern, RealNum* out)
 
     return;
 }
+*/

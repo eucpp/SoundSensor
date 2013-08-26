@@ -26,6 +26,7 @@ private slots:
     // для данных сигналов максимум должен быть в позиции 1.
     void correlationTest1()
     {
+        /*
         Signal signal(8);
         signal[0] = (float)0;
         signal[1] = 0.01;
@@ -79,6 +80,8 @@ private slots:
 
         for (int i = 0; i < size; i++)
             std::cout << "fixed [" << i << "] = " << realNumToFloat(corr[i]) << ", float [" << i << "] = " << aCorr[i] << std::endl;
+
+        */
     }
 
     /*
