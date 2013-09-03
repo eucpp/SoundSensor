@@ -105,7 +105,7 @@ Sample& Sample::operator=(const Sample& sample)
     return *this;
 }
 
-Sample *Sample::operator=(int val)
+Sample& Sample::operator=(int val)
 {
     if (signal->sampleSize() == 1)
     {

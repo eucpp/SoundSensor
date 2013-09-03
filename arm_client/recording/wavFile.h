@@ -27,15 +27,13 @@ public:
       */
     class OpenFileExc {};
     /**
-      * Класс исключений, бросаемых при попытке записи в файл,
-      * открытый только для чтения.
+      * Класс исключений, бросаемых при ошибке при записи в файл.
       */
-    class WriteDisabledExc {};
+    class WriteExc {};
     /**
-      * Класс исключений, бросаемых при попытке чтения из файла,
-      * открытого только для записи.
+      * Класс исключений, бросаемых при ошибке при чтении из файла.
       */
-    class ReadDisabledExc {};
+    class ReadExc {};
     /**
       * Класс исключений, бросаемых в случае, если при записи формат сигнала не совпадает с форматом файла.
       */
@@ -133,13 +131,13 @@ public:
       * @param length Кол-во сэмплов для чтения.
       * @return Объект-сигнал, либо пустой сигнал, если файл не был открыт.
       */
-    Signal read(int length) throw(ReadDisabledExc);
+    Signal read(int length) throw(ReadExc);
     /**
       * Читает содержимое всего файла в сигнал.
       *
       * @return Объект-сигнал, либо пустой сигнал, если файл не был открыт.
       */
-    Signal readAll() throw(ReadDisabledExc);
+    Signal readAll() throw(ReadExc);
     /**
       * Записывает в wav файл сигнал.
       * Если файл открыт только на чтение, бросается исключение WriteDisabledExc.
@@ -152,7 +150,7 @@ public:
       * @throw WriteDisabledExc Если файл открыт только на чтение.
       * @throw FormatMismatchExc Если форматы файла и сигнала не совпадают.
       */
-    int write(Signal signal, int length = -1) throw(WriteDisabledExc, FormatMismatchExc);
+    int write(Signal signal, int length = -1) throw(WriteExc, FormatMismatchExc);
 private:
     /**
       * Класс исключений, генерируемых при чтении заголовка (если заголовок оказался некорректным).

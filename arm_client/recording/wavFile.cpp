@@ -159,23 +159,23 @@ int WavFile::size()
     return (file.size() - 44) / (header.sampleSize() / 8);
 }
 
-Signal WavFile::read(int length) throw(ReadDisabledExc)
+Signal WavFile::read(int length) throw(ReadExc)
 {
     if (openmode == NotOpen)
-        return Signal();
+        throw ReadExc();
     if (openmode == WriteOnly)
-        throw ReadDisabledExc();
+        throw ReadExc();
     int bytesNum = length * header.sampleSize() / 8;
     QByteArray bytes = file.read(bytesNum);
     return Signal(bytes, header);
 }
 
-Signal WavFile::readAll() throw(ReadDisabledExc)
+Signal WavFile::readAll() throw(ReadExc)
 {
     if (openmode == NotOpen)
-        return Signal();
+        throw ReadExc();
     if (openmode == WriteOnly)
-        throw ReadDisabledExc();
+        throw ReadExc();
     int currPos = pos();
     seek(0);
     QByteArray bytes = file.readAll();
@@ -183,12 +183,12 @@ Signal WavFile::readAll() throw(ReadDisabledExc)
     return Signal(bytes, header);
 }
 
-int WavFile::write(Signal signal, int length) throw(WriteDisabledExc, FormatMismatchExc)
+int WavFile::write(Signal signal, int length) throw(WriteExc, FormatMismatchExc)
 {
     if ((openmode == NotOpen) || !headerSetFlag)
         return 0;
     if (openmode == ReadOnly)
-        throw WriteDisabledExc();
+        throw WriteExc();
     if (header != signal.getFormat())
         throw FormatMismatchExc();
     Signal subSignal = signal.subSignal(0, length);

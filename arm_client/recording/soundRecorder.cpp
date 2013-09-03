@@ -43,7 +43,7 @@ SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat&
 Signal SoundRecorder::getSignal() const
 {
     if (audioIn->state() == QAudio::IdleState)
-        return Signal();
+        return Signal(0, audioIn->format());
     if (audioIn->state() == QAudio::ActiveState)
         return Signal(QByteArray::fromRawData(byteArray.constData(), buffer.pos()), getFormat());
     return Signal(byteArray, getFormat());

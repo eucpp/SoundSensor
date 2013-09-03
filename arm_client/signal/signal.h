@@ -43,7 +43,7 @@ public:
     /**
       * Создание пустого сигнала.
       */
-    Signal();
+    //Signal();
     /**
       * Создание сигнала длиной n сэмплов, инициализированного нулями.
       *
@@ -76,6 +76,7 @@ public:
     QAudioFormat getFormat() const;
     /**
       * Устанавливает формат сигнала.
+      *
       */
     void setFormat(const QAudioFormat& signalFormat);
     /**

@@ -1,9 +1,11 @@
 #include "signal.h"
 
+/*
 Signal::Signal():
     bytes(),
     format()
 {}
+*/
 
 Signal::Signal(int n, const QAudioFormat& signalFormat):
     bytes(n * (signalFormat.sampleSize() / 8), 0),
@@ -62,11 +64,12 @@ QAudioFormat Signal::getFormat() const
     return format;
 }
 
+/*
 void Signal::setFormat(const QAudioFormat &signalFormat)
 {
     format = signalFormat;
 }
-
+*/
 
 Sample Signal::operator[](int i) throw(OutOfSignalRangeExc, SampleSizeUnset)
 {
@@ -90,9 +93,9 @@ const Sample Signal::operator[](int i) const throw(OutOfSignalRangeExc, SampleSi
     return Sample(bytes.data() + i * sampleSize(), this);
 }
 
-bool Signal::operator==(const Signal &signal) const
+bool Signal::operator==(const Signal& signal) const
 {
-    return ((bytes == signal.bytes) && (format == signal.format));
+    return ((format == signal.format) && (bytes == signal.bytes));
 }
 
 int Signal::sampleSize() const throw(SampleSizeUnset)
