@@ -4,16 +4,42 @@
 #
 #-------------------------------------------------
 
+# тут определяем некоторые переменные и "конфиги" для сборки проекта.
+
+# сборка проекта для тестирования на обычной машине - desktop, сборка для трика - trik
+CONFIG += desktop
+# путь к XDAIS
+XDAIS_INSTALL_DIR = /opt/trik-dsp/xdais_7_23_00_06
+# путь к codec_engine
+CE_INSTALL_DIR = /opt/trik-dsp/codec_engine_3_23_00_07
+# путь к xdc
+XDC_INSTALL_DIR = /opt/trik-dsp/xdctools_3_24_07_73
+
+# общие настройки qt проекта
 QT       += core
 QT -= gui
-
-
 TARGET = arm_client
 TEMPLATE = app
 CONFIG +=  console
 CONFIG -= app_bundle
-CONFIG += desktop
 
+# настройки проекта
+
+# подключаем pocketsphinx
+INCLUDEPATH +=  /usr/local/include/sphinxbase \
+    /usr/local/include/pocketsphinx
+
+# подключаем модули для dsp
+INCLUDEPATH += $$CE_INSTALL_DIR/packages $$XDC_INSTALL_DIR/packages $$XDAIS_INSTALL_DIR/packages
+
+#  -L/usr/local/lib
+LIBS += -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm
+
+# особые ключи, необходимые для сборки
+# указываем target_types для XDAIS
+QMAKE_CXXFLAGS = "-Dxdc_target_types__=gnu/targets/arm/std.h"
+
+# специфичные настройки для сборки под трик/десктоп
 trik {
     QT += multimedia
     DESTDIR = ../trik-build-bin
@@ -27,11 +53,24 @@ desktop {
     INCLUDEPATH += /usr/include/QtMobility
 }
 
+# подключаем подпроекты
 include(signal/signal.pri)
 include(recording/recording.pri)
+include(codecEngineWrap/codecEngineWrap.pri)
 
-SOURCES +=\
+
+SOURCES += main.cpp \
     voiceCommandSensor.cpp \
+
+HEADERS  += define.h \
+    buildParam.h \
+    voiceCommandSensor.h \
+
+
+
+
+# тут закоменченный код, пока не удалять
+
 #        testwindow.cpp \
 #    Alglib/fasttransforms.cpp \
 #    Alglib/ap.cpp \
@@ -47,12 +86,8 @@ SOURCES +=\
 #    signal/fourierTransform/fftrealWrap.cpp \
 #    signal/correlation/alglibCorrelator.cpp \
 #    motorFilterTest.cpp
-    main.cpp
 
-HEADERS  += define.h \
-    buildParam.h \
-    voiceCommandSensor.h \
-    #testwindow.h \
+#    testwindow.h \
 #    Alglib/fasttransforms.h \
 #    Alglib/ap.h \
 #    Alglib/alglibinternal.h \
@@ -97,12 +132,3 @@ HEADERS  += define.h \
 #    motorFilterTest.h
 
 #FORMS    += testwindow.ui \
-
-# подключаем pocketsphinx
-INCLUDEPATH +=  /usr/local/include/sphinxbase \
-    /usr/local/include/pocketsphinx
-
-#  -L/usr/local/lib
-LIBS += -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm
-
-OTHER_FILES +=
