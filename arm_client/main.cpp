@@ -190,6 +190,7 @@ int main(int argc, char *argv[])
         rec(a);
 
 
+    std::cout << "helloword!" << std::endl;
 
     //return app.exec();
 
