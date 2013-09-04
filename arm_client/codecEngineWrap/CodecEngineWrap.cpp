@@ -1,8 +1,10 @@
 #include <cstring>
 
-#include "codecEngineWrap.h"
+#include "CodecEngineWrap.h"
 
 const QString CodecEngineWrap::serverName = "dsp-server";
+
+using namespace CodecEngineExceptions;
 
 CodecEngineWrap::CodecEngineWrap(bool verbose):
     engineHandle(NULL)
@@ -67,79 +69,18 @@ void CodecEngineWrap::open(const QString &serverPath) throw(OpenExc)
     }
 }
 
-void CodecEngineWrap::close()
+bool CodecEngineWrap::isOpen() const
 {
-    if (engineHandle == NULL)
-      return;
-    Engine_close(engineHandle);
-    engineHandle = NULL;
+    return (engineHandle != NULL);
 }
 
-void CodecEngineWrap::create(QString algName,
-                             size_t maxSrcWidth, size_t maxSrcHeight,
-                             //size_t srcLineLength, size_t _srcImageSize, uint32_t _srcFormat,
-                             size_t maxDstWidth, size_t maxDstHeight,
-                             //size_t _dstLineLength, size_t _dstImageSize, uint32_t _dstFormat
-                             )
+Engine_Handle CodecEngineWrap::getEngineHandle() const
 {
-    VIDTRANSCODE_Params params;
-    params.size = sizeof(params);
-    params.numOutputStreams = 1;
-    params.formatInput = do_convertPixelFormat(_ce, _srcFormat);
-    params.formatOutput[0] = do_convertPixelFormat(_ce, _dstFormat);
-    params.maxHeightInput = maxSrcHeight;
-    params.maxWidthInput = maxSrcWidth;
-    params.maxHeightOutput[0] = maxDstHeight;
-    params.maxWidthOutput[0] = maxDstWidth;
-
-    vidtranscodeHandle = VIDTRANSCODE_create(engineHandle, algName.toAscii().data(), &params);
-    if (vidtranscodeHandle == NULL)
+    if (!isOpen())
     {
-        throw CreateExc();
+        throw EngineNotOpened;
     }
+    return engineHandle;
 }
 
-void CodecEngineWrap::memoryAlloc(size_t _srcBuffSize, size_t _dstBuffSize)
-{
-    memset(allocParams, 0, sizeof(allocParams));
-    allocParams.type = Memory_CONTIGPOOL;
-    #warning TODO check - maybe Memory_CACHED?
-    allocParams.flags = Memory_NONCACHED;
-    allocParams.align = BUFALIGN;
-    allocParams.seg = 0;
-
-    srcBuffSize = ALIGN_UP(_srcBuffSize, BUFALIGN);
-    srcBuff = Memory_alloc(srcBuffSize, allocParams);
-    if (srcBuff == NULL)
-    {
-        throw MemoryAllocExc();
-    }
-
-    dstBuffSize = ALIGN_UP(_dstBuffSize, BUFALIGN);
-    dstBuff = Memory_alloc(dstBuffSize, allocParams);
-    if (dstBuff == NULL)
-    {
-        memoryFree();
-        throw MemoryAllocExc();
-    }
-
-    return 0;
-}
-
-void CodecEngineWrap::memoryFree()
-{
-    if (srcBuff != NULL)
-    {
-      Memory_free(srcBuff, srcBuffSize, allocParams);
-      srcBuff = NULL;
-      srcBuffSize = 0;
-    }
-
-    if (dstBuff != NULL)
-    {
-      Memory_free(dstBuff, dstBuffSize, allocParams);
-      dstBuff = NULL;
-      dstBuffSize = 0;
-    }
-}
 
