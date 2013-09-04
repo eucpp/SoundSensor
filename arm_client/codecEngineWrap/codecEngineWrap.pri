@@ -1,5 +1,8 @@
 HEADERS += \
-    codecEngineWrap/codecEngineWrap.h
+    codecEngineWrap/CodecEngineExceptions.h \
+    codecEngineWrap/CodecEngineWrap.h \
+    codecEngineWrap/TrikVidtranscode.h
 
 SOURCES += \
-    codecEngineWrap/codecEngineWrap.cpp
+    codecEngineWrap/CodecEngineWrap.cpp \
+    codecEngineWrap/TrikVidtranscode.cpp
