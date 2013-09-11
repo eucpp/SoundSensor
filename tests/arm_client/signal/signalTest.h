@@ -43,6 +43,7 @@ private slots:
         {
             bytes.append((char)0);
         }
+
         Signal signal1(bytes, format);
         format.setSampleSize(8);
         Signal signal2(bytes, format);
@@ -55,7 +56,9 @@ private slots:
         QAudioFormat format = createFormat();
         QByteArray bytes(100, (char)0);
         Signal signal(bytes, format);
+
         signal.resize(52);
+
         QCOMPARE(signal.size(), 52);
         QCOMPARE(signal[51].toInt(), 0);
     }
@@ -65,9 +68,34 @@ private slots:
     {
         QAudioFormat format = createFormat();
         Signal signal(44100, format);
+
         QCOMPARE(signal.time(44099), 1000);
         QCOMPARE(signal.time(22050), 500);
         QCOMPARE(signal.time(0), 0);
+    }
+
+    // тестируем выделение подсигнала
+    void subSignalTest()
+    {
+        QAudioFormat format = createFormat();
+        format.setSampleSize(16);
+        QByteArray bytes;
+        bytes.append(0xFF);
+        bytes.append(0x7F); // = 32767
+        bytes.append((char)(0));
+        bytes.append((char)(0)); // = 0
+        bytes.append((char)(0));
+        bytes.append(0xC0); // = -16384
+        bytes.append(0x01);
+        bytes.append(0xA0); // = -24575
+
+        Signal signal(bytes, format);
+        Signal subSignal1 = signal.subSignal(2);
+        Signal subSignal2 = signal.subSignal(1, 2);
+
+        QCOMPARE(subSignal1[0].toInt(), -16384);
+        QCOMPARE(subSignal2[0].toInt(), 0);
+        QCOMPARE(subSignal2[1].toInt(), -16384);
     }
 
 private:

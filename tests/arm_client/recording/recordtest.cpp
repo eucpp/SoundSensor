@@ -1,5 +1,7 @@
 #include "recordtest.h"
 
+using namespace std;
+
 RecordTest::RecordTest(const QAudioDeviceInfo& device):
     recorder(device, device.preferredFormat()),
     frameCounter(0)
@@ -18,7 +20,9 @@ void RecordTest::record(int ms)
 
 void RecordTest::frameHandler(Signal frame)
 {
-    std::cout << "Frame #" << frameCounter++ << "; Samples num = " << frame.size() << std::endl;
+    std::cout << "Frame #" << frameCounter++ << "; Samples num = " << frame.size() <<
+                 "; Bytes ready =  " << recorder.audioIn->bytesReady() << "; State = " <<
+                 recorder.audioIn->state() << std::endl;
 }
 
 void RecordTest::stop(Signal signal)
@@ -37,3 +41,4 @@ void RecordTest::stop(Signal signal)
         std::cout << "Some exception!" << endl;
     }
 }
+

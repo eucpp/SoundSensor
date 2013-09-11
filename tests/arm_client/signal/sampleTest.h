@@ -15,7 +15,9 @@ private slots:
         format.setSampleSize(8);
         format.setSampleType(QAudioFormat::SignedInt);
         Signal signal(4, format);
+
         signal[1] = 127;
+
         char* data = signal.data();
         QCOMPARE(data[1], (char)127);
     }
@@ -26,7 +28,9 @@ private slots:
         format.setSampleSize(8);
         format.setSampleType(QAudioFormat::UnSignedInt);
         Signal signal(4, format);
+
         signal[1] = 250;
+
         char* data = signal.data();
         QCOMPARE((unsigned char)data[1], (unsigned char)250);
     }
@@ -38,7 +42,9 @@ private slots:
         format.setSampleType(QAudioFormat::SignedInt);
         format.setByteOrder(QAudioFormat::BigEndian);
         Signal signal(4, format);
+
         signal[1] = -32768;
+
         char* data = signal.data();
         QCOMPARE(data[2], (char)0x80);
         QCOMPARE(data[3], (char)0x00);
@@ -51,7 +57,9 @@ private slots:
         format.setSampleType(QAudioFormat::UnSignedInt);
         format.setByteOrder(QAudioFormat::LittleEndian);
         Signal signal(4, format);
+
         signal[1] = 16000;
+
         char* data = signal.data();
         QCOMPARE(data[2], (char)0x80);
         QCOMPARE(data[3], (char)0x3E);

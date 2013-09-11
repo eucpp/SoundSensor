@@ -11,6 +11,7 @@ class WavFileTest : public QObject
 {
     Q_OBJECT
 private slots:
+    // создаём тестовый файл и записываем в него хэдер и сигнал
     void init()
     {
         header = new QAudioFormat();
@@ -26,6 +27,7 @@ private slots:
         (*signal)[1] = 16384;
         (*signal)[2] = -256;
         (*signal)[3] = -32768;
+        file->close();
     }
     void cleanup()
     {
@@ -37,21 +39,27 @@ private slots:
     // тестируем запись/чтение заголовка wav файла
     void readWriteHeaderTest()
     {
-        file->close();
         file->open(WavFile::ReadOnly);
+
         QAudioFormat readFormat = file->getHeader();
+
         QCOMPARE(readFormat, *header);
     }
     // тестируем кол-во записанных байт
     void readWriteSignalTest1()
     {
+        file->open(WavFile::WriteOnly, *header);
+
         int samplesWritten = file->write(*signal);
+
         QCOMPARE(samplesWritten, 4);
     }
 
     // тестируем запись/чтение сигнала в файл
     void readWriteSignalTest2()
     {
+        file->open(WavFile::WriteOnly, *header);
+
         file->write(*signal);
         file->close();
         file->open(WavFile::ReadOnly);
@@ -62,45 +70,61 @@ private slots:
     // тестируем запись чтение части сигнала
     void readWriteSignalTest3()
     {
+        file->open(WavFile::WriteOnly, *header);
+
         file->write(*signal, 3);
         file->close();
         file->open(WavFile::ReadOnly);
         Signal readSignal(file->read(2));
+
         QCOMPARE(readSignal, signal->subSignal(0, 2));
     }
     void sizeTest()
     {
+        file->open(WavFile::WriteOnly, *header);
         file->write(*signal);
+
         QCOMPARE(file->size(), 4);
     }
     void seekPosTest()
     {
+        file->open(WavFile::WriteOnly, *header);
         file->write(*signal);
         file->close();
         file->open(WavFile::ReadOnly);
+
         file->seek(1);
+
         QCOMPARE(file->pos(), 1);
+
         Signal signal(file->read(1));
+
         QCOMPARE(signal[0].toInt(), 16384);
     }
     // проверяем запись "с наложением" данных.
     void writeTest()
     {
+        file->open(WavFile::WriteOnly, *header);
+
         file->write(*signal);
         file->seek(1);
         file->write(*signal);
+
         QCOMPARE(file->size(), 5);
     }
     // проверяем добавление в существующий файл.
     void appendTest()
     {
+        file->open(WavFile::WriteOnly, *header);
         file->write(*signal);
         file->close();
+
         file->open(WavFile::Append);
         Signal signal2(2, *header);
         signal2[0] = 0.8;
         signal2[1] = 0.4;
         file->write(signal2);
+
         QCOMPARE(file->size(), 6);
     }
     // проверяем, сгенерируется ли исключение при попытке открыть некорректный wav файл.
@@ -113,8 +137,10 @@ private slots:
             for (int i = 0; i < 20; i++)
                 badFile.write("Lorem ipsum dolar sit amet ");
             badFile.close();
+
             file->setFileName("testUncorrectWavFile.txt");
             file->open(WavFile::ReadOnly);
+
             QFAIL("Exception expected");
         }
         catch (WavFile::OpenFileExc)

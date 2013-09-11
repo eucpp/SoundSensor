@@ -18,6 +18,8 @@ desktop {
     MOBILITY = multimedia
     INCLUDEPATH += /usr/include/QtMultimediaKit
     INCLUDEPATH += /usr/include/QtMobility
+
+    DEFINES += DESKTOP
 }
 
 INCLUDEPATH += ../arm_client/
@@ -28,13 +30,19 @@ INCLUDEPATH += ../arm_client/
 HEADERS += \
     arm_client/recording/wavFileTest.h \
     arm_client/signal/signalTest.h \
-    arm_client/signal/sampleTest.h
+    arm_client/signal/sampleTest.h \
+    arm_client/recording/recordtest.h \
+    tests.h
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    arm_client/recording/recordtest.cpp \
+    tests.cpp
 
 # подключаем объектники тестируемых классов
 # какие-то жуткие костыли
 OBJECTS += $$OUT_PWD/../arm_client/signal.o \
     $$OUT_PWD/../arm_client/sample.o \
     $$OUT_PWD/../arm_client/wavFile.o \
+    $$OUT_PWD/../arm_client/soundRecorder.o \
+    $$OUT_PWD/../arm_client/moc_soundRecorder.o

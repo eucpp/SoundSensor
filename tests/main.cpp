@@ -1,32 +1,33 @@
 #include <QtTest>
 
-#include "arm_client/signal/sampleTest.h"
-#include "arm_client/signal/signalTest.h"
-#include "arm_client/recording/wavFileTest.h"
+#include "tests.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    SampleTest sampleTest;
-    QTest::qExec(&sampleTest);
-
-    SignalTest signalTest;
-    QTest::qExec(&signalTest);
-
-    WavFileTest wavFileTest;
-    QTest::qExec(&wavFileTest);
-
-    /*
-    FourierTransformTest ftTest;
-    QTest::qExec(&ftTest);
-
-    CorrelatorTest correlatorTest;
-    QTest::qExec(&correlatorTest);
-
-    CorrelatorsTimeTest corrTTest;
-    QTest::qExec(&corrTTest);
-    */
+    if (argc == 0)
+    {
+        a.quit();
+    }
+    else
+    {
+        QString cmd(argv[1]);
+        // run unit tests
+        if ((cmd == "unit") || (cmd == "-u"))
+        {
+            unitTests();
+            a.quit();
+        }
+        else if ((cmd == "rec") || (cmd == "-r"))
+        {
+            recordingTest(a);
+        }
+        else if ((cmd == "adev") || (cmd == "-d"))
+        {
+            devicesInfo();
+        }
+    }
 
     return a.exec();
 }
