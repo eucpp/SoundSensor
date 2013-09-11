@@ -1,8 +1,6 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
-#include "../buildParam.h"
-
 #include <cmath>
 #include <QtEndian>
 

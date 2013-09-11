@@ -147,7 +147,7 @@ int Signal::time(int i) const throw(OutOfSignalRangeExc, SampleRateUnset)
 
 Signal Signal::subSignal(int start, int length) const
 {
-    return Signal(bytes.mid(start, length), format);
+    return Signal(bytes.mid(start * sampleSize(), length * sampleSize()), format);
 }
 
 bool Signal::sampleSizeSet() const

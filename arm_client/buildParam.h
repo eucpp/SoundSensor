@@ -1,6 +1,6 @@
 #ifndef BUILDPARAM_H
 #define BUILDPARAM_H
 
-#define DESKTOP
+//#define DESKTOP
 
 #endif // BUILDPARAM_H

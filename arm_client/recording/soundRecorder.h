@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../buildParam.h"
-
 #include <iostream>
 #include <QObject>
 
@@ -21,8 +19,11 @@
 #include <QByteArray>
 #include "../signal/signal.h"
 
-using namespace std;
 
+// for test purpose
+//#include "../../tests/arm_client/recording/recordtest.h"
+
+class RecordTest;
 
 /**
   * Класс используется для записи звука с микрофона (поддерживается только моно запись).
@@ -31,6 +32,7 @@ class SoundRecorder : public QObject
 {
     Q_OBJECT
 public:
+    friend class RecordTest;
     /**
       * Конструктор.
       * При создании нового объекта используется устройство и формат записи по умолчанию.
@@ -115,6 +117,18 @@ private slots:
       * Копирует последний записанный фрейм.
       */
     void recordFrame();
+    /**
+      *
+      */
+    void testReadyRead()
+    {
+        //std::cout << "----- bytes ready! ------" << std::endl;
+    }
+    void testBytesWritten(qint64 n)
+    {
+        //std::cout << "==== bytes writen: " << n << " ! ====" << std::endl;
+    }
+
 private:
     QAudioDeviceInfo audioDevice;
     QScopedPointer<QAudioInput> audioIn;

@@ -13,8 +13,9 @@
 #endif
 
 #include <QFile>
-#include "signal.h"
-#include "soundRecorder.h"
+
+#include "signal/signal.h"
+//#include "soundRecorder.h"
 
 /**
   * Класс для работы с wav файлами.

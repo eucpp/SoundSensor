@@ -8,6 +8,9 @@ SoundRecorder::SoundRecorder():
 {
     audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
     connect(audioIn.data(), SIGNAL(notify()), this, SLOT(recordFrame()));
+
+    connect(&buffer, SIGNAL(bytesWritten(qint64)), this, SLOT(testBytesWritten(qint64)));
+    connect(&buffer, SIGNAL(readyRead()), this, SLOT(testReadyRead()));
 }
 
 SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device):
@@ -18,6 +21,9 @@ SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device):
 {
     audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
     connect(audioIn.data(), SIGNAL(notify()), this, SLOT(recordFrame()));
+
+    connect(&buffer, SIGNAL(bytesWritten(qint64)), this, SLOT(testBytesWritten(qint64)));
+    connect(&buffer, SIGNAL(readyRead()), this, SLOT(testReadyRead()));
 }
 
 SoundRecorder::SoundRecorder(const QAudioFormat& format):
@@ -28,6 +34,9 @@ SoundRecorder::SoundRecorder(const QAudioFormat& format):
 {
     audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
     connect(audioIn.data(), SIGNAL(notify()), this, SLOT(recordFrame()));
+
+    connect(&buffer, SIGNAL(bytesWritten(qint64)), this, SLOT(testBytesWritten(qint64)));
+    connect(&buffer, SIGNAL(readyRead()), this, SLOT(testReadyRead()));
 }
 
 SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat& format):
@@ -38,6 +47,9 @@ SoundRecorder::SoundRecorder(const QAudioDeviceInfo& device, const QAudioFormat&
 {
     audioIn->setNotifyInterval(SoundRecorder::defaultFrameLength);
     connect(audioIn.data(), SIGNAL(notify()), this, SLOT(recordFrame()));
+
+    connect(&buffer, SIGNAL(bytesWritten(qint64)), this, SLOT(testBytesWritten(qint64)));
+    connect(&buffer, SIGNAL(readyRead()), this, SLOT(testReadyRead()));
 }
 
 Signal SoundRecorder::getSignal() const
