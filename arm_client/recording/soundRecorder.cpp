@@ -104,7 +104,7 @@ int SoundRecorder::getFrameLength() const
 QAudioFormat SoundRecorder::defaultAudioFormat()
 {
     QAudioFormat format;
-    format.setSampleRate(16000);
+    format.setSampleRate(44100);
     format.setChannels(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");

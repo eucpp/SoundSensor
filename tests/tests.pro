@@ -5,27 +5,16 @@ TARGET = tests
 TEMPLATE = app
 CONFIG +=  console
 CONFIG -= app_bundle
-CONFIG += desktop
 
-trik {
-    QT += multimedia
-    DESTDIR = ../trik-build-bin
-    OBJECTS_DIR = ../trik-build-bin
-    MOC_DIR = ../trik-build-bin
-}
-desktop {
-    CONFIG += mobility
-    MOBILITY = multimedia
-    INCLUDEPATH += /usr/include/QtMultimediaKit
-    INCLUDEPATH += /usr/include/QtMobility
+include(../defines.pri)
 
-    DEFINES += DESKTOP
-}
+DESTDIR = $$BUILD_FOLDER/tests
+OBJECTS_DIR = $$BUILD_FOLDER/tests
+MOC_DIR = $$BUILD_FOLDER/tests
+RCC_DIR = $$BUILD_FOLDER/tests
+UI_DIR = $$BUILD_FOLDER/tests
 
 INCLUDEPATH += ../arm_client/
-
-#include(../arm_client/signal/signal.pri)
-#include(../arm_client/recording/recording.pri)
 
 HEADERS += \
     arm_client/recording/wavFileTest.h \
@@ -39,10 +28,9 @@ SOURCES += \
     arm_client/recording/recordtest.cpp \
     tests.cpp
 
-# подключаем объектники тестируемых классов
-# какие-то жуткие костыли
-OBJECTS += $$OUT_PWD/../arm_client/signal.o \
-    $$OUT_PWD/../arm_client/sample.o \
-    $$OUT_PWD/../arm_client/wavFile.o \
-    $$OUT_PWD/../arm_client/soundRecorder.o \
-    $$OUT_PWD/../arm_client/moc_soundRecorder.o
+OBJ_PATH = $$BUILD_FOLDER/arm_client
+OBJECTS += $$OBJ_PATH/signal.o \
+    $$OBJ_PATH/sample.o \
+    $$OBJ_PATH/wavFile.o \
+    $$OBJ_PATH/soundRecorder.o \
+    $$OBJ_PATH/moc_soundRecorder.o

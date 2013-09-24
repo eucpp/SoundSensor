@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS= arm_client tests 
+SUBDIRS = arm_client tests
 
 CONFIG += ordered
 
