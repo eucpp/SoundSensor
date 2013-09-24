@@ -26,7 +26,6 @@ SOURCES += main.cpp \
     voiceCommandSensor.cpp \
 
 HEADERS  += define.h \
-    buildParam.h \
     voiceCommandSensor.h
 
 DESTDIR = $$BUILD_FOLDER/arm_client
