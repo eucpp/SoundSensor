@@ -155,10 +155,10 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
 * ======== TRIK_IAUDENC1_DENOISE_control ========
 */
 XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
-    IVIDTRANSCODE_Handle	_algHandle,
-    IVIDTRANSCODE_Cmd	_vidCmd,
+    IAUDENC1_Handle	_algHandle,
+    IAUDENC1_Cmd	_vidCmd,
     TRIK_IAUDENC1_DENOISE_DynamicParams*	_vidDynParams,
-    IVIDTRANSCODE_Status*	_vidStatus)
+    IAUDENC1_Status*	_vidStatus)
 {
 
 }

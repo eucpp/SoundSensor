@@ -32,7 +32,7 @@ function getLibs(prog)
     }
 
     /* And finally, the location of the libraries are in lib/<profile>/* */
-    name = "lib/" + this.profile + "/trik_vidtranscode_cv.a" + suffix;
+    name = "lib/" + this.profile + "/trik_iaudenc1_denoise.a" + suffix;
 
     return (name);
 }
