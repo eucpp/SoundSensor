@@ -1,7 +1,7 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
-#include "../buildParam.h"
+
 
 #include <cmath>
 #include <cstring>

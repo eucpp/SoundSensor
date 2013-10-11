@@ -1,4 +1,4 @@
-#include "buildParam.h"
+
 
 #include <QtGui/QApplication>
 #include <QTimer>
@@ -16,7 +16,7 @@
 //#include "fixed_point/fixed_func.h"
 #include "recording/soundRecorder.h"
 #include "recording/wavFile.h"
-#include "voiceCommandSensor.h"
+//#include "voiceCommandSensor.h"
 //#include "tests/sampleTest.h"
 //#include "tests/signalTest.h"
 //#include "tests/wavFileTest.h"
@@ -101,8 +101,10 @@ void corr(char* argv[])
 
 void voiceCommand(char* argv[])
 {
+    /*
     try
     {
+
         VoiceCommandSensor cmdSensor("sphinx_data/msu_ru_nsh.cd_cont_1000_8gau_16000_adapt/",
                                      "sphinx_data/robot.gram", "sphinx_data/adapt.dic");
 
@@ -136,6 +138,8 @@ void voiceCommand(char* argv[])
         cout << "Recognize error" << endl;
         exit(EXIT_FAILURE);
     }
+    }
+    */
 }
 
 int rec(const QCoreApplication& app)

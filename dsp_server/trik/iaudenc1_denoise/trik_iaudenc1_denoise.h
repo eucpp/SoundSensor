@@ -5,6 +5,8 @@
 #include <ti/xdais/ialg.h>
 #include <ti/xdais/dm/iaudenc1.h>
 
+#include "include/internal/denoise.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -16,6 +18,7 @@ extern "C" {
 */
 extern IAUDENC1_Fxns TRIK_IAUDENC1_DENOISE_FXNS;
 extern IALG_Fxns TRIK_IAUDENC1_DENOISE_IALG;
+
 
 typedef struct TRIK_IAUDENC1_DENOISE_Params {
     IAUDENC1_Params	base;
@@ -37,6 +40,14 @@ typedef struct TRIK_IAUDENC1_DENOISE_OutArgs {
     IAUDENC1_OutArgs	base;
 
 } TRIK_IAUDENC1_DENOISE_OutArgs;
+
+
+typedef struct TrikDenoiseHandle {
+    IALG_Obj	m_alg;	/* MUST be first field of all XDAIS algs */
+
+    TRIK_IAUDENC1_DENOISE_Params	m_params;
+    TRIK_IAUDENC1_DENOISE_DynamicParams	m_dynamicParams;
+} TrikDenoiseHandle;
 
 
 #ifdef __cplusplus

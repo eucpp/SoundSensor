@@ -10,7 +10,6 @@
     #include <QtMultimedia/QAudioFormat>
 #endif
 
-#include "../define.h"
 #include "signal.h"
 
 class Signal;

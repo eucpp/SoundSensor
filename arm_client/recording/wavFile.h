@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../buildParam.h"
 
 #include <iostream>
 #include <cstring>

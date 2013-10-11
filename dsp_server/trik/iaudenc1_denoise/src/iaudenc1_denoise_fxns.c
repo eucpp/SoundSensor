@@ -84,6 +84,33 @@ IALG_Fxns TRIK_IAUDENC1_DENOISE_IALG = {
 
 static const char s_version[] = "1.00.00.00";
 
+
+static XDAS_Int32 setupDynamicParams(TrikDenoiseHandle* _handle,
+                                                 const TRIK_IAUDENC1_DENOISE_DynamicParams* _dynamicParams)
+{
+    static const TRIK_IAUDENC1_DENOISE_DynamicParams default_dyn_params = {
+        {
+            sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams),    //size
+            16 * 16000,                                     //bitRate
+            16000,                                          //sampleRate
+            IAUDIO_1_0,                                     //channelMode
+            XDAS_FALSE,                                     //lfeFlag
+            IAUDIO_DUALMONO_LR,                             //dualMonoMode
+            IAUDIO_CBR,                                  	//inputBitsPerSample
+        }
+    };
+
+    if (_dynamicParams == NULL) {
+        dyn_params = default_dyn_params;
+    }
+    else {
+        dyn_params = *_dynamicParams;
+    }
+    _handle->m_dynamicParams = dyn_params;
+
+    return IALG_EOK;
+}
+
 /*
 * ======== TRIK_IAUDENC1_DENOISE_alloc ========
 * Return a table of memory descriptors that describe the memory needed
@@ -95,10 +122,15 @@ Int TRIK_IAUDENC1_DENOISE_alloc(
     IALG_Fxns**	_algFxns,
     IALG_MemRec	_algMemTab[])
 {
+    /* Request memory for my object, ignoring algParams */
+    _algMemTab[0].size	= sizeof(TrikDenoiseHandle);
+    _algMemTab[0].alignment	= 0;
+    _algMemTab[0].space	= IALG_EXTERNAL;
+    _algMemTab[0].attrs	= IALG_PERSIST;
 
+    /* Return the number of records in the memTab */
+    return 1;
 }
-
-
 
 
 /*
@@ -112,10 +144,18 @@ Int TRIK_IAUDENC1_DENOISE_free(
     IALG_Handle	_algHandle,
     IALG_MemRec	_algMemTab[])
 {
+    TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
 
+    /* Returned data must match one returned in alloc */
+    _algMemTab[0].base	= handle;
+    _algMemTab[0].size	= sizeof(TrikCvHandle);
+    _algMemTab[0].alignment	= 0;
+    _algMemTab[0].space	= IALG_EXTERNAL;
+    _algMemTab[0].attrs	= IALG_PERSIST;
+
+    /* Return the number of records in the memTab */
+    return 1;
 }
-
-
 
 
 /*
@@ -129,9 +169,40 @@ Int TRIK_IAUDENC1_DENOISE_initObj(
     IALG_Handle	_algParent,
     const IALG_Params*	_algParams)
 {
+    TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
+    XDAS_Int32 res;
 
+    static const TRIK_IAUDENC1_DENOISE_Params default_params = {
+        {                                           // base
+            sizeof(TRIK_IAUDENC1_DENOISE_Params),   // size
+            16000,                                  //sampleRate
+            16 * 16000,                             //bitRate
+            IAUDIO_1_0,                             //channelMode
+            XDM_LE_16,                              //dataEndianness
+            IAUDIO_CBR,                             //encMode
+            IAUDIO_BLOCK,                           //inputFormat
+            16,                                  	//inputBitsPerSample
+            16 * 16000,                          	//maxBitRate
+            IAUDIO_DUALMONO_LR,                  	//dualMonoMode
+            XDAS_FALSE,                          	//crcFlag
+            XDAS_FALSE,                          	//ancFlag
+            XDAS_FALSE                           	//lfeFlag
+        }
+    };
+
+    TRIK_IAUDENC1_DENOISE_Params params = (TRIK_IAUDENC1_DENOISE_Params*)_algParams;
+    if (params == NULL) {
+        params = &default_params;
+    }
+    handle->m_params = params;
+
+    XDAS_Int32 res = setupDynamicParams(handle, NULL);
+    if (res != IALG_EOK) {
+        return res;
+    }
+
+    return IALG_EOK;
 }
-
 
 
 
@@ -145,10 +216,10 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
     TRIK_IAUDENC1_DENOISE_InArgs*	_vidInArgs,
     TRIK_IAUDENC1_DENOISE_OutArgs*	_vidOutArgs)
 {
+    test_fillOutBuff(_xdmOutBufs);
 
+    return 	IAUDENC1_EOK;
 }
-
-
 
 
 /*
@@ -160,7 +231,60 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
     TRIK_IAUDENC1_DENOISE_DynamicParams*	_vidDynParams,
     IAUDENC1_Status*	_vidStatus)
 {
+    TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
+    XDAS_Int32 retVal = IAUDENC1_EFAIL;
 
+    /* initialize for the general case where we don't access the data buffer */
+    XDM_CLEARACCESSMODE_READ(_vidStatus->data.accessMask);
+    XDM_CLEARACCESSMODE_WRITE(_vidStatus->data.accessMask);
+
+    switch (_vidCmd)
+    {
+        case XDM_GETSTATUS:
+        case XDM_GETBUFINFO:
+            _vidStatus->extendedError = 0;
+
+            _vidStatus->bufInfo.minNumInBufs = 1;
+            _vidStatus->bufInfo.minNumOutBufs = 1;
+            _vidStatus->bufInfo.minInBufSize[0] = 0;
+            _vidStatus->bufInfo.minOutBufSize[0] = 0;
+
+            XDM_SETACCESSMODE_WRITE(_vidStatus->data.accessMask);
+            retVal = IAUDENC1_EOK;
+            break;
+
+        case XDM_SETPARAMS:
+            if (_vidDynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
+                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_vidDynParams);
+            else
+                retVal = IAUDENC1_EUNSUPPORTED;
+            break;
+
+        case XDM_RESET:
+        case XDM_SETDEFAULT:
+            retVal = setupDynamicParams(handle, NULL);
+            break;
+
+        case XDM_FLUSH:
+            retVal = IAUDENC1_EOK;
+            break;
+
+        case XDM_GETVERSION:
+            if (_vidStatus->data.buf != NULL && _vidStatus->data.bufSize >= strlen(s_version)+1)
+            {
+                memcpy(_vidStatus->data.buf, s_version, strlen(s_version)+1);
+                XDM_SETACCESSMODE_WRITE(_vidStatus->data.accessMask);
+                retVal = IAUDENC1_EOK;
+            }
+            else
+                retVal = IAUDENC1_EFAIL;
+            break;
+
+        default:
+            /* unsupported cmd */
+            retVal = IAUDENC1_EFAIL;
+            break;
+    }
+
+    return retVal;
 }
-
-

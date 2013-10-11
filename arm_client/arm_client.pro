@@ -22,11 +22,7 @@ include(recording/recording.pri)
 include(codecEngineWrap/codecEngineWrap.pri)
 
 
-SOURCES += main.cpp \
-    voiceCommandSensor.cpp \
-
-HEADERS  += define.h \
-    voiceCommandSensor.h
+SOURCES += main.cpp
 
 DESTDIR = $$BUILD_FOLDER/arm_client
 OBJECTS_DIR = $$BUILD_FOLDER/arm_client
