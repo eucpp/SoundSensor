@@ -54,7 +54,7 @@ char* Signal::data()
     return bytes.data();
 }
 
-const char *Signal::data() const
+const char* Signal::data() const
 {
     return bytes.constData();
 }

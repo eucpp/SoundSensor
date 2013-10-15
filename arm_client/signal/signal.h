@@ -78,7 +78,7 @@ public:
       * Устанавливает формат сигнала.
       *
       */
-    void setFormat(const QAudioFormat& signalFormat);
+    //void setFormat(const QAudioFormat& signalFormat);
     /**
       * Оператор возвращает сэмпл в позиции i сигнала.
       */

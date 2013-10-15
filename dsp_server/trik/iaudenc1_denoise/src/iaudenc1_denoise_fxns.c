@@ -23,14 +23,14 @@ Int TRIK_IAUDENC1_DENOISE_initObj(IALG_Handle _algHandle,
                                   const IALG_Params* _algParams);
 
 XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(IAUDENC1_Handle _algHandle,
-                                         XDM1_BufDesc* _xdmInBufs, XDM_BufDesc* _xdmOutBufs,
+                                         XDM1_BufDesc* _xdmInBufs, XDM1_BufDesc* _xdmOutBufs,
                                          TRIK_IAUDENC1_DENOISE_InArgs* _inArgs,
                                          TRIK_IAUDENC1_DENOISE_OutArgs* _outArgs);
 
 XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(IAUDENC1_Handle _algHandle,
                                          IAUDENC1_Cmd _vidCmd,
-                                         TRIK_IAUDENC1_DENOISE_DynamicParams* _vidDynParams,
-                                         IAUDENC1_Status* _vidStatus);
+                                         TRIK_IAUDENC1_DENOISE_DynamicParams* _dynParams,
+                                         IAUDENC1_Status* _status);
 
 
 #define TRIK_IAUDENC1_DENOISE_IALGFXNS \
@@ -204,7 +204,34 @@ Int TRIK_IAUDENC1_DENOISE_initObj(
     return IALG_EOK;
 }
 
+XDAS_Int32 checkProcessParams(XDM1_BufDesc*	xdmInBufs,
+                              XDM1_BufDesc*	xdmOutBufs,
+                              TRIK_IAUDENC1_DENOISE_InArgs*	inArgs,
+                              TRIK_IAUDENC1_DENOISE_OutArgs*	outArgs)
+{
+    if (    (xdmInBufs->numBufs != 2)
+            || (xdmInBufs->descs[0].buf == NULL) || (xdmInBufs->descs[0].bufSize < 0)
+            || (xdmInBufs->descs[1].buf == NULL) || (xdmInBufs->descs[1].bufSize != xdmInBufs->descs[0].bufSize)
+            || (xdmOutBufs->numBufs != 2)
+            || (xdmOutBufs->descs[0].buf == NULL) || (xdmOutBufs->descs[0].bufSize != xdmInBufs->descs[0].bufSize)
+            || (xdmOutBufs->descs[1].buf == NULL) || (xdmOutBufs->descs[1].bufSize != xdmInBufs->descs[0].bufSize))
+    {
+        XDM_SETUNSUPPORTEDPARAM(outArgs->base.extendedError);
+        return IAUDENC1_EUNSUPPORTED;
+    }
 
+    // only 16 bits samples supported.
+    // if you need to process 8 bits samples, you should convert them to 16 bits on arm side
+    // (probably just add first 8 bits to null).
+    // also check that numInSamples is even integer
+    if ((inArgs->base.numInSamples != 2 * xdmInBufs->descs[0].bufSize)
+            || (inArgs->base % 2 != 0)
+            || (outArgs->base.numInSamples != inArgs->base.numInSamples))
+    {
+        XDM_SETUNSUPPORTEDPARAM(outArgs->base.extendedError);
+        return IAUDENC1_EUNSUPPORTED;
+    }
+}
 
 /*
 * ======== TRIK_IAUDENC1_DENOISE_process ========
@@ -212,11 +239,26 @@ Int TRIK_IAUDENC1_DENOISE_initObj(
 XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
     IAUDENC1_Handle	_algHandle,
     XDM1_BufDesc*	_xdmInBufs,
-    XDM_BufDesc*	_xdmOutBufs,
-    TRIK_IAUDENC1_DENOISE_InArgs*	_vidInArgs,
-    TRIK_IAUDENC1_DENOISE_OutArgs*	_vidOutArgs)
+    XDM1_BufDesc*	_xdmOutBufs,
+    TRIK_IAUDENC1_DENOISE_InArgs*	_inArgs,
+    TRIK_IAUDENC1_DENOISE_OutArgs*	_outArgs)
 {
     test_fillOutBuff(_xdmOutBufs);
+
+    XDAS_Int32 checkParams = checkProcessParams(_xdmInBufs, _xdmOutBufs, _inArgs, _outArgs);
+    if (checkParams != IAUDENC1_EOK)
+    {
+        return checkParams;
+    }
+
+    XDM1_SingleBufDesc signal_plus_noise = _xdmInBufs->descs[0];
+    XDM1_SingleBufDesc ideal_noise = _xdmInBufs->descs[1];
+    XDAS_Int32 numInSamples = _inArgs->base.numInSamples;
+
+    XDM1_SingleBufDesc noise = _xdmOutBufs->descs[0];
+    XDM1_SingleBufDesc filter_impulse_response = _xdmOutBufs->descs[1];
+
+
 
     return 	IAUDENC1_EOK;
 }
@@ -228,34 +270,34 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
 XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
     IAUDENC1_Handle	_algHandle,
     IAUDENC1_Cmd	_vidCmd,
-    TRIK_IAUDENC1_DENOISE_DynamicParams*	_vidDynParams,
-    IAUDENC1_Status*	_vidStatus)
+    TRIK_IAUDENC1_DENOISE_DynamicParams*	_dynParams,
+    IAUDENC1_Status*	_status)
 {
     TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
     XDAS_Int32 retVal = IAUDENC1_EFAIL;
 
     /* initialize for the general case where we don't access the data buffer */
-    XDM_CLEARACCESSMODE_READ(_vidStatus->data.accessMask);
-    XDM_CLEARACCESSMODE_WRITE(_vidStatus->data.accessMask);
+    XDM_CLEARACCESSMODE_READ(_status->data.accessMask);
+    XDM_CLEARACCESSMODE_WRITE(_status->data.accessMask);
 
     switch (_vidCmd)
     {
         case XDM_GETSTATUS:
         case XDM_GETBUFINFO:
-            _vidStatus->extendedError = 0;
+            _status->extendedError = 0;
 
-            _vidStatus->bufInfo.minNumInBufs = 1;
-            _vidStatus->bufInfo.minNumOutBufs = 1;
-            _vidStatus->bufInfo.minInBufSize[0] = 0;
-            _vidStatus->bufInfo.minOutBufSize[0] = 0;
+            _status->bufInfo.minNumInBufs = 1;
+            _status->bufInfo.minNumOutBufs = 1;
+            _status->bufInfo.minInBufSize[0] = 0;
+            _status->bufInfo.minOutBufSize[0] = 0;
 
-            XDM_SETACCESSMODE_WRITE(_vidStatus->data.accessMask);
+            XDM_SETACCESSMODE_WRITE(_status->data.accessMask);
             retVal = IAUDENC1_EOK;
             break;
 
         case XDM_SETPARAMS:
-            if (_vidDynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
-                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_vidDynParams);
+            if (_dynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
+                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
             else
                 retVal = IAUDENC1_EUNSUPPORTED;
             break;
@@ -270,10 +312,10 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
             break;
 
         case XDM_GETVERSION:
-            if (_vidStatus->data.buf != NULL && _vidStatus->data.bufSize >= strlen(s_version)+1)
+            if (_status->data.buf != NULL && _status->data.bufSize >= strlen(s_version)+1)
             {
-                memcpy(_vidStatus->data.buf, s_version, strlen(s_version)+1);
-                XDM_SETACCESSMODE_WRITE(_vidStatus->data.accessMask);
+                memcpy(_status->data.buf, s_version, strlen(s_version)+1);
+                XDM_SETACCESSMODE_WRITE(_status->data.accessMask);
                 retVal = IAUDENC1_EOK;
             }
             else
