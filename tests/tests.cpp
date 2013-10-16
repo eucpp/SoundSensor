@@ -15,17 +15,6 @@ void unitTests()
 
     WavFileTest wavFileTest;
     QTest::qExec(&wavFileTest);
-
-    /*
-    FourierTransformTest ftTest;
-    QTest::qExec(&ftTest);
-
-    CorrelatorTest correlatorTest;
-    QTest::qExec(&correlatorTest);
-
-    CorrelatorsTimeTest corrTTest;
-    QTest::qExec(&corrTTest);
-    */
 }
 
 int recordingTest(const QCoreApplication& a)
@@ -54,4 +43,17 @@ void devicesInfo()
         cout << "Device #" << i++ << ": " << device.deviceName().toStdString() <<
                 "; isNull() = " << device.isNull() << endl;
     }
+}
+
+
+void denoiseTest(char *signalFileName, char *noiseFileName, char *outputFileName)
+{
+    cout << "RUN DENOISE TEST" << endl;
+    cout << "signal file: " << signalFileName << "; noise file: " << noiseFileName << "; output file: "
+         << outputFileName << endl;
+
+    denoise_test(signalFileName, noiseFileName, outputFileName);
+
+    cout << "DONE" << endl;
+    return;
 }

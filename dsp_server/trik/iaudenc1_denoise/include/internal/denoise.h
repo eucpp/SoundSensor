@@ -37,7 +37,7 @@ extern "C" {
  *                         and it is typically set to a small fractional value.
  *                         A high adaptation rate can destabilize the LMS algorithm.
  */
-void denoise(const float* signal_with_noise, const float* noise,
+float denoise(const float* signal_with_noise, const float* noise,
              float* filter_impulse_response, float* signal,
              int samplesNum, float error, const float adaptation_range);
 

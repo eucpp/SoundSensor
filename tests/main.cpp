@@ -1,6 +1,10 @@
 #include <QtTest>
 
+#include <iostream>
+
 #include "tests.h"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +31,17 @@ int main(int argc, char *argv[])
         {
             devicesInfo();
         }
+        else if ((cmd == "denoise") || (cmd == "-n"))
+        {
+            if (argc < 5)
+            {
+                cout << "Too few arguments!" << endl;
+                a.quit();
+            }
+            denoiseTest(argv[2], argv[3], argv[4]);
+        }
+
+        a.quit();
     }
 
     return a.exec();

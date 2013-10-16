@@ -1,0 +1,37 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# XDC generates files
+*.dlls
+*.executables
+*.interfaces
+*.libraries
+*.libraries,*
+*.xdcenv.mak
+bin
+lib
+package
+package.mak
+
+# Built package
+trik_iaudenc1_denoise.tar
+trik_iaudenc1_denoise.zip
+dsp_server/trik_iaudenc1_denoise_dsp_server.tar
+dsp_server/trik_iaudenc1_denoise_dsp_server.zip
+
+# Qt Creator files for dsp_server prj
+*.creator
+*.includes
+*.config
+*.files 

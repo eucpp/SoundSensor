@@ -1,31 +1,34 @@
 #include "../include/internal/denoise.h"
 
 
-void denoise(const float* signal_with_noise, const float* noise,
+float denoise(const float* signal_with_noise, const float* noise,
                  float* filter_impulse_response, float* signal,
                  int samplesNum, float error, const float adaptation_range)
 {
-    size_t size = 2 * samplesNum * sizeof(float) + sizeof(float);
+    size_t size = (2 * samplesNum + 1) * sizeof(float);
     float* x = (float*) malloc(size);
     memset(x, 0, size);
-    memcpy((++x) + samplesNum * sizeof(float), signal_with_noise, samplesNum * sizeof(float));
+    memcpy(x + 1 + samplesNum, signal_with_noise, samplesNum * sizeof(float));
 
     float* y = (float*) malloc(samplesNum * sizeof(float));
     memset(y, 0, samplesNum * sizeof(float));
 
     float final_adapt_err = 0;
     #ifdef TEST
-        final_adapt_err = DSPF_sp_lms_cn(++x, filter_impulse_response, noise, y,
+        final_adapt_err = DSPF_sp_lms_cn(x + 1, filter_impulse_response, noise, y,
                                         adaptation_range, error, samplesNum, samplesNum);
         DSPF_sp_w_vec_cn(y, signal_with_noise, -1, signal, samplesNum);
+        memcpy(signal, y, samplesNum * sizeof(float));
     #else
-        final_adapt_err = DSPF_sp_lms(++x, filter_impulse_response, noise, y,
+        final_adapt_err = DSPF_sp_lms(x + 1, filter_impulse_response, noise, y,
                                       adaptation_range, error, samplesNum, samplesNum);
         DSPF_sp_w_vec(y, signal_with_noise, -1, signal, samplesNum);
     #endif
 
     free(x);
     free(y);
+
+    return final_adapt_err;
 }
 
 #ifndef TEST
