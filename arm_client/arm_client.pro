@@ -22,7 +22,8 @@ include(recording/recording.pri)
 include(codecEngineWrap/codecEngineWrap.pri)
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    tests.cpp
 
 DESTDIR = $$BUILD_FOLDER/arm_client
 OBJECTS_DIR = $$BUILD_FOLDER/arm_client
@@ -30,4 +31,5 @@ MOC_DIR = $$BUILD_FOLDER/arm_client
 RCC_DIR = $$BUILD_FOLDER/arm_client
 UI_DIR = $$BUILD_FOLDER/arm_client
 
-HEADERS +=
+HEADERS += \
+    tests.h

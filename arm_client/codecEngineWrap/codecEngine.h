@@ -12,7 +12,7 @@ class CodecEngine : public QObject
 {
 	Q_OBJECT
 public:
-	explicit CodecEngine(QObject* _parent);
+	explicit CodecEngine(QObject* _parent = NULL);
 	virtual ~CodecEngine();
 
 signals:

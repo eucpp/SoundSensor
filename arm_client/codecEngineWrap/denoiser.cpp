@@ -14,7 +14,6 @@ Denoiser::Denoiser(const TrikognitionCE& ce, QObject* parent)
 		return;
 	}
 
-
 	AUDENC1_Status status;
 	memset(&status, 0 , sizeof(status));
 	XDAS_Int32 res = AUDENC1_control(mHandle, XDM_SETPARAMS, NULL, status);
@@ -63,6 +62,14 @@ void Denoiser::testProcess()
 	XDAS_Int32 res = AUDENC1_process(mHandle, inBufDesc, outBufDesc, inArgs, outArgs);
 	if (res != AUDENC1_EOK) {
 		qDebug() << "AUDENC1 process failed";
+	}
+
+	XDAS_Int8 buf = outBuf.buf;
+	for (int i = 0; i < 10; i++) {
+		if (buf[i] != (char)i) {
+			qDebug() << 'A' + (char)buf[i];
+			qDebug() << "MISMATCH at " << i;
+		}
 	}
 }
 
