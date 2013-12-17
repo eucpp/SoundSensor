@@ -34,4 +34,7 @@ dsp_server/trik_iaudenc1_denoise_dsp_server.zip
 *.creator
 *.includes
 *.config
-*.files 
+*.pro.user
+*.creator.user
+*.files
+
