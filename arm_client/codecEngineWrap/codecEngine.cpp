@@ -1,16 +1,14 @@
-#include "internal/codecengine.h"
-
 #include <QDebug>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QByteArray>
 
+#include "codecEngine.h"
+
 #include <libcodecengine-client/codecengine-client.h>
+#include <ti/sdo/ce/audio1/audenc1.h>
 
-
-
-namespace trik
-{
+namespace trik {
 
 class CodecEngine::EngineControl
 {
@@ -194,10 +192,10 @@ CodecEngine::reportLoad()
 	qDebug() << "DSP load" << Server_getCpuLoad(serverHandle);
 }
 
-} // namespace trik
 
-
-Engine_Handle CodecEngine::handle() const
+AUDENC1_Handle CodecEngine::createAUDENC1() const
 {
-	return m_handle->engineHandle();
+	return AUDENC1_create(m_handle->engineHandle(), "TRIK_IAUDENC1_DENOISE", NULL);
+}
+
 }

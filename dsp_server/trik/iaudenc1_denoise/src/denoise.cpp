@@ -42,7 +42,7 @@ void test_fillOutBuff(XDM1_BufDesc* outBuff)
 
     outBuff->descs[0].bufSize = 10;
     for (int i = 0; i < outBuff->descs[0].bufSize; i++) {
-        outBuff->descs[0].buf[i] = 0;
+		outBuff->descs[0].buf[i] = i;
     }
 
     return;

@@ -1,14 +1,19 @@
+#include <QDebug>
+
 #include "tests.h"
 
-#include "codecEngineWrap/trikognitionCE.h"
+#include "codecEngineWrap/codecEngine.h"
 #include "codecEngineWrap/denoiser.h"
 
 
 void dspTest()
 {
-	TrikognitionCE ce();
+	qDebug() << "create ce";
+	trik::CodecEngine ce;
 	ce.setServerName("dsp_server.xe674");
-	ce.setServerPath("/home/evgeniy/projects/trik/soundSensor/SoundSensor/dsp_server/trik/iaudenc1_denoise/dsp_server/bin/");
+	ce.setServerPath("./");
+
+	qDebug() << "open engine";
 	ce.open();
 
 	Denoiser denoiser(ce);

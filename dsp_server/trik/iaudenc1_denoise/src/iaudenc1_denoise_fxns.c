@@ -100,6 +100,7 @@ static XDAS_Int32 setupDynamicParams(TrikDenoiseHandle* _handle,
         }
     };
 
+	TRIK_IAUDENC1_DENOISE_DynamicParams dyn_params;
     if (_dynamicParams == NULL) {
         dyn_params = default_dyn_params;
     }
@@ -148,7 +149,7 @@ Int TRIK_IAUDENC1_DENOISE_free(
 
     /* Returned data must match one returned in alloc */
     _algMemTab[0].base	= handle;
-    _algMemTab[0].size	= sizeof(TrikCvHandle);
+	_algMemTab[0].size	= sizeof(TrikDenoiseHandle);
     _algMemTab[0].alignment	= 0;
     _algMemTab[0].space	= IALG_EXTERNAL;
     _algMemTab[0].attrs	= IALG_PERSIST;
@@ -170,7 +171,6 @@ Int TRIK_IAUDENC1_DENOISE_initObj(
     const IALG_Params*	_algParams)
 {
     TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
-    XDAS_Int32 res;
 
     static const TRIK_IAUDENC1_DENOISE_Params default_params = {
         {                                           // base
@@ -190,11 +190,11 @@ Int TRIK_IAUDENC1_DENOISE_initObj(
         }
     };
 
-    TRIK_IAUDENC1_DENOISE_Params params = (TRIK_IAUDENC1_DENOISE_Params*)_algParams;
+	TRIK_IAUDENC1_DENOISE_Params* params = (TRIK_IAUDENC1_DENOISE_Params*)_algParams;
     if (params == NULL) {
-        params = &default_params;
+		memcpy(params, &default_params, sizeof(default_params));
     }
-    handle->m_params = params;
+	handle->m_params = *params;
 
     XDAS_Int32 res = setupDynamicParams(handle, NULL);
     if (res != IALG_EOK) {
@@ -225,12 +225,14 @@ XDAS_Int32 checkProcessParams(XDM1_BufDesc*	xdmInBufs,
     // (probably just add first 8 bits to null).
     // also check that numInSamples is even integer
     if ((inArgs->base.numInSamples != 2 * xdmInBufs->descs[0].bufSize)
-            || (inArgs->base % 2 != 0)
+			|| (inArgs->base.numInSamples % 2 != 0)
             || (outArgs->base.numInSamples != inArgs->base.numInSamples))
     {
         XDM_SETUNSUPPORTEDPARAM(outArgs->base.extendedError);
         return IAUDENC1_EUNSUPPORTED;
     }
+
+	return IAUDENC1_EOK;
 }
 
 /*
@@ -245,20 +247,18 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
 {
     test_fillOutBuff(_xdmOutBufs);
 
-    XDAS_Int32 checkParams = checkProcessParams(_xdmInBufs, _xdmOutBufs, _inArgs, _outArgs);
-    if (checkParams != IAUDENC1_EOK)
-    {
-        return checkParams;
-    }
+//    XDAS_Int32 checkParams = checkProcessParams(_xdmInBufs, _xdmOutBufs, _inArgs, _outArgs);
+//    if (checkParams != IAUDENC1_EOK)
+//    {
+//        return checkParams;
+//    }
 
-    XDM1_SingleBufDesc signal_plus_noise = _xdmInBufs->descs[0];
-    XDM1_SingleBufDesc ideal_noise = _xdmInBufs->descs[1];
-    XDAS_Int32 numInSamples = _inArgs->base.numInSamples;
+//    XDM1_SingleBufDesc signal_plus_noise = _xdmInBufs->descs[0];
+//    XDM1_SingleBufDesc ideal_noise = _xdmInBufs->descs[1];
+//    XDAS_Int32 numInSamples = _inArgs->base.numInSamples;
 
-    XDM1_SingleBufDesc noise = _xdmOutBufs->descs[0];
-    XDM1_SingleBufDesc filter_impulse_response = _xdmOutBufs->descs[1];
-
-
+//    XDM1_SingleBufDesc noise = _xdmOutBufs->descs[0];
+//    XDM1_SingleBufDesc filter_impulse_response = _xdmOutBufs->descs[1];
 
     return 	IAUDENC1_EOK;
 }

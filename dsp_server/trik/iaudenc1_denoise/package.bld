@@ -24,8 +24,8 @@ Pkg.otherFiles.$add(publicHeader);
  * package.  Note that the extension is added by XDC, so it need
  * not be explicitly specified.
  */
-var SRCS = ["src/iaudenc1_denoise_fxns.c", /*
-            "src/iaudenc1_denoise.cpp" */];
+var SRCS = ["src/iaudenc1_denoise_fxns.c", 
+            "src/denoise.cpp" ];
 
 
 for (var i = 0; i < Build.targets.length; i++) {

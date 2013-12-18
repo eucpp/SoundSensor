@@ -1,6 +1,5 @@
 HEADERS += signal/signal.h \
-    signal/sample.h \
-    signal/fourierTransform/fourierTransform.h
+    signal/sample.h
 
 SOURCES += signal/signal.cpp \
     signal/sample.cpp

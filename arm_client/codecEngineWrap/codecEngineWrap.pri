@@ -1,18 +1,16 @@
-trik {
-    HEADERS += \
-        codecEngineWrap/CodecEngineExceptions.h \
-        codecEngineWrap/TrikVidtranscode.h
+#trik {
+#    HEADERS += \
+#        codecEngineWrap/CodecEngineExceptions.h \
+#        codecEngineWrap/TrikVidtranscode.h
 
-    SOURCES += \
-        codecEngineWrap/TrikVidtranscode.cpp
-}
+#    SOURCES += \
+#        codecEngineWrap/TrikVidtranscode.cpp
+#}
 
 SOURCES += \
     codecEngineWrap/codecEngine.cpp \
-    codecEngineWrap/denoiser.cpp \
-    codecEngineWrap/trikognitionCE.cpp
+    codecEngineWrap/denoiser.cpp
 
 HEADERS += \
     codecEngineWrap/codecEngine.h \
-    codecEngineWrap/denoiser.h \
-    codecEngineWrap/trikognitionCE.h
+    codecEngineWrap/denoiser.h

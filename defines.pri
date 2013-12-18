@@ -2,14 +2,12 @@
 # его можно подключать во всех подпроектах.
 
 # сборка проекта для тестирования на обычной машине - desktop, сборка для трика - trik
-CONFIG += desktop
+CONFIG += trik
 
 # подключаем pocketsphinx
-INCLUDEPATH +=  /usr/local/include/sphinxbase \
-    /usr/local/include/pocketsphinx
 
 #  -L/usr/local/lib
-LIBS += -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm
+#LIBS += -lpthread -lm
 
 # специфичные настройки для сборки под трик/десктоп
 trik {
@@ -17,7 +15,7 @@ trik {
 
     QT += multimedia
 
-    BUILD_FOLDER = ../../trik-build-arm
+#    BUILD_FOLDER = ../../trik-build-arm
 
     DEFINES += TRIK
 }

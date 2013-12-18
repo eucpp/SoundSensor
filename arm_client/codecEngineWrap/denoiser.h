@@ -3,21 +3,21 @@
 
 #include <QObject>
 
-#include <ti/sdo/ce/audio1/audenc1.h>
+#include "codecEngine.h"
 
-#include "trikognitionCE.h"
+#include <libcodecengine-client/codecengine-client.h>
+#include <ti/sdo/ce/audio1/audenc1.h>
 
 class Denoiser : public QObject
 {
 	Q_OBJECT
 public:
-	Denoiser(const TrikognitionCE& ce, QObject *parent = 0);
+	Denoiser(const trik::CodecEngine& ce, QObject *parent = 0);
 
 	void testProcess();
 signals:
 
 public slots:
-	XDAS_Int32 testProcess();
 
 private:
 	size_t memoryAlloc(void* ptr, size_t size);
