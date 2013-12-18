@@ -195,7 +195,8 @@ CodecEngine::reportLoad()
 
 AUDENC1_Handle CodecEngine::createAUDENC1() const
 {
-	return AUDENC1_create(m_handle->engineHandle(), "TRIK_IAUDENC1_DENOISE", NULL);
+
+	return AUDENC1_create(m_handle->engineHandle(), "iaudenc1_denoise", NULL);
 }
 
 }

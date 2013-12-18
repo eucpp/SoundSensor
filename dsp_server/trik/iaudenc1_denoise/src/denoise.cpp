@@ -28,27 +28,29 @@ float denoise(const float* signal_with_noise, const float* noise,
     free(x);
     free(y);
 
+
     return final_adapt_err;
 }
 
-#ifndef TEST
+//#ifndef TEST
 
 void test_fillOutBuff(XDM1_BufDesc* outBuff)
 {
-    outBuff->numBufs = 1;
 
     XDM_SETACCESSMODE_READ(outBuff->descs[0].accessMask);
     XDM_SETACCESSMODE_WRITE(outBuff->descs[0].accessMask);
 
+//	outBuff->numBufs = 1;
+
     outBuff->descs[0].bufSize = 10;
     for (int i = 0; i < outBuff->descs[0].bufSize; i++) {
-		outBuff->descs[0].buf[i] = i;
+		outBuff->descs[0].buf[i] = (XDAS_Int8)i;
     }
 
     return;
 }
 
-#endif
+//#endif
 
 
 

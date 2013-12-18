@@ -10,8 +10,8 @@ void dspTest()
 {
 	qDebug() << "create ce";
 	trik::CodecEngine ce;
-	ce.setServerName("dsp_server.xe674");
-	ce.setServerPath("./");
+	ce.setServerName("dsp_server");
+	ce.setServerPath("dsp_server.xe674");
 
 	qDebug() << "open engine";
 	ce.open();

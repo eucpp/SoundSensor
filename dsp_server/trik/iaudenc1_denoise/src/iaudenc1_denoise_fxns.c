@@ -107,9 +107,9 @@ static XDAS_Int32 setupDynamicParams(TrikDenoiseHandle* _handle,
     else {
         dyn_params = *_dynamicParams;
     }
-    _handle->m_dynamicParams = dyn_params;
+//	_handle->m_dynamicParams = dyn_params;
 
-    return IALG_EOK;
+	return IAUDENC1_EOK;
 }
 
 /*
@@ -245,7 +245,8 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
     TRIK_IAUDENC1_DENOISE_InArgs*	_inArgs,
     TRIK_IAUDENC1_DENOISE_OutArgs*	_outArgs)
 {
-    test_fillOutBuff(_xdmOutBufs);
+//    test_fillOutBuff(_xdmOutBufs);
+
 
 //    XDAS_Int32 checkParams = checkProcessParams(_xdmInBufs, _xdmOutBufs, _inArgs, _outArgs);
 //    if (checkParams != IAUDENC1_EOK)
@@ -273,60 +274,62 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
     TRIK_IAUDENC1_DENOISE_DynamicParams*	_dynParams,
     IAUDENC1_Status*	_status)
 {
-    TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
-    XDAS_Int32 retVal = IAUDENC1_EFAIL;
+//    TrikDenoiseHandle* handle = (TrikDenoiseHandle*)_algHandle;
+//    XDAS_Int32 retVal = IAUDENC1_EFAIL;
 
-    /* initialize for the general case where we don't access the data buffer */
-    XDM_CLEARACCESSMODE_READ(_status->data.accessMask);
-    XDM_CLEARACCESSMODE_WRITE(_status->data.accessMask);
+//    /* initialize for the general case where we don't access the data buffer */
+////    XDM_CLEARACCESSMODE_READ(_status->data.accessMask);
+////    XDM_CLEARACCESSMODE_WRITE(_status->data.accessMask);
 
-    switch (_vidCmd)
-    {
-        case XDM_GETSTATUS:
-        case XDM_GETBUFINFO:
-            _status->extendedError = 0;
+//    switch (_vidCmd)
+//    {
+//        case XDM_GETSTATUS:
+//        case XDM_GETBUFINFO:
+//            _status->extendedError = 0;
 
-            _status->bufInfo.minNumInBufs = 1;
-            _status->bufInfo.minNumOutBufs = 1;
-            _status->bufInfo.minInBufSize[0] = 0;
-            _status->bufInfo.minOutBufSize[0] = 0;
+//            _status->bufInfo.minNumInBufs = 1;
+//            _status->bufInfo.minNumOutBufs = 1;
+//            _status->bufInfo.minInBufSize[0] = 0;
+//            _status->bufInfo.minOutBufSize[0] = 0;
 
-            XDM_SETACCESSMODE_WRITE(_status->data.accessMask);
-            retVal = IAUDENC1_EOK;
-            break;
+//            XDM_SETACCESSMODE_WRITE(_status->data.accessMask);
+//            retVal = IAUDENC1_EOK;
+//            break;
 
-        case XDM_SETPARAMS:
-            if (_dynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
-                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
-            else
-                retVal = IAUDENC1_EUNSUPPORTED;
-            break;
+//        case XDM_SETPARAMS:
+////            if (_dynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
+////                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
+////            else
+////                retVal = IAUDENC1_EUNSUPPORTED;
+//			retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
+//            break;
 
-        case XDM_RESET:
-        case XDM_SETDEFAULT:
-            retVal = setupDynamicParams(handle, NULL);
-            break;
+//        case XDM_RESET:
+//        case XDM_SETDEFAULT:
+//            retVal = setupDynamicParams(handle, NULL);
+//            break;
 
-        case XDM_FLUSH:
-            retVal = IAUDENC1_EOK;
-            break;
+//        case XDM_FLUSH:
+//            retVal = IAUDENC1_EOK;
+//            break;
 
-        case XDM_GETVERSION:
-            if (_status->data.buf != NULL && _status->data.bufSize >= strlen(s_version)+1)
-            {
-                memcpy(_status->data.buf, s_version, strlen(s_version)+1);
-                XDM_SETACCESSMODE_WRITE(_status->data.accessMask);
-                retVal = IAUDENC1_EOK;
-            }
-            else
-                retVal = IAUDENC1_EFAIL;
-            break;
+//        case XDM_GETVERSION:
+//            if (_status->data.buf != NULL && _status->data.bufSize >= strlen(s_version)+1)
+//            {
+//                memcpy(_status->data.buf, s_version, strlen(s_version)+1);
+//                XDM_SETACCESSMODE_WRITE(_status->data.accessMask);
+//                retVal = IAUDENC1_EOK;
+//            }
+//            else
+//                retVal = IAUDENC1_EFAIL;
+//            break;
 
-        default:
-            /* unsupported cmd */
-            retVal = IAUDENC1_EFAIL;
-            break;
-    }
+//        default:
+//            /* unsupported cmd */
+//            retVal = IAUDENC1_EFAIL;
+//            break;
+//    }
 
-    return retVal;
+//    return retVal;
+	return IAUDENC1_EOK;
 }

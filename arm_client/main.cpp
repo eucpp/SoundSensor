@@ -29,6 +29,8 @@
 //#include "signal/correlation/simpleCorrelator.h"
 //#include "motorFilterTest.h"
 
+#include "tests.h"
+
 using std::cout;
 using std::endl;
 
@@ -159,44 +161,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    /*
-    const int _size = 64;
-    const double Pi = 3.141592653589;
-    Signal signal(_size);
-    // тут надо переделать, убрать коэфф. 3 перед косинусом
-    for (int i = 0; i < _size; i++)
-        signal[i] = cos(2 * Pi * i / 16);
-
-    Signal signalCopy(signal.toPcm16Array(), signal.size());
-
-    WavFile file("cos2nPiOver16.wav");
-    file.open(WavFile::WriteOnly, signalCopy.getFormat());
-    file.write(signalCopy);
-    file.close();
-    */
-
-    //motorFilterTest();
-
-    QString cmd(argv[1]);
-    if (cmd == "tests")
-        tests();
-    else if (cmd == "detect")
-    {
-        //detectSignal(a, argv);
-    }
-    else if (cmd == "corr")
-    {
-        //corr(argv);
-    }
-    else if (cmd == "cmd")
-        voiceCommand(argv);
-    else if (cmd == "rec")
-        rec(a);
-
-
-    std::cout << "helloword!" << std::endl;
-
-    //return app.exec();
+	dspTest();
 
     return a.exec();
 }
