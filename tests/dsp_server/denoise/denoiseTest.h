@@ -5,7 +5,7 @@
 
 #include "recording/wavFile.h"
 
-#define TEST
+//#define TEST
 
 #include "trik/iaudenc1_denoise/include/internal/denoise.h"
 

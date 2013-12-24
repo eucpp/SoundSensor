@@ -3,16 +3,13 @@
 
 //#define TEST
 
-#ifdef TEST
-    #include <ti/dsplib/src/DSPF_sp_lms/c674/DSPF_sp_lms_cn.h>
-    #include <ti/dsplib/src/DSPF_sp_w_vec/c674/DSPF_sp_w_vec_cn.h>
-#else
-    #include <xdc/std.h>
-    #include <ti/xdais/ialg.h>
-    #include <ti/xdais/dm/iaudenc1.h>
+#ifndef TEST
+	#include <xdc/std.h>
+	#include <ti/xdais/ialg.h>
+	#include <ti/xdais/dm/iaudenc1.h>
 
-    #include <ti/dsplib/src/DSPF_sp_lms/c674/DSPF_sp_lms.h>
-    #include <ti/dsplib/src/DSPF_sp_w_vec/c674/DSPF_sp_w_vec.h>
+	#include <ti/dsplib/src/DSPF_sp_lms/c674/DSPF_sp_lms.h>
+	#include <ti/dsplib/src/DSPF_sp_w_vec/c674/DSPF_sp_w_vec.h>
 #endif
 
 #include "stdlib.h"
@@ -22,6 +19,10 @@
 extern "C" {
 #endif // __cplusplus
 
+#ifdef TEST
+	#include <ti/dsplib/src/DSPF_sp_lms/c674/DSPF_sp_lms_cn.h>
+	#include <ti/dsplib/src/DSPF_sp_w_vec/c674/DSPF_sp_w_vec_cn.h>
+#endif
 
 /**
  * @brief denoise
@@ -42,11 +43,11 @@ float denoise(const float* signal_with_noise, const float* noise,
              int samplesNum, float error, const float adaptation_range);
 
 
-//#ifndef TEST
+#ifndef TEST
 
 void test_fillOutBuff(XDM1_BufDesc* outBuff);
 
-//#endif
+#endif
 
 
 #ifdef __cplusplus

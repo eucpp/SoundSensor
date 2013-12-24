@@ -2,12 +2,12 @@
 # его можно подключать во всех подпроектах.
 
 # сборка проекта для тестирования на обычной машине - desktop, сборка для трика - trik
-CONFIG += trik
+CONFIG += desktop
 
 # подключаем pocketsphinx
 
 #  -L/usr/local/lib
-#LIBS += -lpthread -lm
+LIBS += -lpthread -lm
 
 # специфичные настройки для сборки под трик/десктоп
 trik {
@@ -27,7 +27,7 @@ desktop {
     INCLUDEPATH += /usr/include/QtMultimediaKit
     INCLUDEPATH += /usr/include/QtMobility
 
-    BUILD_FOLDER = ../../debug
+#    BUILD_FOLDER = ../../debug
 
     DEFINES += DESKTOP
 }

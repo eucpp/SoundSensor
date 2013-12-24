@@ -23,8 +23,8 @@ void denoise_test(const QString& signalWithNoiseFileName, const QString& noiseFi
     int minSize = qMin(signalFile.size(), noiseFile.size());
     int frameNum = minSize / frameSize;
 
-    float adaptation_rate = pow(10, -2);
-    float error = pow(10, -3);
+	float adaptation_rate = 1.65;
+	float error = 0.1;
 
     float* signal_with_noise = new float[frameSize];
     float* noise = new float[frameSize];
@@ -45,9 +45,11 @@ void denoise_test(const QString& signalWithNoiseFileName, const QString& noiseFi
             signal_with_noise[j] = static_cast<float>(signalFrame[j].toInt()) * pow(2, -15);
             noise[j] = static_cast<float>(noiseFrame[j].toInt()) * pow(2, -15);
         }
-        float final_err = denoise(signal_with_noise, noise, filter, signal, frameSize, error, adaptation_rate);
+		memset(filter, 0, frameSize * sizeof(float));
+		float final_err = error;
+		final_err = denoise(signal_with_noise, noise, filter, signal, frameSize, final_err, adaptation_rate);
 
-        qDebug() << "Adapt error: " << final_err;
+		qDebug() << "Adapt error: " << final_err;
 
         Signal outputFrame(frameSize, signalFile.getHeader());
         for (int j = 0; j < frameSize; j++)
@@ -74,6 +76,6 @@ void denoise_test(const QString& signalWithNoiseFileName, const QString& noiseFi
 
     delete[] signal_with_noise;
     delete[] noise;
-    delete[] signal;
+	delete[] signal;
     delete[] filter;
 }
