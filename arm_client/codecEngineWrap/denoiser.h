@@ -20,7 +20,7 @@ signals:
 public slots:
 
 private:
-	size_t memoryAlloc(void* ptr, size_t size);
+	size_t memoryAlloc(void** ptr, size_t size);
 
 	AUDENC1_Handle mHandle;
 };

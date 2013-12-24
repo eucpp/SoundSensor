@@ -42,11 +42,11 @@ float denoise(const float* signal_with_noise, const float* noise,
              int samplesNum, float error, const float adaptation_range);
 
 
-#ifndef TEST
+//#ifndef TEST
 
 void test_fillOutBuff(XDM1_BufDesc* outBuff);
 
-#endif
+//#endif
 
 
 #ifdef __cplusplus

@@ -1,5 +1,8 @@
 #include <xdc/std.h>
 
+//#include "someshit.h"
+
+
 #ifdef __TI_COMPILER_VERSION__ /* XDAIS Rule 13 - this #pragma should only apply to TI codegen */
 #pragma CODE_SECTION(TRIK_IAUDENC1_DENOISE_control, ".text:algControl")
 #pragma CODE_SECTION(TRIK_IAUDENC1_DENOISE_process, ".text:algProcess")
@@ -245,7 +248,7 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_process(
     TRIK_IAUDENC1_DENOISE_InArgs*	_inArgs,
     TRIK_IAUDENC1_DENOISE_OutArgs*	_outArgs)
 {
-//    test_fillOutBuff(_xdmOutBufs);
+	test_fillOutBuff(_xdmOutBufs);
 
 
 //    XDAS_Int32 checkParams = checkProcessParams(_xdmInBufs, _xdmOutBufs, _inArgs, _outArgs);
@@ -278,8 +281,8 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
 //    XDAS_Int32 retVal = IAUDENC1_EFAIL;
 
 //    /* initialize for the general case where we don't access the data buffer */
-////    XDM_CLEARACCESSMODE_READ(_status->data.accessMask);
-////    XDM_CLEARACCESSMODE_WRITE(_status->data.accessMask);
+//    XDM_CLEARACCESSMODE_READ(_status->data.accessMask);
+//    XDM_CLEARACCESSMODE_WRITE(_status->data.accessMask);
 
 //    switch (_vidCmd)
 //    {
@@ -297,10 +300,10 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
 //            break;
 
 //        case XDM_SETPARAMS:
-////            if (_dynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
-////                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
-////            else
-////                retVal = IAUDENC1_EUNSUPPORTED;
+//            if (_dynParams->base.size == sizeof(TRIK_IAUDENC1_DENOISE_DynamicParams))
+//                retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
+//            else
+//                retVal = IAUDENC1_EUNSUPPORTED;
 //			retVal = setupDynamicParams(handle, (TRIK_IAUDENC1_DENOISE_DynamicParams*)_dynParams);
 //            break;
 
@@ -331,5 +334,7 @@ XDAS_Int32 TRIK_IAUDENC1_DENOISE_control(
 //    }
 
 //    return retVal;
+	_status->extendedError = 1;
+
 	return IAUDENC1_EOK;
 }
